@@ -1,0 +1,30 @@
+{
+  "name": "msevents",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@nestjs/apollo": "^13.2.1",
+    "@nestjs/common": "^11.1.7",
+    "@nestjs/core": "^11.1.7",
+    "@nestjs/graphql": "^13.2.0",
+    "@prisma/client": "^6.17.1",
+    "apollo-server-express": "^3.13.0",
+    "graphql": "^16.11.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "prisma": "^6.17.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  }
+}
