@@ -1,0 +1,63 @@
+# -----------------------------
+# Types
+# -----------------------------
+type Payment {
+  id: ID!
+  eventId: String!
+  userDocument: String!
+  amount: Int!
+  method: PaymentMethod!
+  gateway: PaymentGateway!
+  gatewayTransactionId: String
+  status: PaymentStatus!
+  createdAt: String!
+}
+
+# -----------------------------
+# Enums
+# -----------------------------
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+  BOLETO
+}
+
+enum PaymentGateway {
+  STRIPE
+  MERCADO_PAGO
+  PAGARME
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELED
+}
+
+# -----------------------------
+# Input Types
+# -----------------------------
+input CreatePaymentInput {
+  eventId: String!
+  userDocument: String!
+  amount: Int!
+  method: PaymentMethod!
+  gateway: PaymentGateway!
+}
+
+# -----------------------------
+# Queries
+# -----------------------------
+type Query {
+  payments: [Payment!]!
+  paymentById(id: String!): Payment
+  paymentsByEvent(eventId: String!): [Payment!]!
+}
+
+# -----------------------------
+# Mutations
+# -----------------------------
+type Mutation {
+  createPayment(input: CreatePaymentInput!): Payment!
+}
