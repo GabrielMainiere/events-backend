@@ -1,4 +1,4 @@
-package br.com.mspayments.model;
+package br.com.mspayments.models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
