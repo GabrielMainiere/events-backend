@@ -1,0 +1,32 @@
+name: "events-backend"
+services:
+  mspayments:
+    container_name: mspayments
+    build: /mspayments
+    env_file:
+      - /mspayments/.env
+    ports:
+      - 8081:8080
+    depends_on:
+      - mspayments-postgres
+    networks:
+      - mspayments
+  mspayments-postgres:
+    container_name: mspayments-postgres
+    image: postgres:17.4-alpine
+    ports:
+      - "5433:5433"
+    volumes:
+      - ./.data/postgresql/data:/var/lib/postgresql
+    env_file:
+      - /mspayments/.env
+    command: -p 5433
+    networks:
+      - mspayments
+  
+
+networks:
+  events-backend:
+    driver: bridge
+  mspayments:
+    driver: bridge
