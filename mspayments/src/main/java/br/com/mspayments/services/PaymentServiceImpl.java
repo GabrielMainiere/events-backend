@@ -40,6 +40,18 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public void updatePaymentStatus(String gatewayTransactionId, PaymentStatus paymentStatus) {
+        var paymentOpt = paymentRepository.findByGatewayTransactionId(gatewayTransactionId);
+        if (paymentOpt.isEmpty()) {
+            throw new RuntimeException("Payment not found for gatewayTransactionId: " + gatewayTransactionId);
+        }
+
+        var payment = paymentOpt.get();
+        payment.setStatus(paymentStatus);
+        paymentRepository.save(payment);
+    }
+
+    @Override
     public List<Payment> findAllByEventId(String eventId) {
         return paymentRepository.findByEventId(eventId);
     }

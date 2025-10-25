@@ -10,4 +10,8 @@ public class MercadoPagoConfig {
     public String mercadoPagoAccessToken(Dotenv dotenv) {
         return dotenv.get("MERCADO_PAGO_ACCESS_TOKEN");
     }
+    @Bean
+    public String mercadoPagoWebhookKey(Dotenv dotenv) {
+        return dotenv.get("MERCADO_PAGO_WEBHOOK_KEY");
+    }
 }
