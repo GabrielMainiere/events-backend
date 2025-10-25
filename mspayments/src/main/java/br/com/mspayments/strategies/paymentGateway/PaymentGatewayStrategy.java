@@ -1,8 +1,9 @@
 package br.com.mspayments.strategies.paymentGateway;
 
 import br.com.mspayments.models.Payment;
+import br.com.mspayments.strategies.paymentGateway.dtos.PixResponse;
 
 public interface PaymentGatewayStrategy {
-    Payment processPix(Payment payment);
+    PixResponse processPix(Payment payment);
     Payment processCreditCard(Payment payment);
 }

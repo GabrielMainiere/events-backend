@@ -8,7 +8,7 @@ public class PixPaymentMethod implements PaymentMethodStrategy {
     @Override
     public Payment pay(PaymentGatewayStrategy gatewayStrategy, Payment payment) {
         //regras de negocio para implementar o pix
-        gatewayStrategy.processPix(payment);
+        var pixResponse = gatewayStrategy.processPix(payment);
         return null;
     }
 }

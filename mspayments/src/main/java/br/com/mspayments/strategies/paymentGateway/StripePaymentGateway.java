@@ -1,11 +1,12 @@
 package br.com.mspayments.strategies.paymentGateway;
 
 import br.com.mspayments.models.Payment;
+import br.com.mspayments.strategies.paymentGateway.dtos.PixResponse;
 
 public class StripePaymentGateway implements PaymentGatewayStrategy {
 
     @Override
-    public Payment processPix(Payment payment) {
+    public PixResponse processPix(Payment payment) {
         return null;
     }
 
