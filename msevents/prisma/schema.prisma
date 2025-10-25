@@ -28,9 +28,9 @@ model tb_event {
   title           String
   description     String?
   start_at        DateTime
-  end_at          DateTime?
-  price           Int
-  sale_start_at   DateTime
+  end_at          DateTime
+  price           Int?
+  sale_start_at   DateTime?
   sale_end_at     DateTime?
   address_street  String
   address_number  String?

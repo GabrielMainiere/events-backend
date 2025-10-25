@@ -1,31 +1,29 @@
 import { PrismaSingleton } from 'src/database/prisma/prismaSingleton';
 import { tb_event } from 'generated/prisma';
-import { CreateEventInput } from './dto/create-event.input';
+import { EventProps } from './builder/IEventsBuilder';
 
 export class EventRepository {
   private prisma = PrismaSingleton.getInstance();
 
-  async create(data: CreateEventInput): Promise<tb_event> {
+  async create(eventData: EventProps): Promise<tb_event> {
     return this.prisma.tb_event.create({
       data: {
-        title: data.title,
-        description: data.description ?? null,
-        start_at: new Date(data.startAt),
-        end_at: data.endAt ? new Date(data.endAt) : null,
-        price: data.price,
-        sale_start_at: new Date(data.saleStartAt),
-        sale_end_at: data.saleEndAt ? new Date(data.saleEndAt) : null,
-        address_street: data.addressStreet,
-        address_number: data.addressNumber ?? null,
-        address_city: data.addressCity,
-        address_state: data.addressState,
-        address_zipcode: data.addressZipcode,
-        address_country: data.addressCountry,
-        status: data.status ?? 'DRAFT',
-        event_type: data.eventType ?? 'MEETING',
+        title: eventData.title,
+        description: eventData.description ?? null,
+        start_at: eventData.startAt,
+        end_at: eventData.endAt ?? null,
+        address_street: eventData.addressStreet,
+        address_number: eventData.addressNumber ?? null,
+        address_city: eventData.addressCity,
+        address_state: eventData.addressState,
+        address_zipcode: eventData.addressZipcode,
+        address_country: eventData.addressCountry,
+        status: eventData.status,
+        event_type: eventData.eventType,
       },
     });
   }
+
 
   async findAll(): Promise<tb_event[]> {
     return this.prisma.tb_event.findMany();
