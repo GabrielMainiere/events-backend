@@ -46,6 +46,12 @@ export class Event {
   @Field()
   addressCountry: string;
 
+  @Field()
+  capacity: number;
+
+  @Field()
+  isFree: boolean;
+
   @Field(() => EventStatus)
   status: EventStatus;
 
