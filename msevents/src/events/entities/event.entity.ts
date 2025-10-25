@@ -16,14 +16,14 @@ export class Event {
   @Field()
   startAt: Date;
 
-  @Field({ nullable: true })
-  endAt?: Date;
-
-  @Field(() => Int)
-  price: number;
-
   @Field()
-  saleStartAt: Date;
+  endAt: Date;
+
+  @Field(() => Int, { nullable: true })
+  price?: number; //cents
+
+  @Field({ nullable: true })
+  saleStartAt?: Date;
 
   @Field({ nullable: true })
   saleEndAt?: Date;

@@ -3,56 +3,49 @@ import { EventType } from 'generated/prisma';
 import { EventStatus } from 'generated/prisma';
 
 export class EventBuilder implements IEventBuilder {
-    private event: Partial<EventProps> = {};
+  private event: Partial<EventProps> = {};
 
-    withTitle(title: string): this {
-        this.event.title = title;
-        return this;
+  produceBasicInfo(title: string, startAt: Date, endAt : Date): void {
+    this.event.title = title;
+    this.event.startAt = startAt;
+    this.event.endAt = endAt;
+  }
+
+  produceDescription(description?: string): void {
+    this.event.description = description;
+  }
+
+  producePrice(price?: number): void {
+      this.event.price = price;
+  }
+
+  produceSaleDates(saleStartAt?: Date, saleEndAt?: Date): void {
+    this.event.saleStartAt = saleStartAt;
+    this.event.saleEndAt = saleEndAt;
+  }
+
+  produceAddress(street : string, city : string, state : string, zipcode : string, country : string, number ?: string): void {
+    this.event.addressStreet = street;
+    this.event.addressCity = city;
+    this.event.addressState = state;
+    this.event.addressZipcode = zipcode;
+    this.event.addressCountry = country;
+    this.event.addressNumber = number;
+  }
+
+  produceType(type?: EventType): void {
+    this.event.eventType = type ?? EventType.MEETING;
+  }
+
+  produceStatus(status?: EventStatus): void {
+    this.event.status = status ?? EventStatus.DRAFT;
+  }
+
+  getResult(): EventProps {
+    if (!this.event.title || !this.event.startAt || !this.event.endAt) {
+      throw new Error('Event must have a title, start date and end date.');
     }
 
-    withDescription(description?: string): this {
-        this.event.description = description;
-        return this;
-    }
-
-    withStartAt(startAt: Date): this {
-        this.event.startAt = startAt;
-        return this;
-    }
-
-    withEndAt(endAt: Date): this {
-        this.event.endAt = endAt;
-        return this;
-    }
-
-    withLocation(location: string): this {
-        this.event.location = location;
-        return this;
-    }
-
-    withType(type: EventType): this {
-        this.event.eventType = type;
-        return this;
-    }
-
-    withStatus(status: EventStatus): this {
-        this.event.status = status;
-        return this;
-    }
-
-    build(): EventProps {
-        if (!this.event.title) {
-        throw new Error("Event must have a title");
-        }
-        if (!this.event.startAt) {
-        throw new Error("Event must have a start date");
-        }
-        if (!this.event.status) {
-        this.event.status = EventStatus.DRAFT;
-        }
-        if (!this.event.eventType) {
-        this.event.eventType = EventType.MEETING;
-        }
-        return this.event as EventProps;
-    }
+    return this.event as EventProps;
+  }
 }

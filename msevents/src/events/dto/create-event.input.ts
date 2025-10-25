@@ -19,17 +19,18 @@ export class CreateEventInput {
   startAt: string;
 
   @Field({ nullable: true })
+  @IsDateString()
+  endAt: string;
+
+  @Field(() => Int, { nullable: true })
   @IsOptional()
-  @IsDateString()
-  endAt?: string;
-
-  @Field(() => Int)
   @IsInt()
-  price: number; //cents
+  price?: number; //cents
 
-  @Field()
+  @Field({ nullable: true })
   @IsDateString()
-  saleStartAt: string;
+  @IsOptional()
+  saleStartAt?: string;
 
   @Field({ nullable: true })
   @IsOptional()
