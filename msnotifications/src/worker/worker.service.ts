@@ -1,10 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { PrismaService } from '../prisma-ds/prisma.service'; // <-- Importar
-import { EmailService } from '../modules/email/email.service'; // <-- Importar
+import { PrismaService } from '../prisma-ds/prisma.service';
 import { NotificationStatus } from '@prisma/client';
-import { NotificationTemplateService } from 'src/modules/notification-template/notification-template.service';
-import * as handlebars from 'handlebars';
+import { NotificationFactory } from 'src/modules/factory/notification.factory';
 
 @Injectable()
 export class WorkerService {
@@ -12,8 +10,7 @@ export class WorkerService {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly emailService: EmailService,
-    private readonly templateService: NotificationTemplateService,
+    private readonly notificationFactory: NotificationFactory,
   ) {}
 
   @Cron(CronExpression.EVERY_10_SECONDS)
@@ -40,23 +37,8 @@ export class WorkerService {
       });
 
         try {
-        const template = await this.templateService.findByName(notification.template_name);
-        if (!template) {
-          throw new Error(`Template ${notification.template_name} não encontrado.`);
-        }
-
-        const subjectTemplate = handlebars.compile(template.subject_template);
-        const bodyTemplate = handlebars.compile(template.body_template);
-
-        const payload = notification.payload as Record<string, any>; 
-        const subject = subjectTemplate(payload);
-        const body = bodyTemplate(payload);
-
-        await this.emailService.sendMail(
-          notification.recipient_address,
-          subject,
-          body,
-        );
+        const strategy = this.notificationFactory.getStrategy(notification.channel);
+        await strategy.send(notification);
 
         await this.prisma.notificationLog.update({
           where: { id: notification.id },
