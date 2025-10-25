@@ -1,5 +1,5 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsString, IsDateString, IsOptional, IsInt } from 'class-validator';
+import { IsString, IsDateString, IsOptional, IsInt, IsBoolean } from 'class-validator';
 import { EventStatus } from 'generated/prisma';
 import { EventType } from 'generated/prisma';
 
@@ -61,6 +61,14 @@ export class CreateEventInput {
   @Field()
   @IsString()
   addressCountry: string;
+
+  @Field()
+  @IsInt()
+  capacity: number;
+
+  @Field()
+  @IsBoolean()
+  isFree: boolean; 
 
   @Field(() => EventStatus, { nullable: true })
   @IsOptional()

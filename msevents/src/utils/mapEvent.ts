@@ -17,6 +17,8 @@ export function mapEvent(event: tb_event): Event {
     addressState: event.address_state,
     addressZipcode: event.address_zipcode,
     addressCountry: event.address_country,
+    capacity: event.capacity,
+    isFree: event.isFree,
     status: event.status,
     eventType: event.event_type,
     createdAt: event.created_at,

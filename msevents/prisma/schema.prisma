@@ -10,9 +10,9 @@ datasource db {
 
 enum EventStatus {
   DRAFT
-  PENDING
   ARCHIVED
-  PUBLISHED
+  CONFIRMED
+  WAITING_PAYMENT
   CANCELLED
 }
 
@@ -38,6 +38,8 @@ model tb_event {
   address_state   String
   address_zipcode String
   address_country String
+  capacity        Int
+  isFree          Boolean     @default(false)
   status          EventStatus @default(DRAFT)
   event_type      EventType   @default(MEETING)
   created_at      DateTime    @default(now())

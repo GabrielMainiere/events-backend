@@ -17,6 +17,8 @@ type Event {
   addressState: String!
   addressZipcode: String!
   addressCountry: String!
+  capacity: Float!
+  isFree: Boolean!
   status: EventStatus!
   eventType: EventType!
   createdAt: DateTime!
@@ -31,9 +33,9 @@ scalar DateTime
 """Status do evento"""
 enum EventStatus {
   DRAFT
-  PENDING
   ARCHIVED
-  PUBLISHED
+  CONFIRMED
+  WAITING_PAYMENT
   CANCELLED
 }
 
@@ -46,11 +48,13 @@ enum EventType {
 }
 
 type Query {
+  getEventById(id: String!): Event!
   events: [Event!]!
 }
 
 type Mutation {
   createEvent(input: CreateEventInput!): Event!
+  updateEvent(input: UpdateEventInput!): Event!
 }
 
 input CreateEventInput {
@@ -67,6 +71,25 @@ input CreateEventInput {
   addressState: String!
   addressZipcode: String!
   addressCountry: String!
+  capacity: Float!
+  isFree: Boolean!
   status: EventStatus
   eventType: EventType
+}
+
+input UpdateEventInput {
+  id: ID!
+  title: String
+  description: String
+  startAt: DateTime
+  endAt: DateTime
+  price: Int
+  isFree: Boolean
+  capacity: Int
+  addressStreet: String
+  addressNumber: String
+  addressCity: String
+  addressState: String
+  addressZipcode: String
+  addressCountry: String
 }

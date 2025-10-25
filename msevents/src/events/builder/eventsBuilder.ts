@@ -5,10 +5,11 @@ import { EventStatus } from 'generated/prisma';
 export class EventBuilder implements IEventBuilder {
   private event: Partial<EventProps> = {};
 
-  produceBasicInfo(title: string, startAt: Date, endAt : Date): void {
+  produceBasicInfo(title: string, startAt: Date, endAt : Date, isFree : boolean): void {
     this.event.title = title;
     this.event.startAt = startAt;
     this.event.endAt = endAt;
+    this.event.isFree = isFree;
   }
 
   produceDescription(description?: string): void {
@@ -39,6 +40,10 @@ export class EventBuilder implements IEventBuilder {
 
   produceStatus(status?: EventStatus): void {
     this.event.status = status ?? EventStatus.DRAFT;
+  }
+
+  produceCapacity(capacity: number): void {
+    this.event.capacity = capacity;
   }
 
   getResult(): EventProps {
