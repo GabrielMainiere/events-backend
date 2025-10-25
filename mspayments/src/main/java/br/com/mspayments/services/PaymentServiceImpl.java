@@ -3,6 +3,8 @@ package br.com.mspayments.services;
 import br.com.mspayments.models.Payment;
 import br.com.mspayments.models.PaymentStatus;
 import br.com.mspayments.repositories.PaymentRepository;
+import br.com.mspayments.strategies.paymentGateway.PaymentGatewayFactory;
+import br.com.mspayments.strategies.paymentMethod.PaymentMethodFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,9 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment create(Payment input) {
         input.setCreatedAt(Instant.now());
         input.setStatus(PaymentStatus.PENDING);
+        var gatewayStrategy = PaymentGatewayFactory.getPaymentGateway(input.getGateway());
+        var methodStrategy = PaymentMethodFactory.getPaymentMethod(input.getMethod());
+        methodStrategy.pay(gatewayStrategy, input);
         return paymentRepository.save(input);
     }
 
