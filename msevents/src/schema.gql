@@ -1,0 +1,72 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Event {
+  id: String!
+  title: String!
+  description: String
+  startAt: DateTime!
+  endAt: DateTime!
+  price: Int
+  saleStartAt: DateTime
+  saleEndAt: DateTime
+  addressStreet: String!
+  addressNumber: String
+  addressCity: String!
+  addressState: String!
+  addressZipcode: String!
+  addressCountry: String!
+  status: EventStatus!
+  eventType: EventType!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""Status do evento"""
+enum EventStatus {
+  DRAFT
+  PENDING
+  ARCHIVED
+  PUBLISHED
+  CANCELLED
+}
+
+"""Tipo do evento"""
+enum EventType {
+  MEETING
+  CONFERENCE
+  WORKSHOP
+  PARTY
+}
+
+type Query {
+  events: [Event!]!
+}
+
+type Mutation {
+  createEvent(input: CreateEventInput!): Event!
+}
+
+input CreateEventInput {
+  title: String!
+  description: String
+  startAt: String!
+  endAt: String
+  price: Int
+  saleStartAt: String
+  saleEndAt: String
+  addressStreet: String!
+  addressNumber: String
+  addressCity: String!
+  addressState: String!
+  addressZipcode: String!
+  addressCountry: String!
+  status: EventStatus
+  eventType: EventType
+}
