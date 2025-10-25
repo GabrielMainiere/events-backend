@@ -3,19 +3,16 @@ syntax = "proto3";
 package notifications;
 
 service NotificationService {
-  // O método que outros serviços vão chamar
   rpc SendNotification (SendNotificationRequest) returns (SendNotificationResponse);
 }
 
-// O que será recebido
 message SendNotificationRequest {
   string user_id = 1;
   string template_name = 2;
   string recipient_address = 3;
-  string payload_json = 4; // Os dados como string JSON
+  string payload_json = 4;
 }
 
-// O que será respondido
 message SendNotificationResponse {
   string notification_id = 1;
   string status = 2;
