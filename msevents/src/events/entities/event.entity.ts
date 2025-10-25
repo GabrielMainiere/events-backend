@@ -1,4 +1,4 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { EventStatus } from 'generated/prisma';
 import { EventType } from 'generated/prisma';
 
@@ -19,8 +19,32 @@ export class Event {
   @Field({ nullable: true })
   endAt?: Date;
 
+  @Field(() => Int)
+  price: number;
+
+  @Field()
+  saleStartAt: Date;
+
   @Field({ nullable: true })
-  location?: string;
+  saleEndAt?: Date;
+
+  @Field()
+  addressStreet: string;
+
+  @Field({ nullable: true })
+  addressNumber?: string;
+
+  @Field()
+  addressCity: string;
+
+  @Field()
+  addressState: string;
+
+  @Field()
+  addressZipcode: string;
+
+  @Field()
+  addressCountry: string;
 
   @Field(() => EventStatus)
   status: EventStatus;

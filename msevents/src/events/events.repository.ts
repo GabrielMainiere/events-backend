@@ -9,12 +9,20 @@ export class EventRepository {
     return this.prisma.tb_event.create({
       data: {
         title: data.title,
-        description: data.description,
+        description: data.description ?? null,
         start_at: new Date(data.startAt),
         end_at: data.endAt ? new Date(data.endAt) : null,
-        location: data.location,
-        status: data.status,
-        event_type: data.eventType,
+        price: data.price,
+        sale_start_at: new Date(data.saleStartAt),
+        sale_end_at: data.saleEndAt ? new Date(data.saleEndAt) : null,
+        address_street: data.addressStreet,
+        address_number: data.addressNumber ?? null,
+        address_city: data.addressCity,
+        address_state: data.addressState,
+        address_zipcode: data.addressZipcode,
+        address_country: data.addressCountry,
+        status: data.status ?? 'DRAFT',
+        event_type: data.eventType ?? 'MEETING',
       },
     });
   }

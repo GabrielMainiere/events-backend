@@ -1,5 +1,5 @@
-import { InputType, Field } from '@nestjs/graphql';
-import { IsString, IsDateString, IsOptional } from 'class-validator';
+import { InputType, Field, Int } from '@nestjs/graphql';
+import { IsString, IsDateString, IsOptional, IsInt } from 'class-validator';
 import { EventStatus } from 'generated/prisma';
 import { EventType } from 'generated/prisma';
 
@@ -23,10 +23,43 @@ export class CreateEventInput {
   @IsDateString()
   endAt?: string;
 
+  @Field(() => Int)
+  @IsInt()
+  price: number; //cents
+
+  @Field()
+  @IsDateString()
+  saleStartAt: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  @IsDateString()
+  saleEndAt?: string;
+
+  @Field()
+  @IsString()
+  addressStreet: string;
+
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
-  location?: string;
+  addressNumber?: string;
+
+  @Field()
+  @IsString()
+  addressCity: string;
+
+  @Field()
+  @IsString()
+  addressState: string;
+
+  @Field()
+  @IsString()
+  addressZipcode: string;
+
+  @Field()
+  @IsString()
+  addressCountry: string;
 
   @Field(() => EventStatus, { nullable: true })
   @IsOptional()
