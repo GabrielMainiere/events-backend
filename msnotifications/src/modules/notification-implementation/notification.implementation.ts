@@ -3,8 +3,8 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { CreateNotificationLogDto } from 'src/dto/createNotificationLogDto';
 import type { ISendNotificationRequest } from 'src/interfaces/iSendNotificationRequest';
 import type { ISendNotificationResponse } from 'src/interfaces/iSendNotificationResponse';
-import { NotificationLogService } from 'src/notification-log/notification-log.service';
-import { NotificationTemplateService } from 'src/notification-template/notification-template.service';
+import { NotificationLogService } from 'src/modules/notification-log/notification-log.service';
+import { NotificationTemplateService } from 'src/modules/notification-template/notification-template.service';
 
 @Controller()
 export class NotificationImplementation {
