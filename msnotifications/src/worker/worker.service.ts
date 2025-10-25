@@ -47,10 +47,8 @@ export class WorkerService {
             sent_at: new Date(),
           },
         });
-        this.logger.log(`WORKER: Notificação ${notification.id} enviada com sucesso.`);
-
+        
       } catch (error) {
-        this.logger.error(`WORKER: Notificação ${notification.id} falhou. Erro: ${error.message}`);
         await this.prisma.notificationLog.update({
           where: { id: notification.id },
           data: {
