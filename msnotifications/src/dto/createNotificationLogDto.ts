@@ -1,4 +1,4 @@
-import { NotificationChannel } from 'generated/prisma/client';
+import { NotificationChannel } from '@prisma/client';
 
 export class CreateNotificationLogDto {
   user_id: string;

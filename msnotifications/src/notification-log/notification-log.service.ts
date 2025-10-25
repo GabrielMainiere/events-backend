@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationStatus } from 'generated/prisma/client';
+import { NotificationStatus } from '@prisma/client';
 import { CreateNotificationLogDto } from 'src/dto/createNotificationLogDto';
 import { PrismaService } from 'src/prisma-ds/prisma.service';
 
