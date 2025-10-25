@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
-//NestJS already utilizes singleton pattern for services, no need to manually implement it.
+//NestJS already utilizes singleton pattern for services.
 
 @Injectable()
 export class EmailService {
@@ -20,7 +20,7 @@ export class EmailService {
 
   async sendMail(to: string, subject: string, body: string) {
     await this.transport.sendMail({
-      from: `"Sympla Clone" <${this.configService.get<string>('GMAIL_USER')}>`,
+      from: `"Events Project" <${this.configService.get<string>('GMAIL_USER')}>`,
       to: to,
       subject: subject,
       html: body,
