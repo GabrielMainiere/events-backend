@@ -13,19 +13,27 @@ type Payment {
   createdAt: String!
 }
 
+type PixData {
+  qrCode: String
+  qrCodeBase64: String
+}
+
+type PaymentResponse {
+  payment: Payment!
+  pixData: PixData
+}
+
 # -----------------------------
 # Enums
 # -----------------------------
 enum PaymentMethod {
   PIX
   CREDIT_CARD
-  BOLETO
 }
 
 enum PaymentGateway {
   STRIPE
   MERCADO_PAGO
-  PAGARME
 }
 
 enum PaymentStatus {
@@ -59,5 +67,5 @@ type Query {
 # Mutations
 # -----------------------------
 type Mutation {
-  createPayment(input: CreatePaymentInput!): Payment!
+  createPayment(input: CreatePaymentInput!): PaymentResponse!
 }

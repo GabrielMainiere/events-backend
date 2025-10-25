@@ -1,5 +1,6 @@
 package br.com.mspayments.services;
 
+import br.com.mspayments.controllers.PaymentResponse;
 import br.com.mspayments.models.Payment;
 import br.com.mspayments.models.PaymentStatus;
 import br.com.mspayments.repositories.PaymentRepository;
@@ -17,13 +18,15 @@ import java.util.UUID;
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     @Override
-    public Payment create(Payment input) {
+    public PaymentResponse create(Payment input) {
         input.setCreatedAt(Instant.now());
         input.setStatus(PaymentStatus.PENDING);
         var gatewayStrategy = PaymentGatewayFactory.getPaymentGateway(input.getGateway());
         var methodStrategy = PaymentMethodFactory.getPaymentMethod(input.getMethod());
-        methodStrategy.pay(gatewayStrategy, input);
-        return paymentRepository.save(input);
+        var response = methodStrategy.pay(gatewayStrategy, input);
+        response.getPayment().setGatewayTransactionId(response.getPixData().getId());
+        paymentRepository.save(response.getPayment());
+        return response;
     }
 
     @Override

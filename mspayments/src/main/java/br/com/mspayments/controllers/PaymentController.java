@@ -17,7 +17,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @MutationMapping
-    public Payment createPayment(@Argument("input") Payment input) {
+    public PaymentResponse createPayment(@Argument("input") Payment input) {
         return  paymentService.create(input);
     }
 
