@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { EventRepository } from './events.repository';
 import { CreateEventInput } from './dto/create-event.input';
 import { Event } from './entities/event.entity';
@@ -7,6 +7,7 @@ import { EventBuilder } from './builder/eventsBuilder';
 import { EventDirector } from './builder/eventDirector';
 import { validateEventPricing } from '../utils//priceValidation';
 import { UpdateEventInput } from './dto/update-event-input';
+import { EventStatus } from 'generated/prisma';
 
 @Injectable()
 export class EventsService {
@@ -85,5 +86,24 @@ export class EventsService {
   async getAllEvents(): Promise<Event[]> {
     const events = await this.repository.findAll();
     return events.map(mapEvent);
+  }
+
+  async cancelEvent(id: string): Promise<Event | undefined> {
+    const event = await this.repository.getById(id);
+
+    if (!event) {
+      throw new NotFoundException(`Event with id ${id} not found`);
+    }
+
+    if (event.status === EventStatus.CANCELLED) {
+      throw new BadRequestException(`Event already cancelled`);
+    }
+
+    if (event.isFree) {
+      const updated = await this.repository.update(event.id, {
+        status: EventStatus.CANCELLED,
+      });
+      return mapEvent(updated);
+    }
   }
 }
