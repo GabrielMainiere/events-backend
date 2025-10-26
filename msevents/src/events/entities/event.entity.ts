@@ -1,10 +1,12 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { IsUUID } from 'class-validator';
 import { EventStatus } from 'generated/prisma';
 import { EventType } from 'generated/prisma';
 
 @ObjectType()
 export class Event {
   @Field()
+  @IsUUID()
   id: string;
 
   @Field()

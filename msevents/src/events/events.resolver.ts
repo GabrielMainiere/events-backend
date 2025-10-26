@@ -3,6 +3,7 @@ import { EventsService } from './events.service';
 import { Event } from './entities/event.entity';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event-input';
+import { CancelEventInput } from './dto/cancel-event.input';
 
 @Resolver(() => Event)
 export class EventsResolver {
@@ -17,6 +18,11 @@ export class EventsResolver {
   @Mutation(() => Event)
   async updateEvent(@Args('input') input: UpdateEventInput): Promise<Event> {
     return this.service.updateEvent(input);
+  }
+
+  @Mutation(() => Event)
+  async cancelEvent(@Args('input') input: CancelEventInput): Promise<Event | undefined> {
+    return this.service.cancelEvent(input.id);
   }
 
   @Query(() => Event)

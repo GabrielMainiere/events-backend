@@ -1,5 +1,5 @@
 import { PrismaSingleton } from 'src/database/prisma/prismaSingleton';
-import { tb_event } from 'generated/prisma';
+import { EventStatus, tb_event } from 'generated/prisma';
 import { EventProps } from './builder/IEventsBuilder';
 
 export class EventRepository {
@@ -46,6 +46,7 @@ export class EventRepository {
         address_state: data.addressState,
         address_zipcode: data.addressZipcode,
         address_country: data.addressCountry,
+        status: data.status,
         updated_at: new Date(),
       },
     });
@@ -57,5 +58,15 @@ export class EventRepository {
 
   async findAll(): Promise<tb_event[]> {
     return this.prisma.tb_event.findMany();
+  }
+
+  async cancel(id: string): Promise<tb_event> {
+    return this.prisma.tb_event.update({
+      where: { id },
+      data: {
+        status: EventStatus.CANCELLED,
+        updated_at: new Date(),
+      },
+    });
   }
 }

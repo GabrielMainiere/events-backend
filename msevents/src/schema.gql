@@ -55,6 +55,7 @@ type Query {
 type Mutation {
   createEvent(input: CreateEventInput!): Event!
   updateEvent(input: UpdateEventInput!): Event!
+  cancelEvent(input: CancelEventInput!): Event!
 }
 
 input CreateEventInput {
@@ -92,4 +93,8 @@ input UpdateEventInput {
   addressState: String
   addressZipcode: String
   addressCountry: String
+}
+
+input CancelEventInput {
+  id: String!
 }
