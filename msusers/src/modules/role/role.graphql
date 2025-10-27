@@ -13,7 +13,7 @@ input UpdateRoleInput {
 }
 
 type Query {
-    listRoles: [Role!]!
+    listRoles(id: ID): [Role!]!
 }
 
 type Mutation {

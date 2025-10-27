@@ -45,7 +45,7 @@ export interface Role {
 }
 
 export interface IQuery {
-    listRoles(): Role[] | Promise<Role[]>;
+    listRoles(id?: Nullable<string>): Role[] | Promise<Role[]>;
     getUser(id: string): Nullable<User> | Promise<Nullable<User>>;
     listUsers(): User[] | Promise<User[]>;
 }
