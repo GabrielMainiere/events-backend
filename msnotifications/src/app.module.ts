@@ -13,6 +13,10 @@ import { DecoratorModule } from './modules/decorator/decorator.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
 
+// Importar os enums para registrá-los no GraphQL
+import './enum/notification-channel.enum';
+import './enum/notification-type.enum';
+
 
 @Module({
   imports: [

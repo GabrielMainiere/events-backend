@@ -20,9 +20,17 @@ enum NotificationStatus {
   FALHA
 }
 
+enum NotificationType {
+  ACCOUNT
+  PAYMENTS
+  MARKETING
+  EVENT
+}
+
 model NotificationTemplate {
   id               String              @id @default(uuid())
   template_name    String              @unique
+  notification_type NotificationType   @default(ACCOUNT)
   channel          NotificationChannel
   subject_template String
   body_template    String
@@ -33,9 +41,10 @@ model NotificationTemplate {
 }
 
 model NotificationLog {
-  id                String             @id @default(uuid())
-  user_id           String             @db.Uuid
-  status            NotificationStatus @default(PENDENTE) @map("status")
+  id                String              @id @default(uuid())
+  user_id           String              @db.Uuid
+  notification_type NotificationType
+  status            NotificationStatus  @default(PENDENTE) @map("status")
   channel           NotificationChannel
   recipient_address String
   template_name     String
@@ -43,7 +52,7 @@ model NotificationLog {
   sent_at           DateTime?
   retry_count       Int                 @default(0)
   error_message     String?
-  created_at        DateTime           @default(now())
+  created_at        DateTime            @default(now())
 
   @@index([status])
   @@index([user_id])
@@ -53,7 +62,7 @@ model NotificationLog {
 model UserPreference {
   id                String              @id @default(uuid())
   user_id           String              @db.Uuid
-  notification_type String
+  notification_type NotificationType
   channel           NotificationChannel
   is_enabled        Boolean             @default(true)
   updated_at        DateTime            @updatedAt

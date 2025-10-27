@@ -18,21 +18,22 @@ export class NotificationImplementation {
     data: ISendNotificationRequest,
   ): Promise<ISendNotificationResponse> { 
     
-    const template = await this.templateService.findByName(data.templateName);
+    const template = await this.templateService.findOne(data.templateId);
     if (!template) {
-      throw new Error(`Template not found: ${data.templateName}`);
+      throw new Error(`Template não encontrado: ${data.templateId}`);
     }
 
     let payload: Record<string, any>;
     try {
       payload = JSON.parse(data.payloadJson);
     } catch (error) {
-      throw new Error('Invalid payload JSON');
+      throw new Error('Payload JSON inválido');
     }
 
     const logDto: CreateNotificationLogDto = {
       user_id: data.userId,
-      template_name: data.templateName,
+      template_name: template.template_name,
+      notification_type: template.notification_type,
       recipient_address: data.recipientAddress,
       channel: template.channel, 
       payload: payload,

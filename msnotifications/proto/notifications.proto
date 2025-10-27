@@ -8,7 +8,7 @@ service NotificationService {
 
 message SendNotificationRequest {
   string user_id = 1;
-  string template_name = 2;
+  string template_id = 2;
   string recipient_address = 3;
   string payload_json = 4;
 }

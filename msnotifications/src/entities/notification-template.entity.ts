@@ -1,5 +1,6 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { NotificationChannel } from '@prisma/client';
+import { NotificationType } from 'src/enum/notification-type.enum';
+import { NotificationChannel } from 'src/enum/notification-channel.enum';
 
 
 @ObjectType()
@@ -10,7 +11,10 @@ export class NotificationTemplateEntity {
   @Field()
   template_name: string;
 
-  @Field(() => String)
+  @Field(() => NotificationType)
+  notification_type: NotificationType;
+
+  @Field(() => NotificationChannel)
   channel: NotificationChannel;
 
   @Field()

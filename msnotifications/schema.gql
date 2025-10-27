@@ -4,7 +4,8 @@
 
 input CreateTemplateInput {
   body_template: String!
-  channel: String!
+  channel: NotificationChannel!
+  notification_type: NotificationType!
   subject_template: String!
   template_name: String!
 }
@@ -20,14 +21,30 @@ type Mutation {
   updateNotificationTemplate(id: String!, input: UpdateTemplateInput!): NotificationTemplateEntity!
 }
 
+"""Canais de notificação disponíveis"""
+enum NotificationChannel {
+  EMAIL
+  PUSH
+  SMS
+}
+
 type NotificationTemplateEntity {
   body_template: String!
-  channel: String!
+  channel: NotificationChannel!
   created_at: DateTime!
   id: ID!
+  notification_type: NotificationType!
   subject_template: String!
   template_name: String!
   updated_at: DateTime!
+}
+
+"""Tipos de notificação disponíveis no sistema"""
+enum NotificationType {
+  ACCOUNT
+  EVENT
+  MARKETING
+  PAYMENTS
 }
 
 type Query {
@@ -38,7 +55,8 @@ type Query {
 
 input UpdateTemplateInput {
   body_template: String
-  channel: String
+  channel: NotificationChannel
+  notification_type: NotificationType
   subject_template: String
   template_name: String
 }

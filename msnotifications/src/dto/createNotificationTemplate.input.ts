@@ -1,6 +1,7 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { NotificationChannel } from '@prisma/client';
-import { IsString } from 'class-validator';
+import { IsString, IsEnum } from 'class-validator';
+import { NotificationType } from 'src/enum/notification-type.enum';
+import { NotificationChannel } from 'src/enum/notification-channel.enum';
 
 @InputType()
 export class CreateTemplateInput {
@@ -8,8 +9,12 @@ export class CreateTemplateInput {
   @IsString()
   template_name: string;
 
-  @Field(() => String)
-  @IsString()
+  @Field(() => NotificationType)
+  @IsEnum(NotificationType)
+  notification_type: NotificationType;
+
+  @Field(() => NotificationChannel)
+  @IsEnum(NotificationChannel)
   channel: NotificationChannel;
 
   @Field()
