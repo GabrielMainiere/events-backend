@@ -19,7 +19,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:generate": "prisma generate",
-    "nest:g:res": "node -e \"const n=process.argv[1];if(!n){console.error('Use: npm run gen:resource <name>');process.exit(1);}require('child_process').execSync('nest g resource modules/'+n+' --no-spec',{stdio:'inherit'})\""
+    "nest:g:res": "node -e \"const n=process.argv[1];if(!n){console.error('Use: npm run gen:resource <name>');process.exit(1);}require('child_process').execSync('nest g resource modules/'+n+' --no-spec',{stdio:'inherit'})\"",
+    "prisma:migrate": "npx prisma migrate dev"
   },
   "dependencies": {
     "@apollo/server": "^5.0.0",

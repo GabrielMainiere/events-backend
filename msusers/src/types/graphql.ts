@@ -45,15 +45,16 @@ export interface Role {
 }
 
 export interface IQuery {
-    listRoles(id?: Nullable<string>): Role[] | Promise<Role[]>;
+    listRoles(): Role[] | Promise<Role[]>;
+    findRole(id: string): Nullable<Role> | Promise<Nullable<Role>>;
     getUser(id: string): Nullable<User> | Promise<Nullable<User>>;
     listUsers(): User[] | Promise<User[]>;
 }
 
 export interface IMutation {
-    createRole(input: CreateRoleInput): Role | Promise<Role>;
-    updateRole(id: string, input: UpdateRoleInput): Role | Promise<Role>;
-    deleteRole(id: string): boolean | Promise<boolean>;
+    createRole(createRoleInput: CreateRoleInput): Role | Promise<Role>;
+    updateRole(id: string, updateRoleInput: UpdateRoleInput): Role | Promise<Role>;
+    deleteRole(id: string): string | Promise<string>;
     createUser(input: CreateUserInput): User | Promise<User>;
     updateUser(id: string, input: UpdateUserInput): User | Promise<User>;
     deleteUser(id: string): boolean | Promise<boolean>;

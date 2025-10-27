@@ -7,27 +7,27 @@ export class RoleResolver {
   constructor(private readonly roleService: RoleService) {}
 
   @Mutation('createRole')
-  create(@Args('createRoleInput') createRoleInput: CreateRoleInput) {
-    return this.roleService.create(createRoleInput)
+  async create(@Args('createRoleInput') createRoleInput: CreateRoleInput) {
+    return await this.roleService.create(createRoleInput)
   }
 
   @Query('listRoles')
-  listRoles() {
-    return this.roleService.findAll()
+  async listRoles() {
+    return await this.roleService.findAll()
   }
 
-  @Query('listRoles')
-  findOne(@Args('id') id: number) {
-    return this.roleService.findOne(id)
+  @Query('findRole')
+  async findOne(@Args('id') id: string) {
+    return await this.roleService.findOne(id)
   }
 
   @Mutation('updateRole')
-  update(@Args('id') id: number, @Args('updateRoleInput') updateRoleInput: UpdateRoleInput) {
-    return this.roleService.update(id, updateRoleInput)
+  async update(@Args('id') id: string, @Args('updateRoleInput') updateRoleInput: UpdateRoleInput) {
+    return await this.roleService.update(id, updateRoleInput)
   }
 
   @Mutation('deleteRole')
-  remove(@Args('id') id: number) {
-    return this.roleService.deactivate(id)
+  async remove(@Args('id') id: string) {
+    return await this.roleService.deactivate(id)
   }
 }

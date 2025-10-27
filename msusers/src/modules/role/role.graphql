@@ -13,11 +13,12 @@ input UpdateRoleInput {
 }
 
 type Query {
-    listRoles(id: ID): [Role!]!
+    listRoles: [Role!]!
+    findRole(id: ID!): Role
 }
 
 type Mutation {
-    createRole(input: CreateRoleInput!): Role!
-    updateRole(id: ID!, input: UpdateRoleInput!): Role!
-    deleteRole(id: ID!): Boolean!
+    createRole(createRoleInput: CreateRoleInput!): Role!
+    updateRole(id: ID!, updateRoleInput: UpdateRoleInput!): Role!
+    deleteRole(id: ID!): ID!
 }

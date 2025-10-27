@@ -15,7 +15,7 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
+  id            String    @id @default(uuid())
   email         String    @unique
   password      String
   name          String
@@ -29,7 +29,7 @@ model User {
 }
 
 model Role {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(uuid())
   name      String    @unique
   deletedAt DateTime?
   createdAt DateTime  @default(now())

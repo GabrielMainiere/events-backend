@@ -6,28 +6,28 @@ import { RoleUpdateInput } from 'generated/prisma/models'
 @Injectable()
 export class RoleService {
   constructor(private readonly roleRepository: RoleRepository) {}
-  create(createRoleInput: CreateRoleInput) {
-    return this.roleRepository.create(createRoleInput)
+  async create(createRoleInput: CreateRoleInput) {
+    return await this.roleRepository.create(createRoleInput)
   }
 
-  findOne(id: number) {
-    return this.roleRepository.findOne(id)
+  async findOne(id: string) {
+    return await this.roleRepository.findOne(id)
   }
 
-  findAll() {
-    return this.roleRepository.findAll()
+  async findAll() {
+    return await this.roleRepository.findAll()
   }
 
-  update(id: number, updateRoleInput: UpdateRoleInput) {
+  async update(id: string, updateRoleInput: UpdateRoleInput) {
     const serializedRoleUpdateInput: RoleUpdateInput = {
       ...updateRoleInput,
       name: updateRoleInput.name ?? undefined,
     }
 
-    return this.roleRepository.update(id, serializedRoleUpdateInput)
+    return await this.roleRepository.update(id, serializedRoleUpdateInput)
   }
 
-  deactivate(id: number) {
-    return this.roleRepository.deactivate(id)
+  async deactivate(id: string) {
+    return await this.roleRepository.deactivate(id)
   }
 }

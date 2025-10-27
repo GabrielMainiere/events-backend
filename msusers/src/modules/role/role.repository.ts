@@ -6,23 +6,27 @@ import { PRISMA_CLIENT } from 'src/core/constants'
 @Injectable()
 export class RoleRepository {
   constructor(@Inject(PRISMA_CLIENT) private prismaClient: PrismaClient) {}
-  create(createRoleInput: RoleCreateInput) {
-    return this.prismaClient.role.create({ data: createRoleInput })
+  async create(createRoleInput: RoleCreateInput) {
+    return await this.prismaClient.role.create({ data: createRoleInput })
   }
 
-  findOne(id: number) {
-    return this.prismaClient.role.findUnique({ where: { id } })
+  async findOne(id: string) {
+    return await this.prismaClient.role.findUnique({ where: { id } })
   }
 
-  findAll() {
-    return this.prismaClient.role.findMany()
+  async findAll() {
+    return await this.prismaClient.role.findMany()
   }
 
-  update(id: number, updateRoleInput: RoleUpdateInput) {
-    return this.prismaClient.role.update({ where: { id }, data: updateRoleInput })
+  async update(id: string, updateRoleInput: RoleUpdateInput) {
+    return await this.prismaClient.role.update({ where: { id }, data: updateRoleInput })
   }
 
-  deactivate(id: number) {
-    return this.prismaClient.role.update({ where: { id }, data: { deletedAt: new Date() } })
+  async deactivate(id: string) {
+    const deletedRole = await this.prismaClient.role.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    })
+    return deletedRole.id
   }
 }
