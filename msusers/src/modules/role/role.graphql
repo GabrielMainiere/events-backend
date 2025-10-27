@@ -1,0 +1,24 @@
+type Role {
+    id: ID!
+    name: String!
+    deletedAt: String
+}
+input CreateRoleInput {
+    name: String!
+}
+
+input UpdateRoleInput {
+    name: String
+    deletedAt: String
+}
+
+type Query {
+    listRoles: [Role!]!
+    findRole(id: ID!): Role
+}
+
+type Mutation {
+    createRole(createRoleInput: CreateRoleInput!): Role!
+    updateRole(id: ID!, updateRoleInput: UpdateRoleInput!): Role!
+    deleteRole(id: ID!): ID!
+}

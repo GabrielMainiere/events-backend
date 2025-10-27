@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EventStatus {
+  DRAFT
+  ARCHIVED
+  CONFIRMED
+  WAITING_PAYMENT
+  CANCELLED
+}
+
+enum EventType {
+  MEETING
+  CONFERENCE
+  WORKSHOP
+  PARTY
+}
+
+model tb_event {
+  id              String      @id @default(uuid())
+  title           String
+  description     String?
+  start_at        DateTime
+  end_at          DateTime
+  price           Int?
+  sale_start_at   DateTime?
+  sale_end_at     DateTime?
+  address_street  String
+  address_number  String?
+  address_city    String
+  address_state   String
+  address_zipcode String
+  address_country String
+  capacity        Int
+  isFree          Boolean     @default(false)
+  status          EventStatus @default(DRAFT)
+  event_type      EventType   @default(MEETING)
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+}
