@@ -1,0 +1,73 @@
+
+/*
+ * -------------------------------------------------------
+ * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+ * -------------------------------------------------------
+ */
+
+/* tslint:disable */
+/* eslint-disable */
+
+export interface CreateRoleInput {
+    name: string;
+}
+
+export interface UpdateRoleInput {
+    name?: Nullable<string>;
+    deletedAt?: Nullable<string>;
+}
+
+export interface CreateUserInput {
+    email: string;
+    name: string;
+    birthDatetime: string;
+    cpf: string;
+    phoneNumber: string;
+    password: string;
+    roles: string[];
+}
+
+export interface UpdateUserInput {
+    email?: Nullable<string>;
+    name?: Nullable<string>;
+    birthDatetime?: Nullable<string>;
+    cpf?: Nullable<string>;
+    phoneNumber?: Nullable<string>;
+    password?: Nullable<string>;
+    roles?: Nullable<string[]>;
+    deletedAt?: Nullable<string>;
+}
+
+export interface Role {
+    id: string;
+    name: string;
+    deletedAt?: Nullable<string>;
+}
+
+export interface IQuery {
+    listRoles(): Role[] | Promise<Role[]>;
+    getUser(id: string): Nullable<User> | Promise<Nullable<User>>;
+    listUsers(): User[] | Promise<User[]>;
+}
+
+export interface IMutation {
+    createRole(input: CreateRoleInput): Role | Promise<Role>;
+    updateRole(id: string, input: UpdateRoleInput): Role | Promise<Role>;
+    deleteRole(id: string): boolean | Promise<boolean>;
+    createUser(input: CreateUserInput): User | Promise<User>;
+    updateUser(id: string, input: UpdateUserInput): User | Promise<User>;
+    deleteUser(id: string): boolean | Promise<boolean>;
+}
+
+export interface User {
+    id: string;
+    email: string;
+    name: string;
+    birthDatetime: string;
+    cpf: string;
+    phoneNumber: string;
+    roles: Role[];
+    deletedAt?: Nullable<string>;
+}
+
+type Nullable<T> = T | null;
