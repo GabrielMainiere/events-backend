@@ -1,7 +1,9 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { IsString, IsDateString, IsOptional, IsInt, IsBoolean } from 'class-validator';
+import { IsString, IsDateString, IsOptional, IsInt, IsBoolean, ValidateNested } from 'class-validator';
 import { EventStatus } from 'generated/prisma';
 import { EventType } from 'generated/prisma';
+import { AddressInput } from './address.input';
+import { Type } from 'class-transformer';
 
 @InputType()
 export class CreateEventInput {
@@ -37,30 +39,10 @@ export class CreateEventInput {
   @IsDateString()
   saleEndAt?: string;
 
-  @Field()
-  @IsString()
-  addressStreet: string;
-
-  @Field({ nullable: true })
-  @IsOptional()
-  @IsString()
-  addressNumber?: string;
-
-  @Field()
-  @IsString()
-  addressCity: string;
-
-  @Field()
-  @IsString()
-  addressState: string;
-
-  @Field()
-  @IsString()
-  addressZipcode: string;
-
-  @Field()
-  @IsString()
-  addressCountry: string;
+  @Field(() => AddressInput)
+  @ValidateNested()
+  @Type(() => AddressInput)
+  address: AddressInput;
 
   @Field()
   @IsInt()

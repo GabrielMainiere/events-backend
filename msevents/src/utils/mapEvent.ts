@@ -1,7 +1,18 @@
-import { tb_event } from "generated/prisma";
-import { Event } from "src/events/entities/event.entity";
+import { tb_event, tb_address } from 'generated/prisma';
+import { Event } from 'src/events/entities/event.entity';
+import { Address } from 'src/events/entities/address.entity';
 
-export function mapEvent(event: tb_event): Event {
+export function mapEvent(event: tb_event & { address: tb_address }): Event {
+  const address: Address = {
+    id: event.address.id,
+    street: event.address.street,
+    number: event.address.number ?? undefined,
+    city: event.address.city,
+    state: event.address.state,
+    zipcode: event.address.zipcode,
+    country: event.address.country,
+  };
+
   return {
     id: event.id,
     title: event.title,
@@ -11,12 +22,7 @@ export function mapEvent(event: tb_event): Event {
     price: event.price ?? undefined,
     saleStartAt: event.sale_start_at ?? undefined,
     saleEndAt: event.sale_end_at ?? undefined,
-    addressStreet: event.address_street,
-    addressNumber: event.address_number ?? undefined,
-    addressCity: event.address_city,
-    addressState: event.address_state,
-    addressZipcode: event.address_zipcode,
-    addressCountry: event.address_country,
+    address,
     capacity: event.capacity,
     isFree: event.isFree,
     status: event.status,

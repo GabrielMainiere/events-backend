@@ -1,5 +1,7 @@
 import { InputType, Field, Int, ID } from '@nestjs/graphql';
-import { IsOptional, IsString, IsInt, IsDate, IsBoolean, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsInt, IsDate, IsBoolean, IsUUID, ValidateNested } from 'class-validator';
+import { AddressInput } from './address.input';
+import { Type } from 'class-transformer';
 
 @InputType()
 export class UpdateEventInput {
@@ -42,33 +44,9 @@ export class UpdateEventInput {
   @IsInt()
   capacity?: number;
 
-  @Field({ nullable: true })
+  @Field(() => AddressInput, { nullable: true })
+  @ValidateNested()
   @IsOptional()
-  @IsString()
-  addressStreet?: string;
-
-  @Field({ nullable: true })
-  @IsOptional()
-  @IsString()
-  addressNumber?: string;
-
-  @Field({ nullable: true })
-  @IsOptional()
-  @IsString()
-  addressCity?: string;
-
-  @Field({ nullable: true })
-  @IsOptional()
-  @IsString()
-  addressState?: string;
-
-  @Field({ nullable: true })
-  @IsOptional()
-  @IsString()
-  addressZipcode?: string;
-
-  @Field({ nullable: true })
-  @IsOptional()
-  @IsString()
-  addressCountry?: string;
+  @Type(() => AddressInput)
+  address: AddressInput;
 }

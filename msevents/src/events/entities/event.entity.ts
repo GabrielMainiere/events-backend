@@ -2,6 +2,7 @@ import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { IsUUID } from 'class-validator';
 import { EventStatus } from 'generated/prisma';
 import { EventType } from 'generated/prisma';
+import { Address } from './address.entity';
 
 @ObjectType()
 export class Event {
@@ -31,28 +32,13 @@ export class Event {
   saleEndAt?: Date;
 
   @Field()
-  addressStreet: string;
-
-  @Field({ nullable: true })
-  addressNumber?: string;
-
-  @Field()
-  addressCity: string;
-
-  @Field()
-  addressState: string;
-
-  @Field()
-  addressZipcode: string;
-
-  @Field()
-  addressCountry: string;
-
-  @Field()
   capacity: number;
 
   @Field()
   isFree: boolean;
+
+  @Field(() => Address)
+  address: Address;
 
   @Field(() => EventStatus)
   status: EventStatus;
