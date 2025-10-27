@@ -16,6 +16,7 @@ scalar DateTime
 
 type Mutation {
   createNotificationTemplate(input: CreateTemplateInput!): NotificationTemplateEntity!
+  updateNotificationTemplate(id: String!, input: UpdateTemplateInput!): NotificationTemplateEntity!
 }
 
 type NotificationTemplateEntity {
@@ -32,4 +33,11 @@ type Query {
   notificationTemplate(id: String!): NotificationTemplateEntity!
   notificationTemplateByName(template_name: String!): NotificationTemplateEntity
   notificationTemplates: [NotificationTemplateEntity!]!
+}
+
+input UpdateTemplateInput {
+  body_template: String
+  channel: String
+  subject_template: String
+  template_name: String
 }

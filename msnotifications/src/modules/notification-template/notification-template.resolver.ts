@@ -2,6 +2,7 @@ import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { NotificationTemplateService } from './notification-template.service';
 import { NotificationTemplateEntity } from 'src/entities/notification-template.entity';
 import { CreateTemplateInput } from 'src/dto/createNotificationTemplate.input';
+import { UpdateTemplateInput } from 'src/dto/updateNotificationTemplate.input';
 
 
 @Resolver(() => NotificationTemplateEntity)
@@ -30,5 +31,13 @@ export class NotificationTemplateResolver {
     @Args('input') input: CreateTemplateInput,
   ) {
     return this.templateService.create(input);
+  }
+
+  @Mutation(() => NotificationTemplateEntity)
+  async updateNotificationTemplate(
+    @Args('id') id: string,
+    @Args('input') input: UpdateTemplateInput,
+  ) {
+    return this.templateService.update(id, input);
   }
 }

@@ -1,5 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTemplateInput } from 'src/dto/createNotificationTemplate.input';
+import { UpdateTemplateInput } from 'src/dto/updateNotificationTemplate.input';
 import { PrismaService } from 'src/prisma-ds/prisma.service';
 
 
@@ -50,5 +51,26 @@ export class NotificationTemplateService {
     });
   }
 
-  
+    async update(id: string, data: UpdateTemplateInput) {
+    await this.findOne(id);
+
+    if (data.template_name) {
+      const existing = await this.findByName(data.template_name);
+      if (existing && existing.id !== id) {
+        throw new ConflictException(
+          `Já existe outro template com nome "${data.template_name}"`,
+        );
+      }
+    }
+
+    return this.prisma.notificationTemplate.update({
+      where: { id },
+      data: {
+        template_name: data.template_name,
+        channel: data.channel,
+        subject_template: data.subject_template,
+        body_template: data.body_template,
+      },
+    });
+  }
 }
