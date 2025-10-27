@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateTemplateInput } from 'src/dto/createNotificationTemplate.input';
 import { PrismaService } from 'src/prisma-ds/prisma.service';
 
 
@@ -29,4 +30,25 @@ export class NotificationTemplateService {
 
     return template;
   }
+
+    async create(data: CreateTemplateInput) {
+
+    const existing = await this.findByName(data.template_name);
+    if (existing) {
+      throw new ConflictException(
+        `Template com nome "${data.template_name}" já existe`,
+      );
+    }
+
+    return this.prisma.notificationTemplate.create({
+      data: {
+        template_name: data.template_name,
+        channel: data.channel,
+        subject_template: data.subject_template,
+        body_template: data.body_template,
+      },
+    });
+  }
+
+  
 }

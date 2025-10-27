@@ -1,0 +1,35 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateTemplateInput {
+  body_template: String!
+  channel: String!
+  subject_template: String!
+  template_name: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  createNotificationTemplate(input: CreateTemplateInput!): NotificationTemplateEntity!
+}
+
+type NotificationTemplateEntity {
+  body_template: String!
+  channel: String!
+  created_at: DateTime!
+  id: ID!
+  subject_template: String!
+  template_name: String!
+  updated_at: DateTime!
+}
+
+type Query {
+  notificationTemplate(id: String!): NotificationTemplateEntity!
+  notificationTemplateByName(template_name: String!): NotificationTemplateEntity
+  notificationTemplates: [NotificationTemplateEntity!]!
+}
