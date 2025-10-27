@@ -40,4 +40,9 @@ export class NotificationTemplateResolver {
   ) {
     return this.templateService.update(id, input);
   }
+
+  @Mutation(() => NotificationTemplateEntity)
+  async removeNotificationTemplate(@Args('id') id: string) {
+    return this.templateService.remove(id);
+  }
 }

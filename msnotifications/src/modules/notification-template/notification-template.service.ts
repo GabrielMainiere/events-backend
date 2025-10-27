@@ -73,4 +73,18 @@ export class NotificationTemplateService {
       },
     });
   }
+  
+  async remove(id: string) {
+    const template = await this.prisma.notificationTemplate.findUnique({
+      where: { id },
+    });
+
+    if (!template) {
+      throw new NotFoundException(`Template com ID "${id}" não encontrado`);
+    }
+    
+    return this.prisma.notificationTemplate.delete({
+      where: { id },
+    });
+  }
 }

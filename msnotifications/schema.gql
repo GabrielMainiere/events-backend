@@ -16,6 +16,7 @@ scalar DateTime
 
 type Mutation {
   createNotificationTemplate(input: CreateTemplateInput!): NotificationTemplateEntity!
+  removeNotificationTemplate(id: String!): NotificationTemplateEntity!
   updateNotificationTemplate(id: String!, input: UpdateTemplateInput!): NotificationTemplateEntity!
 }
 
