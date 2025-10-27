@@ -18,9 +18,15 @@ type PixData {
   qrCodeBase64: String
 }
 
+type CreditCardData {
+  id: String
+  status: String
+}
+
 type PaymentResponse {
   payment: Payment!
   pixData: PixData
+  creditCardData: CreditCardData
 }
 
 # -----------------------------
@@ -52,6 +58,9 @@ input CreatePaymentInput {
   amount: Int!
   method: PaymentMethod!
   gateway: PaymentGateway!
+  cardToken: String
+  installments: Int
+  paymentMethodId: String
 }
 
 # -----------------------------

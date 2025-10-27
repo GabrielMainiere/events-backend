@@ -1,6 +1,7 @@
 package br.com.mspayments.services;
 
 import br.com.mspayments.controllers.PaymentResponse;
+import br.com.mspayments.controllers.dtos.CreatePaymentInput;
 import br.com.mspayments.models.Payment;
 import br.com.mspayments.models.PaymentStatus;
 
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PaymentService {
-    PaymentResponse create(Payment input);
+    PaymentResponse create(CreatePaymentInput input);
     List<Payment> findAll();
     List<Payment> findAllByEventId(String eventId);
     Payment findById(UUID id);

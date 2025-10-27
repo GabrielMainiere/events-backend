@@ -1,5 +1,6 @@
 package br.com.mspayments.gateways.mercadopago;
 
+import br.com.mspayments.gateways.mercadopago.dtos.MercadoPagoCreditCardResponse;
 import br.com.mspayments.gateways.mercadopago.dtos.MercadoPagoPixResponse;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.http.*;
@@ -38,6 +39,24 @@ public class MercadoPagoClient {
                 HttpMethod.POST,
                 entity,
                 MercadoPagoPixResponse.class
+        );
+
+        return response.getBody();
+    }
+
+    public MercadoPagoCreditCardResponse createCreditCardPayment(Map<String, Object> payload) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
+        headers.set("X-Idempotency-Key", UUID.randomUUID().toString());
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+
+        ResponseEntity<MercadoPagoCreditCardResponse> response = restTemplate.exchange(
+                MP_URL,
+                HttpMethod.POST,
+                entity,
+                MercadoPagoCreditCardResponse.class
         );
 
         return response.getBody();

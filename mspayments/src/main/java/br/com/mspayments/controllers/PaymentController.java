@@ -1,5 +1,6 @@
 package br.com.mspayments.controllers;
 
+import br.com.mspayments.controllers.dtos.CreatePaymentInput;
 import br.com.mspayments.models.Payment;
 import br.com.mspayments.services.PaymentService;
 import lombok.AllArgsConstructor;
@@ -17,8 +18,8 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @MutationMapping
-    public PaymentResponse createPayment(@Argument("input") Payment input) {
-        return  paymentService.create(input);
+    public PaymentResponse createPayment(@Argument("input") CreatePaymentInput input) {
+        return paymentService.create(input);
     }
 
     @QueryMapping

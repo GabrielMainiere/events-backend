@@ -1,16 +1,16 @@
 package br.com.mspayments.strategies.paymentMethod;
 
 import br.com.mspayments.controllers.PaymentResponse;
-import br.com.mspayments.models.Payment;
+import br.com.mspayments.strategies.paymentMethod.dtos.PaymentMethodData;
 import br.com.mspayments.strategies.paymentGateway.PaymentGatewayStrategy;
 
 public class PixPaymentMethod implements PaymentMethodStrategy {
 
     @Override
-    public PaymentResponse pay(PaymentGatewayStrategy gatewayStrategy, Payment payment) {
+    public PaymentResponse pay(PaymentGatewayStrategy gatewayStrategy, PaymentMethodData paymentData) {
         //regras de negocio para implementar o pix
-        var pixResponse = gatewayStrategy.processPix(payment);
+        var pixResponse = gatewayStrategy.processPix(paymentData.getPayment());
 
-        return new PaymentResponse(payment, pixResponse);
+        return new PaymentResponse(paymentData.getPayment(), pixResponse);
     }
 }
