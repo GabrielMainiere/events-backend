@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { EventRegistrationClient } from './proto/clients/eventRegistrationClient';
+import { EventRegistrationClient } from './clients/eventRegistrationClient';
 
 @Module({
   providers: [EventRegistrationClient],

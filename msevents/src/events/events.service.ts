@@ -8,13 +8,14 @@ import { EventDirector } from './builder/eventDirector';
 import { validateEventPricing } from '../utils//priceValidation';
 import { UpdateEventInput } from './dto/update-event-input';
 import { EventStatus } from 'generated/prisma';
+import { EventRegistrationClient } from 'src/grpc/clients/eventRegistrationClient';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class EventsService {
-  constructor(private readonly repository: EventRepository) {}
+  constructor(private readonly repository: EventRepository, private readonly grpcClient: EventRegistrationClient) {}
 
   async createEvent(input: CreateEventInput): Promise<Event> {
-
     validateEventPricing(input.isFree, input.price);
 
     const builder = new EventBuilder();
@@ -40,6 +41,34 @@ export class EventsService {
     );
 
     const event = await this.repository.create(eventData);
+
+    try {
+      await lastValueFrom(this.grpcClient.notifyEventCreated({
+        id: event.id,
+        title: event.title,
+        description: event.description ?? '',
+        startAt: event.start_at.toISOString(),
+        endAt: event.end_at.toISOString(),
+        price: event.price ?? 0,
+        saleStartAt: event.sale_start_at?.toISOString() ?? '',
+        saleEndAt: event.sale_end_at?.toISOString() ?? '',
+        addressStreet: event.address_street,
+        addressNumber: event.address_number ?? '',
+        addressCity: event.address_city,
+        addressState: event.address_state,
+        addressZipcode: event.address_zipcode,
+        addressCountry: event.address_country,
+        capacity: event.capacity,
+        isFree: event.isFree,
+        eventType: event.event_type,
+        status: event.status,
+        createdAt: event.created_at.toISOString(),
+        updatedAt: event.updated_at.toISOString(),
+      }));
+    } catch (error) {
+      console.log(`Grpc NotifyEventCreated falhou: ${error.message}`);
+    }
+    
     return mapEvent(event);
   }
 
@@ -70,6 +99,33 @@ export class EventsService {
       eventType: existing.event_type,
       status: existing.status,
     });
+
+    try {
+      await lastValueFrom(this.grpcClient.notifyEventUpdated({
+        id: updated.id,
+        title: updated.title,
+        description: updated.description ?? '',
+        startAt: updated.start_at.toISOString(),
+        endAt: updated.end_at.toISOString(),
+        price: updated.price ?? 0,
+        saleStartAt: updated.sale_start_at?.toISOString() ?? '',
+        saleEndAt: updated.sale_end_at?.toISOString() ?? '',
+        addressStreet: updated.address_street,
+        addressNumber: updated.address_number ?? '',
+        addressCity: updated.address_city,
+        addressState: updated.address_state,
+        addressZipcode: updated.address_zipcode,
+        addressCountry: updated.address_country,
+        capacity: updated.capacity,
+        isFree: updated.isFree,
+        eventType: updated.event_type,
+        status: updated.status,
+        createdAt: updated.created_at.toISOString(),
+        updatedAt: updated.updated_at.toISOString(),
+      }));
+    } catch (error) {
+      console.log(`Grpc NotifyEventUpdated falhou: ${error.message}`);
+    }
 
     return mapEvent(updated);
   }
@@ -103,6 +159,33 @@ export class EventsService {
       const updated = await this.repository.update(event.id, {
         status: EventStatus.CANCELLED,
       });
+
+    try {
+      await lastValueFrom(this.grpcClient.notifyEventCancelled({
+        id: updated.id,
+        title: updated.title,
+        description: updated.description ?? '',
+        startAt: updated.start_at.toISOString(),
+        endAt: updated.end_at.toISOString(),
+        price: updated.price ?? 0,
+        saleStartAt: updated.sale_start_at?.toISOString() ?? '',
+        saleEndAt: updated.sale_end_at?.toISOString() ?? '',
+        addressStreet: updated.address_street,
+        addressNumber: updated.address_number ?? '',
+        addressCity: updated.address_city,
+        addressState: updated.address_state,
+        addressZipcode: updated.address_zipcode,
+        addressCountry: updated.address_country,
+        capacity: updated.capacity,
+        isFree: updated.isFree,
+        eventType: updated.event_type,
+        status: updated.status,
+        createdAt: updated.created_at.toISOString(),
+        updatedAt: updated.updated_at.toISOString(),
+      }));
+    } catch (error) {
+      console.log(`Grpc NotifyEventCancelled falhou: ${error.message}`);
+    }
       return mapEvent(updated);
     }
   }

@@ -1,6 +1,6 @@
-sintax = "proto3"
+syntax = "proto3";
 
-package eventregistration
+package eventregistration;
 
 service EventRegistrationService {
     rpc NotifyEventCreated(EventNotificationRequest) returns (EventNotificationResponse);
@@ -23,8 +23,8 @@ message EventNotificationRequest {
     string addressState = 12;
     string addressZipcode = 13;
     string addressCountry = 14;
-    int32 capacity = 15;
-    bool  isFree = 16;
+    int32  capacity = 15;
+    bool   isFree = 16;
     string eventType = 17;
     string status = 18;
     string createdAt = 19;

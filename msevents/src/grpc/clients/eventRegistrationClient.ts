@@ -7,6 +7,7 @@ import { IEventRegistrationService } from '../interfaces/IEventRegistrationServi
 
 @Injectable()
 export class EventRegistrationClient implements OnModuleInit {
+    
   @Client(grpcClientOptions)
   private client: ClientGrpc;
 
