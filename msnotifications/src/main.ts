@@ -4,8 +4,9 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
+  const app = await NestFactory.create(AppModule);
+
+  app.connectMicroservice<MicroserviceOptions>(
     {
       transport: Transport.GRPC,
       options: {
@@ -15,7 +16,11 @@ async function bootstrap() {
       },
     },
   );
-  await app.listen();
+  
+  await app.startAllMicroservices();
+  await app.listen(3000);
+  
   console.log('ms-notifications (gRPC) is listening on port 50051');
+  console.log('ms-notifications (HTTP) is listening on port 3000');
 }
 bootstrap();
