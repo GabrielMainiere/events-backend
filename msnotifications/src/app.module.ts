@@ -10,6 +10,8 @@ import { EmailModule } from './modules/email/email.module';
 import { StrategyModule } from './modules/strategy/strategy.module';
 import { FactoryModule } from './modules/factory/factory.module';
 import { DecoratorModule } from './modules/decorator/decorator.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver } from '@nestjs/apollo';
 
 
 @Module({
@@ -25,6 +27,12 @@ import { DecoratorModule } from './modules/decorator/decorator.module';
     StrategyModule,
     FactoryModule,
     DecoratorModule,
+    GraphQLModule.forRoot({
+      driver: ApolloDriver,
+      autoSchemaFile: 'schema.gql',
+      sortSchema: true,
+      playground: true,
+    }),
   ],
   controllers: [],
   providers: [],
