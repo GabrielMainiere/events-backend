@@ -12,10 +12,9 @@ import { FactoryModule } from './modules/factory/factory.module';
 import { DecoratorModule } from './modules/decorator/decorator.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
-
-// Importar os enums para registrá-los no GraphQL
 import './enum/notification-channel.enum';
 import './enum/notification-type.enum';
+import { UserPreferenceModule } from './modules/user-preference/user-preference.module';
 
 
 @Module({
@@ -31,6 +30,7 @@ import './enum/notification-type.enum';
     StrategyModule,
     FactoryModule,
     DecoratorModule,
+    UserPreferenceModule,
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',
