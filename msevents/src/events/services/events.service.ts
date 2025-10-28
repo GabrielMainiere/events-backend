@@ -1,23 +1,22 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { EventRepository, EventWithAddress } from './events.repository';
-import { CreateEventInput } from './dto/create-event.input';
-import { UpdateEventInput } from './dto/update-event-input';
-import { Event } from './entities/event.entity';
+import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
+import { EventRepository } from '../repositories/events.repository';
+import { CreateEventInput } from '../dto/create-event.input';
+import { UpdateEventInput } from '../dto/update-event-input';
+import { Event } from '../entities/event.entity';
 import { mapEvent } from 'src/utils/mapEvent';
-import { EventBuilder } from './builder/eventsBuilder';
-import { AddressProps } from './builder/IEventsBuilder';
-import { EventDirector } from './builder/eventDirector';
-import { validateEventPricing } from '../utils/priceValidation';
+import { validateEventPricing } from 'src/utils/priceValidation';
 import { EventStatus } from 'generated/prisma';
-import { EventRegistrationClient } from 'src/grpc/clients/eventRegistrationClient';
-import { lastValueFrom } from 'rxjs';
-import { EventsGrpcMapper } from './mappers/eventsGrpcMapper';
+import { EventBuilder } from '../builder/eventsBuilder';
+import { EventDirector } from '../builder/eventDirector';
+import { AddressProps } from '../builder/IEventsBuilder';
+import type { IEventNotifier } from './IEventNotifier';
+import type { IEventRepository } from '../repositories/IEventRepository';
 
 @Injectable()
 export class EventsService {
   constructor(
-    private readonly repository: EventRepository,
-    private readonly grpcClient: EventRegistrationClient
+    @Inject('IEventRepository') private readonly repository: IEventRepository,
+    @Inject('IEventNotifier') private readonly notifier: IEventNotifier
   ) {}
 
   async createEvent(input: CreateEventInput): Promise<Event> {
@@ -50,13 +49,7 @@ export class EventsService {
     );
 
     const event = await this.repository.create(eventData);
-
-    try {
-      await lastValueFrom(this.grpcClient.notifyEventCreated(EventsGrpcMapper.toGrpcEvent(event)));
-    } catch (error: any) {
-      console.log(`Grpc NotifyEventCreated failed: ${error.message}`);
-    }
-
+    await this.notifier.notifyCreated(event);
     return mapEvent(event);
   }
 
@@ -90,12 +83,7 @@ export class EventsService {
       status: existing.status,
     });
 
-    try {
-      await lastValueFrom(this.grpcClient.notifyEventUpdated(EventsGrpcMapper.toGrpcEvent(updated)));
-    } catch (error: any) {
-      console.log(`Grpc NotifyEventUpdated failed: ${error.message}`);
-    }
-
+    await this.notifier.notifyUpdated(updated);
     return mapEvent(updated);
   }
 
@@ -113,18 +101,10 @@ export class EventsService {
   async cancelEvent(id: string): Promise<Event> {
     const event = await this.repository.getById(id);
     if (!event) throw new NotFoundException(`Event with id ${id} not found`);
-    if (event.status === EventStatus.CANCELLED) {
-      throw new BadRequestException(`Event already cancelled`);
-    }
+    if (event.status === EventStatus.CANCELLED) throw new BadRequestException(`Event already cancelled`);
 
     const updated = await this.repository.cancel(id);
-
-    try {
-      await lastValueFrom(this.grpcClient.notifyEventCancelled(EventsGrpcMapper.toGrpcEvent(updated)));
-    } catch (error: any) {
-      console.log(`Grpc NotifyEventCancelled failed: ${error.message}`);
-    }
-
+    await this.notifier.notifyCancelled(updated);
     return mapEvent(updated);
   }
 }

@@ -1,4 +1,4 @@
-import { EventWithAddress } from "../events.repository";
+import { EventWithAddress } from "../repositories/events.repository";
 
 export class EventsGrpcMapper {
 
