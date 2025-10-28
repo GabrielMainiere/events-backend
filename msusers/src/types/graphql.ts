@@ -42,6 +42,8 @@ export interface Role {
     id: string;
     name: string;
     deletedAt?: Nullable<string>;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface IQuery {
@@ -49,13 +51,14 @@ export interface IQuery {
     findRole(id: string): Nullable<Role> | Promise<Nullable<Role>>;
     listUsers(): Nullable<User>[] | Promise<Nullable<User>[]>;
     findUser(id: string): User | Promise<User>;
+    authenticateUser(email: string, password: string): AuthenticatedUser | Promise<AuthenticatedUser>;
 }
 
 export interface IMutation {
     createRole(createRoleInput: CreateRoleInput): Role | Promise<Role>;
     updateRole(id: string, updateRoleInput: UpdateRoleInput): Role | Promise<Role>;
     deleteRole(id: string): string | Promise<string>;
-    createUser(createUserInput: CreateUserInput): User | Promise<User>;
+    createUser(createUserInput: CreateUserInput): AuthenticatedUser | Promise<AuthenticatedUser>;
     updateUser(id: string, updateUserInput: UpdateUserInput): User | Promise<User>;
     deleteUser(id: string): string | Promise<string>;
 }
@@ -69,6 +72,13 @@ export interface User {
     phoneNumber: string;
     roles: Role[];
     deletedAt?: Nullable<string>;
+}
+
+export interface AuthenticatedUser {
+    email: string;
+    name: string;
+    roles: Role[];
+    token: string;
 }
 
 type Nullable<T> = T | null;

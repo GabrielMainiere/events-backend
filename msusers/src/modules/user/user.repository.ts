@@ -42,4 +42,11 @@ export class UserRepository {
     })
     return deletedUser.id
   }
+
+  async findByEmail(email: string) {
+    return await this.prismaClient.user.findUnique({
+      where: { email, deletedAt: null },
+      include: { roles: true },
+    })
+  }
 }
