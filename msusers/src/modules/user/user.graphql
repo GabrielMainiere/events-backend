@@ -30,12 +30,12 @@ input UpdateUserInput {
 }
 
 type Query {
-  getUser(id: ID!): User
-  listUsers: [User!]!
+  listUsers: [User]!
+  findUser(id: ID!): User!
 }
 
 type Mutation {
-  createUser(input: CreateUserInput!): User!
-  updateUser(id: ID!, input: UpdateUserInput!): User!
-  deleteUser(id: ID!): Boolean!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(id: ID!, updateUserInput: UpdateUserInput!): User!
+  deleteUser(id: ID!): String!
 }
