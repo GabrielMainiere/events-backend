@@ -17,8 +17,10 @@ scalar DateTime
 
 type Mutation {
   createNotificationTemplate(input: CreateTemplateInput!): NotificationTemplateEntity!
+  deleteUserPreferences(user_id: String!): Boolean!
   removeNotificationTemplate(id: String!): NotificationTemplateEntity!
   updateNotificationTemplate(id: String!, input: UpdateTemplateInput!): NotificationTemplateEntity!
+  upsertUserPreference(input: UpsertUserPreferenceInput!): UserPreferenceEntity!
 }
 
 """Canais de notificação disponíveis"""
@@ -51,6 +53,8 @@ type Query {
   notificationTemplate(id: String!): NotificationTemplateEntity!
   notificationTemplateByName(template_name: String!): NotificationTemplateEntity
   notificationTemplates: [NotificationTemplateEntity!]!
+  optionalNotificationTypes: [NotificationType!]!
+  userOptionalPreferences(user_id: String!): [UserPreferenceEntity!]!
 }
 
 input UpdateTemplateInput {
@@ -59,4 +63,20 @@ input UpdateTemplateInput {
   notification_type: NotificationType
   subject_template: String
   template_name: String
+}
+
+input UpsertUserPreferenceInput {
+  channel: NotificationChannel!
+  is_enabled: Boolean!
+  notification_type: NotificationType!
+  user_id: String!
+}
+
+type UserPreferenceEntity {
+  channel: NotificationChannel!
+  id: ID!
+  is_enabled: Boolean!
+  notification_type: NotificationType!
+  updated_at: DateTime!
+  user_id: String!
 }

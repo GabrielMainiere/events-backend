@@ -105,4 +105,11 @@ export class UserPreferenceService {
       ],
     });
   }
+
+  async deleteByUserId(user_id: string) {
+    const result = await this.prisma.userPreference.deleteMany({
+      where: { user_id },
+    });
+    return result;
+  }
 }
