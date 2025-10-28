@@ -6,6 +6,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { join } from 'path'
 import { RoleModule } from './modules/role/role.module'
 import { DatabaseModule } from './modules/database/database.module'
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { DatabaseModule } from './modules/database/database.module'
       },
     }),
     RoleModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
