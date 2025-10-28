@@ -91,4 +91,18 @@ export class UserPreferenceService {
     return canSend;
   }
 
+    async findOptionalPreferences(user_id: string) {
+    const optionalTypes = NotificationTypeHelper.getOptionalTypes();
+
+    return this.prisma.userPreference.findMany({
+      where: {
+        user_id,
+        notification_type: { in: optionalTypes },
+      },
+      orderBy: [
+        { notification_type: 'asc' },
+        { channel: 'asc' },
+      ],
+    });
+  }
 }

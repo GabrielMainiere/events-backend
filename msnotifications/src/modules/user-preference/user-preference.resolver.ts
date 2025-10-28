@@ -13,11 +13,15 @@ export class UserPreferenceResolver {
     private readonly userPreferenceService: UserPreferenceService,
   ) {}
 
+  @Query(() => [UserPreferenceEntity], { name: 'userOptionalPreferences' })
+  async findOptionalPreferences(@Args('user_id') user_id: string) {
+    return this.userPreferenceService.findOptionalPreferences(user_id);
+  }  
+
   @Mutation(() => UserPreferenceEntity)
   async upsertUserPreference(
     @Args('input') input: UpsertUserPreferenceInput,
   ) {
-
     return this.userPreferenceService.upsert(input);
   }
 
