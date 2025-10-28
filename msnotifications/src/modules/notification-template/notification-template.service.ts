@@ -44,6 +44,7 @@ export class NotificationTemplateService {
     return this.prisma.notificationTemplate.create({
       data: {
         template_name: data.template_name,
+        notification_type: data.notification_type,
         channel: data.channel,
         subject_template: data.subject_template,
         body_template: data.body_template,
@@ -67,6 +68,7 @@ export class NotificationTemplateService {
       where: { id },
       data: {
         template_name: data.template_name,
+        notification_type: data.notification_type,
         channel: data.channel,
         subject_template: data.subject_template,
         body_template: data.body_template,

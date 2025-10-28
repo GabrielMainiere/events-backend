@@ -1,6 +1,6 @@
 export interface ISendNotificationRequest {
   userId: string;
-  templateName: string;
+  templateId: string;
   recipientAddress: string;
   payloadJson: string;
 }

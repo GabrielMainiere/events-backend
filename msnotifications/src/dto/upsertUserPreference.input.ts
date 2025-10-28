@@ -1,31 +1,23 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
+import { IsUUID, IsEnum, IsBoolean } from 'class-validator';
 import { NotificationType } from 'src/enum/notification-type.enum';
 import { NotificationChannel } from 'src/enum/notification-channel.enum';
 
-
-@ObjectType()
-export class NotificationTemplateEntity {
-  @Field(() => ID)
-  id: string;
-
+@InputType()
+export class UpsertUserPreferenceInput {
   @Field()
-  template_name: string;
+  @IsUUID()
+  user_id: string;
 
   @Field(() => NotificationType)
+  @IsEnum(NotificationType)
   notification_type: NotificationType;
 
   @Field(() => NotificationChannel)
+  @IsEnum(NotificationChannel)
   channel: NotificationChannel;
 
   @Field()
-  subject_template: string;
-
-  @Field()
-  body_template: string;
-
-  @Field()
-  created_at: Date;
-
-  @Field()
-  updated_at: Date;
+  @IsBoolean()
+  is_enabled: boolean;
 }

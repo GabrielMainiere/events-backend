@@ -4,7 +4,8 @@
 
 input CreateTemplateInput {
   body_template: String!
-  channel: String!
+  channel: NotificationChannel!
+  notification_type: NotificationType!
   subject_template: String!
   template_name: String!
 }
@@ -16,29 +17,66 @@ scalar DateTime
 
 type Mutation {
   createNotificationTemplate(input: CreateTemplateInput!): NotificationTemplateEntity!
+  deleteUserPreferences(user_id: String!): Boolean!
   removeNotificationTemplate(id: String!): NotificationTemplateEntity!
   updateNotificationTemplate(id: String!, input: UpdateTemplateInput!): NotificationTemplateEntity!
+  upsertUserPreference(input: UpsertUserPreferenceInput!): UserPreferenceEntity!
+}
+
+"""Canais de notificação disponíveis"""
+enum NotificationChannel {
+  EMAIL
+  PUSH
+  SMS
 }
 
 type NotificationTemplateEntity {
   body_template: String!
-  channel: String!
+  channel: NotificationChannel!
   created_at: DateTime!
   id: ID!
+  notification_type: NotificationType!
   subject_template: String!
   template_name: String!
   updated_at: DateTime!
+}
+
+"""Tipos de notificação disponíveis no sistema"""
+enum NotificationType {
+  ACCOUNT
+  EVENT
+  MARKETING
+  PAYMENTS
 }
 
 type Query {
   notificationTemplate(id: String!): NotificationTemplateEntity!
   notificationTemplateByName(template_name: String!): NotificationTemplateEntity
   notificationTemplates: [NotificationTemplateEntity!]!
+  optionalNotificationTypes: [NotificationType!]!
+  userOptionalPreferences(user_id: String!): [UserPreferenceEntity!]!
 }
 
 input UpdateTemplateInput {
   body_template: String
-  channel: String
+  channel: NotificationChannel
+  notification_type: NotificationType
   subject_template: String
   template_name: String
+}
+
+input UpsertUserPreferenceInput {
+  channel: NotificationChannel!
+  is_enabled: Boolean!
+  notification_type: NotificationType!
+  user_id: String!
+}
+
+type UserPreferenceEntity {
+  channel: NotificationChannel!
+  id: ID!
+  is_enabled: Boolean!
+  notification_type: NotificationType!
+  updated_at: DateTime!
+  user_id: String!
 }

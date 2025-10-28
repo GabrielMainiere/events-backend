@@ -12,6 +12,9 @@ import { FactoryModule } from './modules/factory/factory.module';
 import { DecoratorModule } from './modules/decorator/decorator.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
+import './enum/notification-channel.enum';
+import './enum/notification-type.enum';
+import { UserPreferenceModule } from './modules/user-preference/user-preference.module';
 
 
 @Module({
@@ -27,6 +30,7 @@ import { ApolloDriver } from '@nestjs/apollo';
     StrategyModule,
     FactoryModule,
     DecoratorModule,
+    UserPreferenceModule,
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',
