@@ -1,4 +1,4 @@
-import { IEventBuilder, EventProps } from './IEventsBuilder';
+import { IEventBuilder, EventProps, AddressProps } from './IEventsBuilder';
 import { EventType } from 'generated/prisma';
 import { EventStatus } from 'generated/prisma';
 
@@ -25,13 +25,8 @@ export class EventBuilder implements IEventBuilder {
     this.event.saleEndAt = saleEndAt;
   }
 
-  produceAddress(street : string, city : string, state : string, zipcode : string, country : string, number ?: string): void {
-    this.event.addressStreet = street;
-    this.event.addressCity = city;
-    this.event.addressState = state;
-    this.event.addressZipcode = zipcode;
-    this.event.addressCountry = country;
-    this.event.addressNumber = number;
+  produceAddress(address: AddressProps): void {
+    this.event.address = address;
   }
 
   produceType(type?: EventType): void {
@@ -47,10 +42,9 @@ export class EventBuilder implements IEventBuilder {
   }
 
   getResult(): EventProps {
-    if (!this.event.title || !this.event.startAt || !this.event.endAt) {
-      throw new Error('Event must have a title, start date and end date.');
+    if (!this.event.title || !this.event.startAt || !this.event.endAt || !this.event.address) {
+      throw new Error('Event must have a title, start date, end date, and address.');
     }
-
     return this.event as EventProps;
   }
 }

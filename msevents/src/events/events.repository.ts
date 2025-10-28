@@ -2,10 +2,22 @@ import { PrismaSingleton } from 'src/database/prisma/prismaSingleton';
 import { EventStatus, tb_event } from 'generated/prisma';
 import { EventProps } from './builder/IEventsBuilder';
 
+export type EventWithAddress = tb_event & {
+  address: {
+    id: string;
+    street: string;
+    number: string | null;
+    city: string;
+    state: string;
+    zipcode: string;
+    country: string;
+  };
+};
+
 export class EventRepository {
   private prisma = PrismaSingleton.getInstance();
 
-  async create(eventData: EventProps): Promise<tb_event> {
+  async create(eventData: EventProps): Promise<EventWithAddress> {
     return this.prisma.tb_event.create({
       data: {
         title: eventData.title,
@@ -15,21 +27,26 @@ export class EventRepository {
         price: eventData.price ?? null,
         sale_start_at: eventData.saleStartAt ?? null,
         sale_end_at: eventData.saleEndAt ?? null,
-        address_street: eventData.addressStreet,
-        address_number: eventData.addressNumber ?? null,
-        address_city: eventData.addressCity,
-        address_state: eventData.addressState,
-        address_zipcode: eventData.addressZipcode,
-        address_country: eventData.addressCountry,
         capacity: eventData.capacity,
         isFree: eventData.isFree,
         status: eventData.status,
         event_type: eventData.eventType,
+        address: {
+          create: {
+            street: eventData.address.street,
+            number: eventData.address.number ?? null,
+            city: eventData.address.city,
+            state: eventData.address.state,
+            zipcode: eventData.address.zipcode,
+            country: eventData.address.country,
+          },
+        },
       },
+      include: { address: true },
     });
   }
 
-  async update(id: string, data: Partial<EventProps>): Promise<tb_event> {
+  async update(id: string, data: Partial<EventProps>): Promise<EventWithAddress> {
     return this.prisma.tb_event.update({
       where: { id },
       data: {
@@ -40,33 +57,44 @@ export class EventRepository {
         price: data.price,
         isFree: data.isFree,
         capacity: data.capacity,
-        address_street: data.addressStreet,
-        address_number: data.addressNumber,
-        address_city: data.addressCity,
-        address_state: data.addressState,
-        address_zipcode: data.addressZipcode,
-        address_country: data.addressCountry,
         status: data.status,
-        updated_at: new Date(),
+        event_type: data.eventType,
+        address: data.address
+          ? {
+              update: {
+                street: data.address.street,
+                number: data.address.number,
+                city: data.address.city,
+                state: data.address.state,
+                zipcode: data.address.zipcode,
+                country: data.address.country,
+              },
+            }
+          : undefined,
       },
+      include: { address: true },
     });
   }
 
-  async getById(id: string): Promise<tb_event | null> {
-    return this.prisma.tb_event.findUnique({ where: { id } });
+  async getById(id: string): Promise<EventWithAddress | null> {
+    return this.prisma.tb_event.findUnique({
+      where: { id },
+      include: { address: true },
+    });
   }
 
-  async findAll(): Promise<tb_event[]> {
-    return this.prisma.tb_event.findMany();
+  async findAll(): Promise<EventWithAddress[]> {
+    return this.prisma.tb_event.findMany({ include: { address: true } });
   }
 
-  async cancel(id: string): Promise<tb_event> {
+  async cancel(id: string): Promise<EventWithAddress> {
     return this.prisma.tb_event.update({
       where: { id },
       data: {
         status: EventStatus.CANCELLED,
         updated_at: new Date(),
       },
+      include: { address: true },
     });
   }
 }

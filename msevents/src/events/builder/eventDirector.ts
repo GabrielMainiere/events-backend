@@ -1,4 +1,4 @@
-import { IEventBuilder } from "./IEventsBuilder";
+import { AddressProps, IEventBuilder } from "./IEventsBuilder";
 import { EventProps } from './IEventsBuilder';
 
 export class EventDirector {
@@ -19,12 +19,7 @@ export class EventDirector {
     title: string,
     startAt: Date,
     endAt: Date,
-    addressStreet: string,
-    addressNumber: string,
-    addressCity: string,
-    addressState: string,
-    addressZipcode: string,
-    addressCountry: string,
+    address: AddressProps,
     capacity: number,
     isFree: boolean,
     description?: string,
@@ -37,7 +32,7 @@ export class EventDirector {
     this.builder.produceDescription(description);
     this.builder.producePrice(price);
     this.builder.produceSaleDates(saleStartAt, saleEndAt);
-    this.builder.produceAddress(addressStreet, addressCity, addressState, addressZipcode, addressCountry, addressNumber);
+    this.builder.produceAddress(address);
     this.builder.produceType();
     this.builder.produceStatus();
     this.builder.produceCapacity(capacity);
