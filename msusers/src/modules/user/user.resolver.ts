@@ -30,4 +30,9 @@ export class UserResolver {
   async deactivate(@Args('id') id: string) {
     return await this.userService.deactivate(id)
   }
+
+  @Query('authenticateUser')
+  async authenticateUser(@Args('email') email: string, @Args('password') password: string) {
+    return await this.userService.authenticate(email, password)
+  }
 }

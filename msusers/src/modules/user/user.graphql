@@ -9,6 +9,13 @@ type User {
   deletedAt: String
 }
 
+type AuthenticatedUser{
+  email: String!
+  name: String!
+  roles: [Role!]!
+  token: String!
+}
+
 input CreateUserInput {
   email: String!
   name: String!
@@ -32,10 +39,11 @@ input UpdateUserInput {
 type Query {
   listUsers: [User]!
   findUser(id: ID!): User!
+  authenticateUser(email: String!, password: String!): AuthenticatedUser!
 }
 
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
+  createUser(createUserInput: CreateUserInput!): AuthenticatedUser!
   updateUser(id: ID!, updateUserInput: UpdateUserInput!): User!
   deleteUser(id: ID!): String!
 }
