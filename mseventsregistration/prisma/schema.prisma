@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model tb_registered_event {
+  id              String      @id @default(uuid())
+  title           String
+  description     String?
+  start_at        DateTime
+  end_at          DateTime
+  price           Int?
+  sale_start_at   DateTime?
+  sale_end_at     DateTime?
+  address_street  String
+  address_number  String?
+  address_city    String
+  address_state   String
+  address_zipcode String
+  address_country String
+  capacity        Int
+  is_free         Boolean      @default(false)
+  status          EventStatus  @default(DRAFT)
+  event_type      EventType    @default(MEETING)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+  registrations   tb_events_registration[] @relation("EventRegistrations")
+}
+
+model tb_events_registration {
+  id                  String   @id @default(uuid())
+  user_id             String   @default(uuid())
+  registered_event_id String
+  status              RegistrationStatus @default(WAITING_PAYMENT)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  registered_event    tb_registered_event @relation(fields: [registered_event_id], references: [id], name: "EventRegistrations")
+}
+
+enum RegistrationStatus {
+  CONFIRMED
+  WAITING_PAYMENT
+  CANCELED
+}
+
+enum EventStatus {
+  DRAFT
+  ARCHIVED
+  CONFIRMED
+  WAITING_PAYMENT
+  CANCELLED
+}
+
+enum EventType {
+  MEETING
+  CONFERENCE
+  WORKSHOP
+  PARTY
+}
