@@ -1,20 +1,21 @@
 import { Injectable } from '@nestjs/common'
 
 import { UserRepository } from './user.repository'
-import { CreateUserInput, UpdateUserInput } from 'src/types/graphql'
 import { UserCreateInput, UserUpdateInput } from 'generated/prisma/models'
 import { sign } from 'jsonwebtoken'
 import { environment } from 'src/core/environment'
 import { hash, compare } from 'bcrypt'
+import { CreateUserDto } from './dto/create-user.dto'
+import { UpdateUserDto } from './dto/update-user.dto'
 
 @Injectable()
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async create(createUserInput: CreateUserInput) {
+  async create(createUserInput: CreateUserDto) {
     const serializedCreateUserInput: UserCreateInput = {
       ...createUserInput,
-      password: await hash(createUserInput.password, environment.saltRounds),
+      password: await this.getHashedPassword(createUserInput.password),
       roles: {
         connect: createUserInput.roles.map(roleId => ({ id: roleId })),
       },
@@ -33,15 +34,12 @@ export class UserService {
     return await this.userRepository.findOne(id)
   }
 
-  async update(id: string, updateUserInput: UpdateUserInput) {
+  async update(id: string, updateUserInput: UpdateUserDto) {
     const serializedUpdateUserInput: UserUpdateInput = {
       ...updateUserInput,
-      email: updateUserInput.email ?? undefined,
-      password: updateUserInput.password ?? undefined,
-      name: updateUserInput.name ?? undefined,
-      birthDatetime: updateUserInput.birthDatetime ?? undefined,
-      cpf: updateUserInput.cpf ?? undefined,
-      phoneNumber: updateUserInput.phoneNumber ?? undefined,
+      password: updateUserInput.password
+        ? await this.getHashedPassword(updateUserInput.password)
+        : undefined,
       roles: {
         set: updateUserInput.roles?.map(roleId => ({ id: roleId })),
       },
@@ -68,5 +66,9 @@ export class UserService {
     return sign({ id: userId }, environment.jwtPass, {
       expiresIn: '8h',
     })
+  }
+
+  private async getHashedPassword(password: string) {
+    return await hash(password, environment.saltRounds)
   }
 }
