@@ -7,24 +7,26 @@ import { LogNotificationDecorator } from '../decorator/log.decorator';
 
 @Injectable()
 export class NotificationFactory {
+  private readonly strategies = new Map<NotificationChannel, INotificationStrategy>();
+
   constructor(
     private readonly emailStrategy: EmailStrategy,
     private readonly smsStrategy: SmsStrategy,
     private readonly logDecorator: LogNotificationDecorator,
-  ) {}
+  ) {
+    // ✅ Registrar strategies disponíveis
+    this.strategies.set(NotificationChannel.EMAIL, this.emailStrategy);
+    this.strategies.set(NotificationChannel.SMS, this.smsStrategy);
+    
+  }
 
   public getStrategy(channel: NotificationChannel): INotificationStrategy {
-    let strategy: INotificationStrategy;
-    
-    switch (channel) {
-      case NotificationChannel.EMAIL:
-        strategy = this.emailStrategy;
-        break;
-      case NotificationChannel.SMS:
-        strategy = this.smsStrategy;
-        break;
-      default:
-        throw new NotFoundException(`Estratégia para o canal ${channel} não encontrada.`);
+    const strategy = this.strategies.get(channel);
+
+    if (!strategy) {
+      throw new NotFoundException(
+        `Estratégia para o canal ${channel} não encontrada.`,
+      );
     }
 
     this.logDecorator.setStrategy(strategy);
