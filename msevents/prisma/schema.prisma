@@ -32,16 +32,25 @@ model tb_event {
   price           Int?
   sale_start_at   DateTime?
   sale_end_at     DateTime?
-  address_street  String
-  address_number  String?
-  address_city    String
-  address_state   String
-  address_zipcode String
-  address_country String
   capacity        Int
   isFree          Boolean     @default(false)
   status          EventStatus @default(DRAFT)
   event_type      EventType   @default(MEETING)
   created_at      DateTime    @default(now())
   updated_at      DateTime    @updatedAt
+
+  address_id      String
+  address         tb_address  @relation(fields: [address_id], references: [id], onDelete: Cascade)
+}
+
+model tb_address {
+  id          String      @id @default(uuid())
+  street      String
+  number      String?
+  city        String
+  state       String
+  zipcode     String
+  country     String
+
+  events      tb_event[]
 }

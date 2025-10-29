@@ -2,6 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Address {
+  id: String!
+  street: String!
+  number: String
+  city: String!
+  state: String!
+  zipcode: String!
+  country: String!
+}
+
 type Event {
   id: String!
   title: String!
@@ -11,14 +21,9 @@ type Event {
   price: Int
   saleStartAt: DateTime
   saleEndAt: DateTime
-  addressStreet: String!
-  addressNumber: String
-  addressCity: String!
-  addressState: String!
-  addressZipcode: String!
-  addressCountry: String!
   capacity: Float!
   isFree: Boolean!
+  address: Address!
   status: EventStatus!
   eventType: EventType!
   createdAt: DateTime!
@@ -66,16 +71,20 @@ input CreateEventInput {
   price: Int
   saleStartAt: String
   saleEndAt: String
-  addressStreet: String!
-  addressNumber: String
-  addressCity: String!
-  addressState: String!
-  addressZipcode: String!
-  addressCountry: String!
+  address: AddressInput!
   capacity: Float!
   isFree: Boolean!
   status: EventStatus
   eventType: EventType
+}
+
+input AddressInput {
+  street: String!
+  number: String
+  city: String!
+  state: String!
+  zipcode: String!
+  country: String!
 }
 
 input UpdateEventInput {
@@ -87,12 +96,7 @@ input UpdateEventInput {
   price: Int
   isFree: Boolean
   capacity: Int
-  addressStreet: String
-  addressNumber: String
-  addressCity: String
-  addressState: String
-  addressZipcode: String
-  addressCountry: String
+  address: AddressInput
 }
 
 input CancelEventInput {
