@@ -1,29 +1,21 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTemplateInput } from 'src/dto/createNotificationTemplate.input';
 import { UpdateTemplateInput } from 'src/dto/updateNotificationTemplate.input';
-import { PrismaService } from 'src/prisma-ds/prisma.service';
-
+import { NotificationTemplateRepository } from './notification-template.repository';
+import { INotificationTemplateService } from 'src/interfaces/iNotificationTemplateService';
 
 @Injectable()
-export class NotificationTemplateService {
-  constructor(private readonly prisma: PrismaService) {}
+export class NotificationTemplateService implements INotificationTemplateService {
+  constructor(
+    private readonly repository: NotificationTemplateRepository,
+  ) {}
 
   async findByName(template_name: string) {
-    return this.prisma.notificationTemplate.findUnique({
-      where: { template_name },
-    });
-  }
-
-  async findAll() {
-    return this.prisma.notificationTemplate.findMany({
-      orderBy: { created_at: 'desc' },
-    });
+    return this.repository.findByName(template_name);
   }
 
   async findOne(id: string) {
-    const template = await this.prisma.notificationTemplate.findUnique({
-      where: { id },
-    });
+    const template = await this.repository.findById(id);
 
     if (!template) {
       throw new NotFoundException(`Template com ID "${id}" não encontrado`);
@@ -32,61 +24,45 @@ export class NotificationTemplateService {
     return template;
   }
 
-    async create(data: CreateTemplateInput) {
-
-    const existing = await this.findByName(data.template_name);
-    if (existing) {
-      throw new ConflictException(
-        `Template com nome "${data.template_name}" já existe`,
-      );
-    }
-
-    return this.prisma.notificationTemplate.create({
-      data: {
-        template_name: data.template_name,
-        notification_type: data.notification_type,
-        channel: data.channel,
-        subject_template: data.subject_template,
-        body_template: data.body_template,
-      },
-    });
+  async findAll() {
+    return this.repository.findAll();
   }
 
-    async update(id: string, data: UpdateTemplateInput) {
-    await this.findOne(id);
+  async create(data: CreateTemplateInput) {
+    await this.validateUniqueTemplateName(data.template_name);
+    return this.repository.create(data);
+  }
+
+  async update(id: string, data: UpdateTemplateInput) {
+    await this.findOne(id); 
 
     if (data.template_name) {
-      const existing = await this.findByName(data.template_name);
-      if (existing && existing.id !== id) {
-        throw new ConflictException(
-          `Já existe outro template com nome "${data.template_name}"`,
-        );
-      }
+      await this.validateUniqueTemplateName(data.template_name, id);
     }
 
-    return this.prisma.notificationTemplate.update({
-      where: { id },
-      data: {
-        template_name: data.template_name,
-        notification_type: data.notification_type,
-        channel: data.channel,
-        subject_template: data.subject_template,
-        body_template: data.body_template,
-      },
-    });
+    return this.repository.update(id, data);
   }
   
   async remove(id: string) {
-    const template = await this.prisma.notificationTemplate.findUnique({
-      where: { id },
-    });
+    const template = await this.repository.findById(id);
 
     if (!template) {
       throw new NotFoundException(`Template com ID "${id}" não encontrado`);
     }
     
-    return this.prisma.notificationTemplate.delete({
-      where: { id },
-    });
+    return this.repository.delete(id);
+  }
+
+  private async validateUniqueTemplateName(
+    template_name: string,
+    excludeId?: string,
+  ): Promise<void> {
+    const existing = await this.repository.findByName(template_name);
+    
+    if (existing && existing.id !== excludeId) {
+      throw new ConflictException(
+        `Template com nome "${template_name}" já existe`,
+      );
+    }
   }
 }

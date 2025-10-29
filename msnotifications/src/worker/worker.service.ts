@@ -1,63 +1,89 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { PrismaService } from '../prisma-ds/prisma.service';
-import { NotificationStatus } from '@prisma/client';
+import { NotificationLog, NotificationStatus } from '@prisma/client';
 import { NotificationFactory } from 'src/modules/factory/notification.factory';
+import { NotificationLogRepository } from 'src/modules/notification-log/notification-log.repository';
+
 
 @Injectable()
 export class WorkerService {
   private readonly logger = new Logger(WorkerService.name);
 
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly notificationLogRepository: NotificationLogRepository,
     private readonly notificationFactory: NotificationFactory,
   ) {}
 
+
   @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {
-    this.logger.debug('WORKER: Procurando por notificações pendentes...');
+    const pendingNotifications = await this.notificationLogRepository.findPending();
 
-    const pendingNotifications = await this.prisma.notificationLog.findMany({
-      where: {
-        status: NotificationStatus.PENDENTE,
-      },
-    });
-
-    if (pendingNotifications.length === 0) {
-      this.logger.debug('WORKER: Nenhuma notificação encontrada.');
+    if (this.hasNoPendingNotifications(pendingNotifications)) {
       return;
     }
 
-    this.logger.log(`WORKER: ${pendingNotifications.length} notificações encontradas. Processando...`);
+    this.logBatchStart(pendingNotifications.length);
 
-    for (const notification of pendingNotifications) {
-      await this.prisma.notificationLog.update({
-        where: { id: notification.id },
-        data: { status: NotificationStatus.PROCESSANDO },
-      });
+    await this.processBatch(pendingNotifications);
+  }
 
-        try {
-        const strategy = this.notificationFactory.getStrategy(notification.channel);
-        await strategy.send(notification);
+  private hasNoPendingNotifications(notifications: NotificationLog[]): boolean {
+    return notifications.length === 0;
+  }
 
-        await this.prisma.notificationLog.update({
-          where: { id: notification.id },
-          data: {
-            status: NotificationStatus.ENVIADO,
-            sent_at: new Date(),
-          },
-        });
-        
-      } catch (error) {
-        await this.prisma.notificationLog.update({
-          where: { id: notification.id },
-          data: {
-            status: NotificationStatus.FALHA,
-            error_message: error.message,
-            retry_count: notification.retry_count + 1,
-          },
-        });
-      }
+  private logBatchStart(count: number): void {
+    this.logger.log(
+      `[WORKER] Processando lote | ${JSON.stringify({ count })}`,
+    );
+  }
+
+  private async processBatch(notifications: NotificationLog[]): Promise<void> {
+    for (const notification of notifications) {
+      await this.processNotification(notification);
     }
+  }
+
+  private async processNotification(notification: NotificationLog): Promise<void> {
+    await this.markAsProcessing(notification.id);
+
+    try {
+      await this.sendNotification(notification);
+      await this.markAsSuccess(notification.id);
+    } catch (error) {
+      await this.handleFailure(notification.id, error);
+    }
+  }
+
+  private async markAsProcessing(notificationId: string): Promise<void> {
+    await this.notificationLogRepository.updateStatus(
+      notificationId,
+      NotificationStatus.PROCESSANDO,
+    );
+  }
+
+  private async sendNotification(notification: NotificationLog): Promise<void> {
+    const strategy = this.notificationFactory.getStrategy(notification.channel);
+    await strategy.send(notification);
+  }
+
+  private async markAsSuccess(notificationId: string): Promise<void> {
+    await this.notificationLogRepository.updateStatus(
+      notificationId,
+      NotificationStatus.ENVIADO,
+    );
+  }
+
+  private async handleFailure(
+    notificationId: string,
+    error: Error,
+  ): Promise<void> {
+    await this.notificationLogRepository.updateStatus(
+      notificationId,
+      NotificationStatus.FALHA,
+      error.message,
+    );
+
+    await this.notificationLogRepository.incrementRetryCount(notificationId);
   }
 }
