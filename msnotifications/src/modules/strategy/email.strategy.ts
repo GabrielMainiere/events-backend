@@ -1,35 +1,45 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { INotificationStrategy } from 'src/interfaces/iNotificationStategy';
 import { NotificationLog } from '@prisma/client';
 import { EmailService } from '../email/email.service';
-import { NotificationTemplateService } from '../notification-template/notification-template.service';
-import * as handlebars from 'handlebars';
+import type { INotificationTemplateService } from 'src/interfaces/iNotificationTemplateService';
+import type { ITemplateProcessor } from 'src/interfaces/iTemplateProcessor';
+
 
 @Injectable()
 export class EmailStrategy implements INotificationStrategy {
-  private readonly logger = new Logger(EmailStrategy.name);
-
   constructor(
     private readonly emailService: EmailService,
-    private readonly templateService: NotificationTemplateService,
+    private readonly templateService: INotificationTemplateService,
+    private readonly templateProcessor: ITemplateProcessor,
   ) {}
 
   async send(notification: NotificationLog): Promise<void> {
-    this.logger.log(`Iniciando envio de E-MAIL para: ${notification.recipient_address}`);
-    
-    const template = await this.templateService.findByName(notification.template_name);
+    const template = await this.getTemplate(notification.template_name);
+
+    const { subject, body } = this.processTemplate(
+      template,
+      notification.payload as Record<string, any>,
+    );
+
+    await this.sendEmail(notification.recipient_address, subject, body);
+  }
+
+  private async getTemplate(template_name: string) {
+    const template = await this.templateService.findByName(template_name);
+
     if (!template) {
-      throw new Error(`Template ${notification.template_name} não encontrado.`);
+      throw new Error(`Template ${template_name} não encontrado.`);
     }
 
-    const subjectTemplate = handlebars.compile(template.subject_template);
-    const bodyTemplate = handlebars.compile(template.body_template);
-    const payload = notification.payload as Record<string, any>;
-    
-    const subject = subjectTemplate(payload);
-    const body = bodyTemplate(payload);
+    return template;
+  }
 
-    await this.emailService.sendMail(notification.recipient_address, subject, body);
-    this.logger.log(`E-MAIL enviado para: ${notification.recipient_address}`);
+  private processTemplate(template: any, payload: Record<string, any>) {
+    return this.templateProcessor.process(template, payload);
+  }
+
+  private async sendEmail(to: string, subject: string, body: string) {
+    await this.emailService.sendMail(to, subject, body);
   }
 }
