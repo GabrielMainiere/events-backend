@@ -9,6 +9,6 @@ import { PrismaModule } from 'src/prisma-ds/prisma.module';
     NotificationLogRepository,
     NotificationLogService,
   ],
-  exports: [NotificationLogService],
+  exports: [NotificationLogService, NotificationLogRepository],
 })
 export class NotificationLogModule {}

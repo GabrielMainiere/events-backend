@@ -2,16 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { INotificationStrategy } from 'src/interfaces/iNotificationStategy';
 import { NotificationLog } from '@prisma/client';
 import { EmailService } from '../email/email.service';
-import type { INotificationTemplateService } from 'src/interfaces/iNotificationTemplateService';
-import type { ITemplateProcessor } from 'src/interfaces/iTemplateProcessor';
+import { NotificationTemplateService } from '../notification-template/notification-template.service';
+import { HandlebarsTemplateProcessor } from '../template-processor/template-processor.service';
 
 
 @Injectable()
 export class EmailStrategy implements INotificationStrategy {
   constructor(
     private readonly emailService: EmailService,
-    private readonly templateService: INotificationTemplateService,
-    private readonly templateProcessor: ITemplateProcessor,
+    private readonly templateService: NotificationTemplateService,
+    private readonly templateProcessor: HandlebarsTemplateProcessor,
   ) {}
 
   async send(notification: NotificationLog): Promise<void> {

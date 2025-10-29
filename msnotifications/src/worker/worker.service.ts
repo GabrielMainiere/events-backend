@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { NotificationLog, NotificationStatus } from '@prisma/client';
 import { NotificationFactory } from 'src/modules/factory/notification.factory';
-import type { INotificationLogRepository } from 'src/interfaces/iNotificationLogRepository';
+import { NotificationLogRepository } from 'src/modules/notification-log/notification-log.repository';
 
 
 @Injectable()
@@ -10,7 +10,7 @@ export class WorkerService {
   private readonly logger = new Logger(WorkerService.name);
 
   constructor(
-    private readonly notificationLogRepository: INotificationLogRepository, // ✅ Interface (DIP)
+    private readonly notificationLogRepository: NotificationLogRepository,
     private readonly notificationFactory: NotificationFactory,
   ) {}
 
