@@ -2,20 +2,16 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import { CreateTemplateInput } from 'src/dto/createNotificationTemplate.input';
 import { UpdateTemplateInput } from 'src/dto/updateNotificationTemplate.input';
 import { NotificationTemplateRepository } from './notification-template.repository';
-
+import { INotificationTemplateService } from 'src/interfaces/iNotificationTemplateService';
 
 @Injectable()
-export class NotificationTemplateService {
+export class NotificationTemplateService implements INotificationTemplateService {
   constructor(
     private readonly repository: NotificationTemplateRepository,
   ) {}
 
   async findByName(template_name: string) {
     return this.repository.findByName(template_name);
-  }
-
-  async findAll() {
-    return this.repository.findAll();
   }
 
   async findOne(id: string) {
@@ -28,29 +24,20 @@ export class NotificationTemplateService {
     return template;
   }
 
-  async create(data: CreateTemplateInput) {
-    const existing = await this.repository.findByName(data.template_name);
-    
-    if (existing) {
-      throw new ConflictException(
-        `Template com nome "${data.template_name}" já existe`,
-      );
-    }
+  async findAll() {
+    return this.repository.findAll();
+  }
 
+  async create(data: CreateTemplateInput) {
+    await this.validateUniqueTemplateName(data.template_name);
     return this.repository.create(data);
   }
 
   async update(id: string, data: UpdateTemplateInput) {
-    await this.findOne(id);
+    await this.findOne(id); 
 
     if (data.template_name) {
-      const existing = await this.repository.findByName(data.template_name);
-      
-      if (existing && existing.id !== id) {
-        throw new ConflictException(
-          `Já existe outro template com nome "${data.template_name}"`,
-        );
-      }
+      await this.validateUniqueTemplateName(data.template_name, id);
     }
 
     return this.repository.update(id, data);
@@ -64,5 +51,18 @@ export class NotificationTemplateService {
     }
     
     return this.repository.delete(id);
+  }
+
+  private async validateUniqueTemplateName(
+    template_name: string,
+    excludeId?: string,
+  ): Promise<void> {
+    const existing = await this.repository.findByName(template_name);
+    
+    if (existing && existing.id !== excludeId) {
+      throw new ConflictException(
+        `Template com nome "${template_name}" já existe`,
+      );
+    }
   }
 }
