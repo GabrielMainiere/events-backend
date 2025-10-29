@@ -1,18 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationStatus } from '@prisma/client';
 import { CreateNotificationLogDto } from 'src/dto/createNotificationLogDto';
-import { PrismaService } from 'src/prisma-ds/prisma.service';
+import { NotificationLogRepository } from './notification-log.repository';
 
 @Injectable()
 export class NotificationLogService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly repository: NotificationLogRepository,
+  ) {}
 
   async create(data: CreateNotificationLogDto) {
-    return this.prisma.notificationLog.create({
-      data: {
-        ...data,
-        status: NotificationStatus.PENDENTE,
-      },
-    });
+    return this.repository.create(data);
   }
 }
