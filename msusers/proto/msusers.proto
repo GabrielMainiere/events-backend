@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package msusers.user;
+
+service UserService {
+  rpc FindOne (FindOneUserRequest) returns (User);
+  rpc Authenticate (AuthenticateRequest) returns (AuthenticatedUser);
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string birthDatetime = 4;
+  string cpf = 5;
+  string phoneNumber = 6;
+  repeated Role roles = 7;
+  string deletedAt = 8;
+}
+
+message AuthenticatedUser {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    string token = 4;
+    repeated Role roles = 5;
+}
+
+message AuthenticateRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message FindOneUserRequest {
+    string id = 1;
+}
+
+message Role {
+  string id = 1;
+  string name = 2;
+  string deletedAt = 3;
+}
