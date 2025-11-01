@@ -15,11 +15,15 @@ import { ApolloDriver } from '@nestjs/apollo';
 import './enum/notification-channel.enum';
 import './enum/notification-type.enum';
 import { UserPreferenceModule } from './modules/user-preference/user-preference.module';
+import { HealthModule } from './health/health.module';
 
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env', // Usa .env por padrão (local), no Docker será sobrescrito por env_file
+    }),
     ScheduleModule.forRoot(),
     PrismaModule, 
     NotificationLogModule,
@@ -31,6 +35,7 @@ import { UserPreferenceModule } from './modules/user-preference/user-preference.
     FactoryModule,
     DecoratorModule,
     UserPreferenceModule,
+    HealthModule,
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',

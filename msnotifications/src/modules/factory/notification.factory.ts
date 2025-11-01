@@ -14,7 +14,7 @@ export class NotificationFactory {
     private readonly smsStrategy: SmsStrategy,
     private readonly logDecorator: LogNotificationDecorator,
   ) {
-    // ✅ Registrar strategies disponíveis
+
     this.strategies.set(NotificationChannel.EMAIL, this.emailStrategy);
     this.strategies.set(NotificationChannel.SMS, this.smsStrategy);
     

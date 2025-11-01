@@ -4,10 +4,14 @@ CREATE TYPE "NotificationChannel" AS ENUM ('EMAIL', 'SMS', 'PUSH');
 -- CreateEnum
 CREATE TYPE "NotificationStatus" AS ENUM ('PENDENTE', 'PROCESSANDO', 'ENVIADO', 'FALHA');
 
+-- CreateEnum
+CREATE TYPE "NotificationType" AS ENUM ('ACCOUNT', 'PAYMENTS', 'MARKETING', 'EVENT');
+
 -- CreateTable
 CREATE TABLE "notification_templates" (
     "id" TEXT NOT NULL,
     "template_name" TEXT NOT NULL,
+    "notification_type" "NotificationType" NOT NULL DEFAULT 'ACCOUNT',
     "channel" "NotificationChannel" NOT NULL,
     "subject_template" TEXT NOT NULL,
     "body_template" TEXT NOT NULL,
@@ -21,6 +25,7 @@ CREATE TABLE "notification_templates" (
 CREATE TABLE "notification_log" (
     "id" TEXT NOT NULL,
     "user_id" UUID NOT NULL,
+    "notification_type" "NotificationType" NOT NULL,
     "status" "NotificationStatus" NOT NULL DEFAULT 'PENDENTE',
     "channel" "NotificationChannel" NOT NULL,
     "recipient_address" TEXT NOT NULL,
@@ -38,7 +43,7 @@ CREATE TABLE "notification_log" (
 CREATE TABLE "user_preferences" (
     "id" TEXT NOT NULL,
     "user_id" UUID NOT NULL,
-    "notification_type" TEXT NOT NULL,
+    "notification_type" "NotificationType" NOT NULL,
     "channel" "NotificationChannel" NOT NULL,
     "is_enabled" BOOLEAN NOT NULL DEFAULT true,
     "updated_at" TIMESTAMP(3) NOT NULL,

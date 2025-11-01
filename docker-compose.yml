@@ -24,9 +24,55 @@ services:
     networks:
       - mspayments
   
+  msnotifications:
+    container_name: msnotifications
+    build:
+      context: ./msnotifications
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+      - "50051:50051"
+    env_file:
+      - ./msnotifications/.env.docker
+    depends_on:
+      msnotifications-postgres:
+        condition: service_healthy
+    networks:
+      - msnotifications
+      - events-backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  msnotifications-postgres:
+    container_name: msnotifications-postgres
+    image: postgres:17.2-alpine
+    ports:
+      - "5434:5432"
+    env_file:
+      - ./msnotifications/.env.docker
+    volumes:
+      - msnotifications-data:/var/lib/postgresql/data
+    networks:
+      - msnotifications
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-msnotifications}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  msnotifications-data:
+    driver: local
 
 networks:
   events-backend:
     driver: bridge
   mspayments:
+    driver: bridge
+  msnotifications:
     driver: bridge
