@@ -3,7 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { NotificationLog, NotificationStatus } from '@prisma/client';
 import { NotificationFactory } from 'src/modules/factory/notification.factory';
 import { NotificationLogRepository } from 'src/modules/notification-log/notification-log.repository';
-
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class WorkerService {
