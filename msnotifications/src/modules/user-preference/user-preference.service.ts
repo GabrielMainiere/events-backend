@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UpsertUserPreferenceInput } from 'src/dto/upsertUserPreference.input';
+import { UpsertUserPreferenceInput } from 'src/common/dto/upsertUserPreference.input';
 import { NotificationType, NotificationChannel, UserPreference } from '@prisma/client';
 import { UserPreferenceRepository } from './user-preference.repository';
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateNotificationLogDto } from 'src/dto/createNotificationLogDto';
+import { CreateNotificationLogDto } from 'src/common/dto/createNotificationLogDto';
 import { NotificationLogRepository } from './notification-log.repository';
 
 @Injectable()

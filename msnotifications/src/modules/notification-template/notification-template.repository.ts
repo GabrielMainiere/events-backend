@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma-ds/prisma.service';
 import { NotificationTemplate } from '@prisma/client';
-import { CreateTemplateInput } from 'src/dto/createNotificationTemplate.input';
-import { UpdateTemplateInput } from 'src/dto/updateNotificationTemplate.input';
+import { CreateTemplateInput } from 'src/common/dto/createNotificationTemplate.input';
+import { UpdateTemplateInput } from 'src/common/dto/updateNotificationTemplate.input';
 
 @Injectable()
 export class NotificationTemplateRepository {

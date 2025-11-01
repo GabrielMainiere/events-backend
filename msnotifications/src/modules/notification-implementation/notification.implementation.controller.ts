@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { NotificationProcessorService } from './notification-processor.service';
 import { RequestLogDecorator } from '../decorator/request-log.decorator';
-import { PayloadHelper } from '../../helper/payload.helper';
+import { PayloadHelper } from '../../common/helper/payload.helper';
 import type{ AccountNotificationRequest } from '../../interfaces/iAccountNotificationRequest';
 import type{ EventNotificationRequest } from '../../interfaces/iEventNotificationRequest';
 import type{ PaymentNotificationRequest } from '../../interfaces/iPaymentNotificationRequest';

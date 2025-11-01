@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateTemplateInput } from 'src/dto/createNotificationTemplate.input';
-import { UpdateTemplateInput } from 'src/dto/updateNotificationTemplate.input';
+import { CreateTemplateInput } from 'src/common/dto/createNotificationTemplate.input';
+import { UpdateTemplateInput } from 'src/common/dto/updateNotificationTemplate.input';
 import { NotificationTemplateRepository } from './notification-template.repository';
 import { INotificationTemplateService } from 'src/interfaces/iNotificationTemplateService';
 

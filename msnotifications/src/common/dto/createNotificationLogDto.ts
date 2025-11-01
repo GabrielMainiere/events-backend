@@ -1,5 +1,5 @@
 import { NotificationChannel } from '@prisma/client';
-import { NotificationType } from 'src/enum/notification-type.enum';
+import { NotificationType } from 'src/common/enum/notification-type.enum';
 
 export class CreateNotificationLogDto {
   user_id: string;

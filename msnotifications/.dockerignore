@@ -12,6 +12,9 @@ dist
 .env.*
 !.env.example
 
+# Prisma
+prisma/migrations/
+
 # Git
 .git
 .gitignore
