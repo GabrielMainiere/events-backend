@@ -1,4 +1,4 @@
-import { tb_events_registration } from 'generated/prisma';
+import { tb_events_registration } from "@prisma/client";
 import { Registration } from 'src/registrations/entities/registration.entity';
 
 export class RegistrationMapper {
