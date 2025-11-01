@@ -16,10 +16,12 @@ export class NotificationFactory {
     private readonly auditDecorator: AuditLogDecorator,
     private readonly performanceDecorator: PerformanceLogDecorator,
   ) {
+    this.registerStrategies();
+  }
 
+  private registerStrategies(): void {
     this.strategies.set(NotificationChannel.EMAIL, this.emailStrategy);
     this.strategies.set(NotificationChannel.SMS, this.smsStrategy);
-    
   }
 
   public getStrategy(channel: NotificationChannel): INotificationStrategy {
@@ -35,11 +37,8 @@ export class NotificationFactory {
   }
 
   private wrapWithDecorators(strategy: INotificationStrategy): INotificationStrategy {
-
     this.auditDecorator.setStrategy(strategy);
-    
     this.performanceDecorator.setStrategy(this.auditDecorator);
-    
     return this.performanceDecorator;
   }
 }
