@@ -1,13 +1,26 @@
 import { Module } from '@nestjs/common';
-import { WorkerService } from './worker.service';
+
 import { FactoryModule } from 'src/modules/factory/factory.module';
 import { NotificationLogModule } from 'src/modules/notification-log/notification-log.module';
+import { DecoratorModule } from 'src/modules/decorator/decorator.module';
+import { WorkerScheduler } from './worker-schedule';
+import { NotificationBatchProcessor } from './notification-batch-processor';
+import { NotificationProcessor } from './notification-processor';
+import { NotificationStatusUpdater } from './notification-status-updater';
+import { NotificationSender } from './notification-sender';
 
 @Module({
   imports: [
     FactoryModule,
-    NotificationLogModule, 
+    NotificationLogModule,
+    DecoratorModule,
   ],
-  providers: [WorkerService],
+  providers: [
+    WorkerScheduler,               
+    NotificationBatchProcessor,     
+    NotificationProcessor,          
+    NotificationStatusUpdater,     
+    NotificationSender,            
+  ],
 })
 export class WorkerModule {}

@@ -1,7 +1,7 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { IsUUID, IsEnum, IsBoolean } from 'class-validator';
-import { NotificationType } from 'src/enum/notification-type.enum';
-import { NotificationChannel } from 'src/enum/notification-channel.enum';
+import { NotificationType } from 'src/common/enum/notification-type.enum';
+import { NotificationChannel } from 'src/common/enum/notification-channel.enum';
 
 @InputType()
 export class UpsertUserPreferenceInput {

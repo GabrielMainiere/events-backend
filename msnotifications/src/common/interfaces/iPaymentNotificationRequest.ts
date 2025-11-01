@@ -1,6 +1,6 @@
-export interface ISendNotificationRequest {
+export interface PaymentNotificationRequest {
   userId: string;
-  templateId: string;
   recipientAddress: string;
+  paymentId: string;
   payloadJson: string;
 }

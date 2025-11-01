@@ -1,0 +1,32 @@
+import { Injectable } from '@nestjs/common';
+import { NotificationLog } from '@prisma/client';
+import { NotificationProcessor } from './notification-processor';
+
+interface BatchResult {
+  successCount: number;
+  failureCount: number;
+}
+
+@Injectable()
+export class NotificationBatchProcessor {
+  constructor(
+    private readonly notificationProcessor: NotificationProcessor,
+  ) {}
+
+  async process(notifications: NotificationLog[]): Promise<BatchResult> {
+    let successCount = 0;
+    let failureCount = 0;
+
+    for (const notification of notifications) {
+      const success = await this.notificationProcessor.process(notification);
+      
+      if (success) {
+        successCount++;
+      } else {
+        failureCount++;
+      }
+    }
+
+    return { successCount, failureCount };
+  }
+}

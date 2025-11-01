@@ -1,4 +1,4 @@
-export interface ISendNotificationResponse {
+export interface NotificationResponse {
   notificationId: string;
   status: string;
 }

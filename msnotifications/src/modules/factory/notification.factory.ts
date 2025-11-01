@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { NotificationChannel } from '@prisma/client';
 import { EmailStrategy } from '../strategy/email.strategy';
-import { INotificationStrategy } from 'src/interfaces/iNotificationStategy';
+import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 import { SmsStrategy } from '../strategy/sms.strategy';
-import { LogNotificationDecorator } from '../decorator/log.decorator';
+import { PerformanceLogDecorator } from 'src/modules/decorator/performance-log.decorator';
+import { AuditLogDecorator } from 'src/modules/decorator/audit-log.decorator';
 
 @Injectable()
 export class NotificationFactory {
@@ -12,12 +13,15 @@ export class NotificationFactory {
   constructor(
     private readonly emailStrategy: EmailStrategy,
     private readonly smsStrategy: SmsStrategy,
-    private readonly logDecorator: LogNotificationDecorator,
+    private readonly auditDecorator: AuditLogDecorator,
+    private readonly performanceDecorator: PerformanceLogDecorator,
   ) {
+    this.registerStrategies();
+  }
 
+  private registerStrategies(): void {
     this.strategies.set(NotificationChannel.EMAIL, this.emailStrategy);
     this.strategies.set(NotificationChannel.SMS, this.smsStrategy);
-    
   }
 
   public getStrategy(channel: NotificationChannel): INotificationStrategy {
@@ -29,7 +33,12 @@ export class NotificationFactory {
       );
     }
 
-    this.logDecorator.setStrategy(strategy);
-    return this.logDecorator;
+    return this.wrapWithDecorators(strategy);
+  }
+
+  private wrapWithDecorators(strategy: INotificationStrategy): INotificationStrategy {
+    this.auditDecorator.setStrategy(strategy);
+    this.performanceDecorator.setStrategy(this.auditDecorator);
+    return this.performanceDecorator;
   }
 }

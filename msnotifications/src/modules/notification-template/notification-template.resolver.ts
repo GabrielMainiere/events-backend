@@ -1,8 +1,8 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { NotificationTemplateService } from './notification-template.service';
-import { NotificationTemplateEntity } from 'src/entities/notification-template.entity';
-import { CreateTemplateInput } from 'src/dto/createNotificationTemplate.input';
-import { UpdateTemplateInput } from 'src/dto/updateNotificationTemplate.input';
+import { NotificationTemplateEntity } from 'src/common/entities/notification-template.entity';
+import { CreateTemplateInput } from 'src/common/dto/createNotificationTemplate.input';
+import { UpdateTemplateInput } from 'src/common/dto/updateNotificationTemplate.input';
 
 
 @Resolver(() => NotificationTemplateEntity)

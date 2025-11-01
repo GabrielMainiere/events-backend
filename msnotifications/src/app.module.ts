@@ -12,8 +12,8 @@ import { FactoryModule } from './modules/factory/factory.module';
 import { DecoratorModule } from './modules/decorator/decorator.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
-import './enum/notification-channel.enum';
-import './enum/notification-type.enum';
+import './common/enum/notification-channel.enum';
+import './common/enum/notification-type.enum';
 import { UserPreferenceModule } from './modules/user-preference/user-preference.module';
 import { HealthModule } from './health/health.module';
 
@@ -22,7 +22,7 @@ import { HealthModule } from './health/health.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env', // Usa .env por padrão (local), no Docker será sobrescrito por env_file
+      envFilePath: '.env',
     }),
     ScheduleModule.forRoot(),
     PrismaModule, 

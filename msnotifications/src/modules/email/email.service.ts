@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
-//NestJS already utilizes singleton pattern for services.
-
 @Injectable()
 export class EmailService {
   private transport;
