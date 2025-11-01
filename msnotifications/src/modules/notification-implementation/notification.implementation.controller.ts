@@ -89,6 +89,20 @@ export class NotificationImplementation {
     });
   }
 
+  @GrpcMethod('NotificationService', 'SendEventReminderNotification')
+  async sendEventReminderNotification(data: EventNotificationRequest): Promise<NotificationResponse> {
+    this.requestLog.logRequestReceived('SendEventReminderNotification', {
+      userId: data.userId,
+      recipientAddress: data.recipientAddress,
+    });
+
+    return this.processor.process({
+      userId: data.userId,
+      recipientAddress: data.recipientAddress,
+      payloadJson: this.payloadHelper.enrichWithEventId(data.payloadJson, data.eventId),
+      templateName: 'event_reminder_email',
+    });
+  }
 
   @GrpcMethod('NotificationService', 'SendPaymentConfirmationNotification')
   async sendPaymentConfirmationNotification(data: PaymentNotificationRequest): Promise<NotificationResponse> {

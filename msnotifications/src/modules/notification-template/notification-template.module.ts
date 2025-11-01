@@ -4,9 +4,13 @@ import { NotificationTemplateResolver } from './notification-template.resolver';
 import { NotificationTemplateRepository } from './notification-template.repository';
 import { PrismaModule } from 'src/prisma-ds/prisma.module';
 import { NotificationTemplateValidator } from './notification-template-validator';
+import { DecoratorModule } from '../decorator/decorator.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    PrismaModule,
+    DecoratorModule,
+  ],
   providers: [
     NotificationTemplateRepository,
     NotificationTemplateService,

@@ -9,6 +9,7 @@ service NotificationService {
   
   rpc SendEventRegistrationNotification (EventNotificationRequest) returns (NotificationResponse);
   rpc SendEventCancellationNotification (EventNotificationRequest) returns (NotificationResponse);
+  rpc SendEventReminderNotification (EventNotificationRequest) returns (NotificationResponse);
 
   rpc SendPaymentConfirmationNotification (PaymentNotificationRequest) returns (NotificationResponse);
   rpc SendPaymentFailedNotification (PaymentNotificationRequest) returns (NotificationResponse);

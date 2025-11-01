@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm ci
+RUN npm ci 
 
 COPY . .
 
@@ -23,16 +23,13 @@ RUN apk add --no-cache wget
 
 WORKDIR /usr/src/app
 
+# Copy package files for metadata
 COPY package*.json ./
 
-RUN npm ci --only=production && npm cache clean --force
-
-COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
-
+# Copy built artifacts and node_modules from builder (ensures dist exists)
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
-
 COPY --from=builder /usr/src/app/proto ./proto
-
 COPY --from=builder /usr/src/app/prisma ./prisma
 
 EXPOSE 3000 50051
@@ -40,4 +37,6 @@ EXPOSE 3000 50051
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-CMD ["sh", "-c", "npx prisma migrate deploy && exec node --experimental-global-webcrypto dist/main.js"]
+# Run migrations, seed once and start the app. Use exec to forward signals.
+# NOTE: NestJS compiles src/main.ts to dist/src/main.js (not dist/main.js)
+CMD ["sh", "-c", "npx prisma migrate deploy && npx prisma db seed && exec node --experimental-global-webcrypto dist/src/main.js"]

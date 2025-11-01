@@ -4,16 +4,10 @@ npm-debug.log
 yarn-debug.log
 yarn-error.log
 
-# Build output
-dist
-
 # Environment files (não incluir .env no build)
 .env
 .env.*
 !.env.example
-
-# Prisma
-prisma/migrations/
 
 # Git
 .git
