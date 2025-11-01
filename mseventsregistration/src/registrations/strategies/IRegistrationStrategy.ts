@@ -1,4 +1,4 @@
-import { tb_registered_event } from 'generated/prisma';
+import { tb_registered_event } from "@prisma/client";
 import { Registration } from '../entities/registration.entity';
 
 export interface IRegistrationStrategy {

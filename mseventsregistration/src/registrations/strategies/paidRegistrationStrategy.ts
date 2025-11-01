@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { IRegistrationStrategy } from './IRegistrationStrategy';
-import { tb_registered_event } from 'generated/prisma';
+import { tb_registered_event } from '@prisma/client';
 import { Registration } from '../entities/registration.entity';
 import type { IRegistrationRepository } from '../repositories/IRegistration.repository';
-import { RegistrationStatus } from 'generated/prisma';
+import { RegistrationStatus } from '@prisma/client';
 
 @Injectable()
 export class PaidRegistrationStrategy implements IRegistrationStrategy {

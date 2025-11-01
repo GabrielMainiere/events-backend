@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FreeRegistrationStrategy } from './freeRegistrationStrategy';
 import { PaidRegistrationStrategy } from './paidRegistrationStrategy';
-import { tb_registered_event } from 'generated/prisma';
+import { tb_registered_event } from '@prisma/client';
 import { Registration } from '../entities/registration.entity';
 
 @Injectable()

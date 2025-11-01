@@ -1,35 +1,20 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
-import { RegistrationsService } from './services/registrations.service';
+import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
 import { Registration } from './entities/registration.entity';
 import { CreateRegistrationInput } from './dto/create-registration.input';
-import { UpdateRegistrationInput } from './dto/update-registration.input';
+import { RegistrationService } from './services/registrations.service';
 
 @Resolver(() => Registration)
-export class RegistrationsResolver {
-  constructor(private readonly registrationsService: RegistrationsService) {}
+export class RegistrationResolver {
+  constructor(private readonly registrationService: RegistrationService) {}
 
   @Mutation(() => Registration)
-  createRegistration(@Args('createRegistrationInput') createRegistrationInput: CreateRegistrationInput) {
-    return this.registrationsService.create(createRegistrationInput);
+  async registerUser(
+    @Args('data') data: CreateRegistrationInput,): Promise<Registration> {
+      return this.registrationService.registerUser(data.userId, data.eventId);
   }
 
-  @Query(() => [Registration], { name: 'registrations' })
-  findAll() {
-    return this.registrationsService.findAll();
-  }
-
-  @Query(() => Registration, { name: 'registration' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.registrationsService.findOne(id);
-  }
-
-  @Mutation(() => Registration)
-  updateRegistration(@Args('updateRegistrationInput') updateRegistrationInput: UpdateRegistrationInput) {
-    return this.registrationsService.update(updateRegistrationInput.id, updateRegistrationInput);
-  }
-
-  @Mutation(() => Registration)
-  removeRegistration(@Args('id', { type: () => Int }) id: number) {
-    return this.registrationsService.remove(id);
+  @Query(() => String)
+  healthCheck(): string {
+    return 'OK';
   }
 }

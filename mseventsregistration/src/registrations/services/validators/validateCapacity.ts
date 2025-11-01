@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { IRegistrationValidator } from './IRegistrationValidator';
 import type { IRegistrationRepository } from 'src/registrations/repositories/IRegistration.repository';
-import { tb_registered_event } from 'generated/prisma';
+import { tb_registered_event } from '@prisma/client';
 
 @Injectable()
 export class EventCapacityValidator implements IRegistrationValidator {

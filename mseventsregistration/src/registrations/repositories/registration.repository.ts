@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaSingleton } from 'src/database/prismaSingleton';
+import { PrismaSingleton } from 'src/core/prismaSingleton';
 import { IRegistrationRepository } from './IRegistration.repository';
 import { Registration } from '../entities/registration.entity';
-import { RegistrationStatus } from 'generated/prisma';
+import { RegistrationStatus, tb_registered_event } from "@prisma/client";
 import { RegistrationMapper } from 'src/mappers/registrationMapper';
 
 @Injectable()
@@ -33,5 +33,9 @@ export class RegistrationRepository implements IRegistrationRepository {
         return this.prisma.tb_events_registration.count({
         where: { registered_event_id: eventId },
         });
+    }
+
+    async findEventById(eventId: string): Promise<tb_registered_event | null> {
+        return this.prisma.tb_registered_event.findUnique({ where: { id: eventId } });
     }
 }
