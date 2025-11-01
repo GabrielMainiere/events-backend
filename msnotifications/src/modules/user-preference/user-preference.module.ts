@@ -7,13 +7,14 @@ import { UserPreferenceLogDecorator } from '../decorator/user-preference-log.dec
 import { DecoratorModule } from '../decorator/decorator.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    PrismaModule,
+    DecoratorModule,
+  ],
   providers: [
     UserPreferenceRepository,
     UserPreferenceService,
     UserPreferenceResolver,
-    UserPreferenceLogDecorator,
-    DecoratorModule,
   ],
   exports: [
     UserPreferenceService,

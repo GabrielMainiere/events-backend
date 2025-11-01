@@ -36,7 +36,7 @@ message PaymentNotificationRequest {
   string payload_json = 4;
 }
 
-message SendNotificationResponse {
+message NotificationResponse {
   string notification_id = 1;
   string status = 2;
 }

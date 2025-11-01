@@ -4,6 +4,8 @@ import { NotificationTemplateModule } from 'src/modules/notification-template/no
 import { NotificationImplementation } from './notification.implementation.controller';
 import { UserPreferenceModule } from '../user-preference/user-preference.module';
 import { DecoratorModule } from '../decorator/decorator.module';
+import { NotificationProcessorService } from './notification-processor.service';
+import { PayloadHelper } from '../../helper/payload.helper';
 
 
 @Module({
@@ -14,5 +16,9 @@ import { DecoratorModule } from '../decorator/decorator.module';
     DecoratorModule,
   ],
   controllers: [NotificationImplementation],
+  providers: [
+    NotificationProcessorService,
+    PayloadHelper,
+  ],
 })
 export class NotificationImplementationModule {}
