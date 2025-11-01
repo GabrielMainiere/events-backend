@@ -1,7 +1,7 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
-import { NotificationLogService } from '../notification-log/notification-log.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { NotificationTemplateService } from '../notification-template/notification-template.service';
 import { UserPreferenceService } from '../user-preference/user-preference.service';
+import { NotificationEnqueuer } from './notification-enqueuer.service';
 import { RequestLogDecorator } from '../decorator/request-log.decorator';
 
 interface ProcessNotificationInput {
@@ -19,9 +19,9 @@ interface ProcessNotificationOutput {
 @Injectable()
 export class NotificationProcessorService {
   constructor(
-    private readonly notificationLogService: NotificationLogService,
-    private readonly templateService: NotificationTemplateService,
+    private readonly templateService: NotificationTemplateService, // ← Usa service direto!
     private readonly userPreferenceService: UserPreferenceService,
+    private readonly enqueuer: NotificationEnqueuer,
     private readonly requestLog: RequestLogDecorator,
   ) {}
 
@@ -47,31 +47,12 @@ export class NotificationProcessorService {
       };
     }
 
-    const payload = this.parsePayload(data.payloadJson);
-
-    const notificationLog = await this.notificationLogService.create({
-      user_id: data.userId,
-      template_name: data.templateName,
-      notification_type: template.notification_type,
-      recipient_address: data.recipientAddress,
-      channel: template.channel,
-      payload: payload,
+    return this.enqueuer.enqueue({
+      userId: data.userId,
+      templateName: data.templateName,
+      template: template,
+      recipientAddress: data.recipientAddress,
+      payloadJson: data.payloadJson,
     });
-
-    this.requestLog.logNotificationEnqueued(notificationLog.id, data.templateName);
-
-    return {
-      notificationId: notificationLog.id,
-      status: notificationLog.status,
-    };
-  }
-
-  private parsePayload(payloadJson: string): Record<string, any> {
-    try {
-      return JSON.parse(payloadJson);
-    } catch (error) {
-      this.requestLog.logInvalidPayload(error.message);
-      throw new BadRequestException('Payload JSON inválido');
-    }
   }
 }
