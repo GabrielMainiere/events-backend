@@ -3,7 +3,7 @@ import { INotificationStrategy } from 'src/interfaces/iNotificationStategy';
 import { NotificationLog } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { NotificationTemplateService } from '../notification-template/notification-template.service';
-import { HandlebarsTemplateProcessor } from '../template-processor/template-processor.service';
+import { HandlebarsTemplateProcessor } from './template-processor/template-processor.service';
 
 
 @Injectable()
