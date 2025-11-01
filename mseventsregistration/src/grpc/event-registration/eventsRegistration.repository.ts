@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { tb_registered_event, EventStatus, EventType } from 'generated/prisma/client';
+import { tb_registered_event, EventStatus, EventType } from '@prisma/client'
 import { IEventNotificationRequest } from './interfaces/IEventRegistrationRequest';
-import { PrismaSingleton } from 'src/database/prismaSingleton';
+import { PrismaSingleton } from 'src/core/prismaSingleton';
 
 @Injectable()
 export class EventsRegistrationRepository {
