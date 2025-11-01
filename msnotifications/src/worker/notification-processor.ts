@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { NotificationLog } from '@prisma/client';
 import { NotificationSender } from './notification-sender';
 import { WorkerLogDecorator } from 'src/modules/decorator/worker-log.decorator';
-import { NotificationStatusUpdater } from './notification-status-updater.service';
+import { NotificationStatusUpdater } from './notification-status-updater';
 
 @Injectable()
 export class NotificationProcessor {

@@ -3,11 +3,13 @@ import { CreateTemplateInput } from 'src/common/dto/createNotificationTemplate.i
 import { UpdateTemplateInput } from 'src/common/dto/updateNotificationTemplate.input';
 import { NotificationTemplateRepository } from './notification-template.repository';
 import { INotificationTemplateService } from 'src/common/interfaces/iNotificationTemplateService';
+import { NotificationTemplateValidator } from './notification-template-validator';
 
 @Injectable()
 export class NotificationTemplateService implements INotificationTemplateService {
   constructor(
     private readonly repository: NotificationTemplateRepository,
+    private readonly validator: NotificationTemplateValidator,
   ) {}
 
   async findByName(template_name: string) {
@@ -15,13 +17,7 @@ export class NotificationTemplateService implements INotificationTemplateService
   }
 
   async findOne(id: string) {
-    const template = await this.repository.findById(id);
-
-    if (!template) {
-      throw new NotFoundException(`Template com ID "${id}" não encontrado`);
-    }
-
-    return template;
+    return this.validator.findByIdOrFail(id);
   }
 
   async findAll() {
@@ -29,40 +25,20 @@ export class NotificationTemplateService implements INotificationTemplateService
   }
 
   async create(data: CreateTemplateInput) {
-    await this.validateUniqueTemplateName(data.template_name);
+    await this.validator.validateUniqueTemplateName(data.template_name);
     return this.repository.create(data);
   }
 
   async update(id: string, data: UpdateTemplateInput) {
     await this.findOne(id); 
-
     if (data.template_name) {
-      await this.validateUniqueTemplateName(data.template_name, id);
+      await this.validator.validateUniqueTemplateName(data.template_name, id);
     }
-
     return this.repository.update(id, data);
   }
   
   async remove(id: string) {
-    const template = await this.repository.findById(id);
-
-    if (!template) {
-      throw new NotFoundException(`Template com ID "${id}" não encontrado`);
-    }
-    
+    await this.validator.findByIdOrFail(id);
     return this.repository.delete(id);
-  }
-
-  private async validateUniqueTemplateName(
-    template_name: string,
-    excludeId?: string,
-  ): Promise<void> {
-    const existing = await this.repository.findByName(template_name);
-    
-    if (existing && existing.id !== excludeId) {
-      throw new ConflictException(
-        `Template com nome "${template_name}" já existe`,
-      );
-    }
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { NotificationTemplateService } from '../notification-template/notification-template.service';
 import { UserPreferenceService } from '../user-preference/user-preference.service';
-import { NotificationEnqueuer } from './notification-enqueuer.service';
+import { NotificationEnqueuer } from './notification-enqueuer';
 import { RequestLogDecorator } from '../decorator/request-log.decorator';
+import { NotificationTemplateValidator } from '../notification-template/notification-template-validator';
 
 interface ProcessNotificationInput {
   userId: string;
@@ -19,19 +19,14 @@ interface ProcessNotificationOutput {
 @Injectable()
 export class NotificationProcessorService {
   constructor(
-    private readonly templateService: NotificationTemplateService, // ← Usa service direto!
+    private readonly templateValidator: NotificationTemplateValidator, // ← Usa service direto!
     private readonly userPreferenceService: UserPreferenceService,
     private readonly enqueuer: NotificationEnqueuer,
     private readonly requestLog: RequestLogDecorator,
   ) {}
 
   async process(data: ProcessNotificationInput): Promise<ProcessNotificationOutput> {
-    const template = await this.templateService.findByName(data.templateName);
-    
-    if (!template) {
-      this.requestLog.logTemplateNotFound(data.templateName);
-      throw new NotFoundException(`Template não encontrado: ${data.templateName}`);
-    }
+    const template = await this.templateValidator.findByNameOrFail(data.templateName);
 
     const canSend = await this.userPreferenceService.canSendNotification(
       data.userId,

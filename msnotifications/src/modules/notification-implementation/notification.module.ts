@@ -6,7 +6,7 @@ import { NotificationImplementation } from './notification.implementation.contro
 import { UserPreferenceModule } from '../user-preference/user-preference.module';
 import { DecoratorModule } from '../decorator/decorator.module';
 import { NotificationProcessorService } from './notification-processor.service';
-import { NotificationEnqueuer } from './notification-enqueuer.service';
+import { NotificationEnqueuer } from './notification-enqueuer';
 import { PayloadHelper } from '../../common/helper/payload.helper';
 
 @Module({
