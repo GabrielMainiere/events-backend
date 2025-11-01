@@ -6,6 +6,6 @@ export class RegistrationsService {
   /*create(createRegistrationInput: CreateRegistrationInput) {
     return 'This action adds a new registration';
   }
-  */
+*/
   
 }
