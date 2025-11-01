@@ -22,7 +22,7 @@ import { HealthModule } from './health/health.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env', // Usa .env por padrão (local), no Docker será sobrescrito por env_file
+      envFilePath: '.env',
     }),
     ScheduleModule.forRoot(),
     PrismaModule, 

@@ -45,17 +45,10 @@ export class NotificationImplementation {
     const template = await this.templateService.findOne(templateId);
 
     if (!template) {
-      this.logTemplateNotFound(templateId);
       throw new Error(`Template não encontrado: ${templateId}`);
     }
 
     return template;
-  }
-
-  private logTemplateNotFound(templateId: string): void {
-    this.logger.error(
-      `[ERROR] Template não encontrado | ${JSON.stringify({ templateId })}`,
-    );
   }
 
   private async checkUserPreference(
@@ -69,38 +62,18 @@ export class NotificationImplementation {
       channel,
     );
 
-    if (canSend) {
-      this.logPreferenceAllowed(userId, notificationType);
-    }
-
     return canSend;
-  }
-
-  private logPreferenceAllowed(
-    userId: string,
-    notificationType: NotificationType,
-  ): void {
-    this.logger.log(
-      `[PREFERENCE_OK] Usuario ${userId} permite ${notificationType}`,
-    );
   }
 
   private buildBlockedResponse(
     userId: string,
     template: NotificationTemplate,
   ): ISendNotificationResponse {
-    this.logBlocked(userId, template);
 
     return {
       notificationId: '',
       status: 'BLOCKED_BY_USER_PREFERENCE',
     };
-  }
-
-  private logBlocked(userId: string, template: NotificationTemplate): void {
-    this.logger.warn(
-      `[BLOCKED] Usuario ${userId} desabilitou ${template.notification_type} via ${template.channel}`,
-    );
   }
 
   private async enqueueNotification(
@@ -123,16 +96,10 @@ export class NotificationImplementation {
     try {
       return JSON.parse(payloadJson);
     } catch (error) {
-      this.logInvalidPayload(payloadJson);
       throw new Error('Payload JSON inválido');
     }
   }
 
-  private logInvalidPayload(payloadJson: string): void {
-    this.logger.error(
-      `[ERROR] Payload JSON inválido | ${JSON.stringify({ payloadJson })}`,
-    );
-  }
 
   private buildNotificationLogDto(
     data: ISendNotificationRequest,

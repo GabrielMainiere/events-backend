@@ -17,6 +17,10 @@ export class EmailStrategy implements INotificationStrategy {
   async send(notification: NotificationLog): Promise<void> {
     const template = await this.getTemplate(notification.template_name);
 
+    if (!template) {
+      throw new Error(`Template ${notification.template_name} não encontrado.`);
+    }
+
     const { subject, body } = this.processTemplate(
       template,
       notification.payload as Record<string, any>,
