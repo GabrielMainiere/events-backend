@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationTemplate } from '@prisma/client';
 import * as handlebars from 'handlebars';
-import { ITemplateProcessor } from 'src/interfaces/iTemplateProcessor';
+import { ITemplateProcessor } from 'src/common/interfaces/iTemplateProcessor';
 
 @Injectable()
 export class HandlebarsTemplateProcessor implements ITemplateProcessor {

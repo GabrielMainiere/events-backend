@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma-ds/prisma.service';
 import { NotificationLog, NotificationStatus } from '@prisma/client';
 import { CreateNotificationLogDto } from 'src/common/dto/createNotificationLogDto';
-import { INotificationLogRepository } from 'src/interfaces/iNotificationLogRepository';
+import { INotificationLogRepository } from 'src/common/interfaces/iNotificationLogRepository';
 
 @Injectable()
 export class NotificationLogRepository implements INotificationLogRepository {

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { NotificationChannel } from '@prisma/client';
 import { EmailStrategy } from '../strategy/email.strategy';
-import { INotificationStrategy } from 'src/interfaces/iNotificationStategy';
+import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 import { SmsStrategy } from '../strategy/sms.strategy';
 import { PerformanceLogDecorator } from 'src/modules/decorator/performance-log.decorator';
 import { AuditLogDecorator } from 'src/modules/decorator/audit-log.decorator';

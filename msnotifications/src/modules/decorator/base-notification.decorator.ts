@@ -1,5 +1,5 @@
 import { NotificationLog } from '@prisma/client';
-import { INotificationStrategy } from 'src/interfaces/iNotificationStategy';
+import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 
 export abstract class BaseNotificationDecorator implements INotificationStrategy {
   protected strategy: INotificationStrategy;

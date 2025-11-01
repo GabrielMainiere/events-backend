@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { INotificationStrategy } from 'src/interfaces/iNotificationStategy';
+import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 import { NotificationLog } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { NotificationTemplateService } from '../notification-template/notification-template.service';

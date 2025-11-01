@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { INotificationStrategy } from 'src/interfaces/iNotificationStategy';
+import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 import { NotificationLog } from '@prisma/client';
 
 @Injectable()

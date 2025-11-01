@@ -3,10 +3,10 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { NotificationProcessorService } from './notification-processor.service';
 import { RequestLogDecorator } from '../decorator/request-log.decorator';
 import { PayloadHelper } from '../../common/helper/payload.helper';
-import type{ AccountNotificationRequest } from '../../interfaces/iAccountNotificationRequest';
-import type{ EventNotificationRequest } from '../../interfaces/iEventNotificationRequest';
-import type{ PaymentNotificationRequest } from '../../interfaces/iPaymentNotificationRequest';
-import type{ NotificationResponse } from '../../interfaces/iNotificationResponse';
+import type{ AccountNotificationRequest } from '../../common/interfaces/iAccountNotificationRequest';
+import type{ EventNotificationRequest } from '../../common/interfaces/iEventNotificationRequest';
+import type{ PaymentNotificationRequest } from '../../common/interfaces/iPaymentNotificationRequest';
+import type{ NotificationResponse } from '../../common/interfaces/iNotificationResponse';
 
 
 
