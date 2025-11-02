@@ -5,6 +5,10 @@ import { EventsRegistrationRepository } from "./eventsRegistration.repository";
 import { Injectable } from "@nestjs/common";
 import { IGetEventByIdRequest } from "./interfaces/IGetEventByIdRequest";
 import { IGetEventByIdResponse } from "./interfaces/IGetEventByIdResponse";
+import { IPaymentUpdateRequest } from "./interfaces/IPaymentUpdateRequest";
+import { IPaymentUpdateResponse } from "./interfaces/IPaymentUpdateResponse";
+import { RegistrationStatus } from "@prisma/client";
+import { PaymentStatusMapper } from "src/mappers/paymentStatusMapper";
 
 @Injectable()
 export class EventsRegistrationService implements IEventRegistrationService {
@@ -53,6 +57,28 @@ export class EventsRegistrationService implements IEventRegistrationService {
         createdAt: event.created_at.toISOString(),
         updatedAt: event.updated_at.toISOString(),
         hasVacancy,
+        };
+    }
+
+    async receivePaymentUpdate(data: IPaymentUpdateRequest): Promise<IPaymentUpdateResponse> {
+        const { eventId, userId, status } = data;
+
+        const registration = await this.repository.findRegistration(eventId, userId);
+        if (!registration) {
+            return { success: false, message: 'Registration not found' };
+        }
+
+        if (registration.status !== RegistrationStatus.WAITING_PAYMENT) {
+            return { success: false, message: 'Registration not in WAITING_PAYMENT status' };
+        }
+
+        const paymentStatus = PaymentStatusMapper.map(status);
+        const newStatus = paymentStatus === 'ACCEPTED' ? RegistrationStatus.CONFIRMED : RegistrationStatus.CANCELED;
+
+        await this.repository.updateRegistrationStatus(eventId, userId, newStatus);
+        return {
+            success: true,
+            message: `Payment ${paymentStatus === 'ACCEPTED' ? 'accepted' : 'rejected'}, registration updated to ${newStatus}`,
         };
     }
 

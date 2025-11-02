@@ -1,4 +1,4 @@
-import { PrismaSingleton } from 'src/database/prisma/prismaSingleton';
+import { PrismaSingleton } from 'src/core/prisma/prismaSingleton';
 import { EventStatus, tb_event } from 'generated/prisma';
 import { EventProps } from '../builder/IEventsBuilder';
 import { IEventRepository } from './IEventRepository';
