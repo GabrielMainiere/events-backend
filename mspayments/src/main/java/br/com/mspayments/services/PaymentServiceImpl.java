@@ -25,7 +25,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponse create(CreatePaymentInput input) {
         try {
-            PaymentMethodData paymentData = PaymentMethodData.fromCreatePaymentInput(input);
+            PaymentMethodData paymentData = PaymentMethodFactory.createPaymentMethodData(input);
 
             paymentData.getPayment().setCreatedAt(Instant.now());
             paymentData.getPayment().setStatus(PaymentStatus.PENDING);
@@ -35,19 +35,17 @@ public class PaymentServiceImpl implements PaymentService {
 
             PaymentResponse response = methodStrategy.pay(gatewayStrategy, paymentData);
 
-            updatePaymentStatusFromResponse(response);
+            PaymentStatus finalStatus = determinePaymentStatus(response);
+            response.getPayment().setStatus(finalStatus);
 
-            if (response.getPixData() != null) {
-                response.getPayment().setGatewayTransactionId(response.getPixData().getId());
-            } else if (response.getCreditCardData() != null) {
-                response.getPayment().setGatewayTransactionId(response.getCreditCardData().getId());
-            }
+            String txId = response.getTransactionId();
+            if (txId != null) response.getPayment().setGatewayTransactionId(txId);
 
             paymentRepository.save(response.getPayment());
             return response;
 
         } catch (Exception e) {
-            log.error("Erro ao processar pagamento: {}", e.getMessage(), e);
+            log.error("Erro ao processar pagamento", e);
 
             Payment rejectedPayment = input.toPayment();
             rejectedPayment.setCreatedAt(Instant.now());
@@ -59,17 +57,17 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private void updatePaymentStatusFromResponse(PaymentResponse response) {
-        if (response.getCreditCardData() != null) {
-            String status = response.getCreditCardData().getStatus();
-            if ("approved".equalsIgnoreCase(status)) {
-                response.getPayment().setStatus(PaymentStatus.APPROVED);
-            } else {
-                response.getPayment().setStatus(PaymentStatus.REJECTED);
-            }
-        } else if (response.getPixData() != null) {
-            response.getPayment().setStatus(PaymentStatus.PENDING);
+
+    private PaymentStatus determinePaymentStatus(PaymentResponse response) {
+        if (response.isApproved()) {
+            return PaymentStatus.APPROVED;
         }
+
+        if (response.getTransactionId() != null && response.getPixData() != null) {
+            return PaymentStatus.PENDING;
+        }
+
+        return PaymentStatus.REJECTED;
     }
 
     @Override
