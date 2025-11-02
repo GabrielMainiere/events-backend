@@ -7,6 +7,6 @@ export const grpcClientOptions: ClientOptions = {
   options: {
     package: 'eventregistration', 
   protoPath: join(__dirname, '../../proto/event-registration.proto'),
-    url: `localhost:${environment.grpcPortMseventsregistrations}`, 
+    url: `${environment.grpcMseventsregistrations}`, 
   },
 };
