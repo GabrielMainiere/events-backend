@@ -63,7 +63,10 @@ export class EventsRegistrationRepository {
 
   async countRegistrations(eventId: string): Promise<number> {
     return this.prisma.tb_events_registration.count({
-      where: { id: eventId },
+      where: { 
+        registered_event_id: eventId, 
+        status: 'CONFIRMED',
+      },
     });
   }
 }
