@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package eventregistration.payments;
+
+service EventRegistrationPaymentsService {
+    rpc GetEventById(GetEventByIdRequest) returns (GetEventByIdResponse);
+}
+
+message GetEventByIdRequest {
+    string id = 1;
+}
+
+message GetEventByIdResponse {
+    string id = 1;
+    string title = 2;
+    string description = 3;
+    string startAt = 4;
+    string endAt = 5;
+    double price = 6;
+    string saleStartAt = 7;
+    string saleEndAt = 8;
+    string addressStreet = 9;
+    string addressNumber = 10;
+    string addressCity = 11;
+    string addressState = 12;
+    string addressZipcode = 13;
+    string addressCountry = 14;
+    int32 capacity = 15;
+    bool isFree = 16;
+    string eventType = 17;
+    string status = 18;
+    string createdAt = 19;
+    string updatedAt = 20;
+    bool hasVacancy = 21;
+}

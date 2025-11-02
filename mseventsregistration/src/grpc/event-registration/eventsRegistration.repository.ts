@@ -54,4 +54,16 @@ export class EventsRegistrationRepository {
       },
     });
   }
+
+  async findById(id: string): Promise<tb_registered_event | null> {
+    return this.prisma.tb_registered_event.findUnique({
+      where: { id },
+    });
+  }
+
+  async countRegistrations(eventId: string): Promise<number> {
+    return this.prisma.tb_events_registration.count({
+      where: { id: eventId },
+    });
+  }
 }
