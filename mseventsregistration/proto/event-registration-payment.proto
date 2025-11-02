@@ -4,6 +4,12 @@ package eventregistration.payments;
 
 service EventRegistrationPaymentsService {
     rpc GetEventById(GetEventByIdRequest) returns (GetEventByIdResponse);
+    rpc ReceivePaymentUpdate(PaymentUpdateRequest) returns (PaymentUpdateResponse);
+}
+
+enum PaymentStatus {
+    ACCEPTED = 0;
+    REJECTED = 1;
 }
 
 message GetEventByIdRequest {
@@ -32,4 +38,15 @@ message GetEventByIdResponse {
     string createdAt = 19;
     string updatedAt = 20;
     bool hasVacancy = 21;
+}
+
+message PaymentUpdateRequest {
+    string eventId = 1;
+    string userId = 2;
+    PaymentStatus status = 3;
+}
+
+message PaymentUpdateResponse {
+    bool success = 1;
+    string message = 2;
 }

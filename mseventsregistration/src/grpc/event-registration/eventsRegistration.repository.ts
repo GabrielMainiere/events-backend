@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { tb_registered_event, EventStatus, EventType } from '@prisma/client'
+import { tb_registered_event, tb_events_registration, EventStatus, EventType, RegistrationStatus } from '@prisma/client'
 import { IEventNotificationRequest } from './interfaces/IEventRegistrationRequest';
 import { PrismaSingleton } from 'src/core/prismaSingleton';
 
@@ -63,7 +63,31 @@ export class EventsRegistrationRepository {
 
   async countRegistrations(eventId: string): Promise<number> {
     return this.prisma.tb_events_registration.count({
-      where: { id: eventId },
+      where: { 
+        registered_event_id: eventId, 
+        status: RegistrationStatus.CONFIRMED,
+      },
+    });
+  }
+
+  async findRegistration(eventId: string, userId: string): Promise<tb_events_registration | null> {
+    return this.prisma.tb_events_registration.findFirst({
+      where: {
+        registered_event_id: eventId,
+        user_id: userId,
+      },
+    });
+  }
+
+  async updateRegistrationStatus(eventId: string, userId: string, newStatus: RegistrationStatus): Promise<void> {
+    await this.prisma.tb_events_registration.updateMany({
+      where: {
+        registered_event_id: eventId,
+        user_id: userId,
+      },
+      data: {
+        status: newStatus,
+      },
     });
   }
 }
