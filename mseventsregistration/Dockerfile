@@ -29,14 +29,13 @@ COPY package*.json ./
 # Copy built artifacts and node_modules from builder (ensures dist exists)
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/generated ./generated
 COPY --from=builder /usr/src/app/proto ./proto
 COPY --from=builder /usr/src/app/prisma ./prisma
 
-EXPOSE 3002 50051
+EXPOSE 3003 50053
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3002/ || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3003/ || exit 1
 
 # Run migrations and start the app. Use exec to forward signals.
 # NOTE: NestJS compiles src/main.ts to dist/main.js (not dist/src/main.js)

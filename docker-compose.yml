@@ -99,7 +99,47 @@ services:
       - events-backend
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  mseventsregistration-postgres:
+    container_name: mseventsregistration-postgres
+    image: postgres:17.2-alpine
+    ports:
+      - "5436:5432"
+    env_file:
+      - ./mseventsregistration/.env.docker
+    volumes:
+      - mseventsregistration-data:/var/lib/postgresql/data
+    networks:
+      - mseventsregistration
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mseventsregistration}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  mseventsregistration:
+    container_name: mseventsregistration
+    build:
+      context: ./mseventsregistration
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3000"
+      - "50053:50051"
+    env_file:
+      - ./mseventsregistration/.env.docker
+    depends_on:
+      mseventsregistration-postgres:
+        condition: service_healthy
+    networks:
+      - mseventsregistration
+      - events-backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -110,6 +150,8 @@ volumes:
     driver: local
   msevents-data:
     driver: local
+  mseventsregistration-data:
+    driver: local
 
 networks:
   events-backend:
@@ -119,4 +161,6 @@ networks:
   msnotifications:
     driver: bridge
   msevents:
+    driver: bridge
+  mseventsregistration:
     driver: bridge
