@@ -11,9 +11,18 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
-      package: 'eventregistration',
+      package: ['eventregistration'],
       protoPath: join(__dirname, '../proto/event-registration.proto'),
       url: `0.0.0.0:${environment.grpcPort}`,
+    },
+  });
+
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.GRPC,
+    options: {
+      package: ['eventregistration.payments'],
+      protoPath: join(__dirname, '../proto/event-registration-payment.proto'),
+      url: `0.0.0.0:${environment.grpcPaymentsPort}`,
     },
   });
 
@@ -23,3 +32,4 @@ async function bootstrap() {
   console.log(`gRPC running on port ${environment.grpcPort}`);
 }
 bootstrap();
+

@@ -1,3 +1,3 @@
 export interface IGetEventByIdRequest {
-  eventId: string;
+  id: string;
 }

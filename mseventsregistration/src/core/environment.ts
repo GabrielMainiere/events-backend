@@ -5,4 +5,5 @@ export const environment = {
   graphqlPort: Number(process.env.GRAPHQL_PORT ?? '3001'),
   grpcPort: Number(process.env.GRPC_PORT ?? '50051'),
   grpcPortMsusers: Number(process.env.GRPC_PORT_MSUSERS ?? '50053'),
+  grpcPaymentsPort: Number(process.env.GRPC_PORT_MSPAYMENT ?? '50054'),
 };
