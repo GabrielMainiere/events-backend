@@ -4,6 +4,10 @@ import br.com.mspayments.models.PaymentMethod;
 
 import java.util.Map;
 
+import br.com.mspayments.controllers.dtos.CreatePaymentInput;
+import br.com.mspayments.strategies.paymentMethod.dtos.PaymentMethodData;
+import br.com.mspayments.models.Payment;
+
 public class PaymentMethodFactory {
 
     public static PaymentMethodStrategy getPaymentMethod(PaymentMethod paymentMethod) {
@@ -13,5 +17,17 @@ public class PaymentMethodFactory {
         );
 
         return strategies.get(paymentMethod);
+    }
+    public static PaymentMethodData createPaymentMethodData(CreatePaymentInput input) {
+        Payment payment = input.toPayment();
+
+        if (payment.getMethod() == PaymentMethod.CREDIT_CARD) {
+            String cardToken = input.getCardToken();
+            Integer installments = input.getInstallments() != null ? input.getInstallments() : 1;
+            String paymentMethodId = input.getPaymentMethodId();
+
+            return new PaymentMethodData(payment, cardToken, installments, paymentMethodId);
+        }
+        return new PaymentMethodData(payment);
     }
 }
