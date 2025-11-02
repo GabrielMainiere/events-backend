@@ -5,12 +5,11 @@ services:
     build: /mspayments
     env_file:
       - /mspayments/.env
-    ports:
-      - 8081:8080
     depends_on:
       - mspayments-postgres
     networks:
       - mspayments
+      - events-backend
   mspayments-postgres:
     container_name: mspayments-postgres
     image: postgres:17.4-alpine
@@ -29,9 +28,6 @@ services:
     build:
       context: ./msnotifications
       dockerfile: Dockerfile
-    ports:
-      - "3001:3000"
-      - "50051:50051"
     env_file:
       - ./msnotifications/.env.docker
     depends_on:
@@ -86,9 +82,6 @@ services:
     build:
       context: ./msevents
       dockerfile: Dockerfile
-    ports:
-      - "3002:3000"
-      - "50052:50051"
     env_file:
       - ./msevents/.env.docker
     depends_on:
@@ -126,9 +119,6 @@ services:
     build:
       context: ./mseventsregistration
       dockerfile: Dockerfile
-    ports:
-      - "3003:3000"
-      - "50053:50051"
     env_file:
       - ./mseventsregistration/.env.docker
     depends_on:
@@ -144,6 +134,24 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  kong:
+    image: kong:3.4
+    container_name: kong
+    restart: unless-stopped
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_PROXY_LISTEN: '0.0.0.0:8000'
+      KONG_ADMIN_LISTEN: '0.0.0.0:8001'
+      KONG_ANONYMOUS_REPORTS: 'off'
+    volumes:
+      - ./gateway/kong.yml:/usr/local/kong/declarative/kong.yml:ro
+    networks:
+      - events-backend
+    ports:
+      - "8000:8000"
+      - "8001:8001"
 
 volumes:
   msnotifications-data:
