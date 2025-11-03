@@ -3,12 +3,12 @@ import { INotificationStrategy } from 'src/common/interfaces/iNotificationStateg
 import { NotificationLog } from '@prisma/client';
 
 @Injectable()
-export class SmsStrategy implements INotificationStrategy {
-  private readonly logger = new Logger(SmsStrategy.name);
+export class PushStrategy implements INotificationStrategy {
+  private readonly logger = new Logger(PushStrategy.name);
 
   async send(notification: NotificationLog): Promise<void> {
     this.logger.log(
-      `[MOCK] Enviando SMS para: ${
+      `[MOCK] Enviando Push para: ${
         notification.recipient_address
       } com payload: ${JSON.stringify(notification.payload)}`,
     );

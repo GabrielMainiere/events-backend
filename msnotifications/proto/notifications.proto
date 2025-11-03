@@ -19,6 +19,7 @@ message AccountNotificationRequest {
   string user_id = 1;
   string recipient_address = 2;
   string payload_json = 3;
+  string template_name = 4;
 }
 
 message EventNotificationRequest {
@@ -26,6 +27,7 @@ message EventNotificationRequest {
   string recipient_address = 2;
   string event_id = 3;
   string payload_json = 4;
+  string template_name = 5;
 }
 
 message PaymentNotificationRequest {
@@ -33,6 +35,7 @@ message PaymentNotificationRequest {
   string recipient_address = 2;
   string payment_id = 3; 
   string payload_json = 4;
+  string template_name = 5;
 }
 
 message NotificationResponse {

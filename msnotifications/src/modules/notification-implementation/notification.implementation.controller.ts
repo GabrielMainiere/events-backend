@@ -12,6 +12,18 @@ import type{ NotificationResponse } from '../../common/interfaces/iNotificationR
 
 @Controller()
 export class NotificationImplementation {
+
+  private readonly defaultTemplates = {
+    welcome: 'account_welcome_email',
+    verification: 'account_verification_email',
+    passwordReset: 'account_password_reset_email',
+    eventRegistration: 'event_registration_email',
+    eventCancellation: 'event_cancellation_email',
+    eventReminder: 'event_reminder_email',
+    paymentConfirmation: 'payment_confirmation_email',
+    paymentFailed: 'payment_failed_email',
+  };
+
   constructor(
     private readonly processor: NotificationProcessorService,
     private readonly requestLog: RequestLogDecorator,
@@ -25,9 +37,11 @@ export class NotificationImplementation {
       recipientAddress: data.recipientAddress,
     });
 
+    const templateName = data.templateName || this.defaultTemplates.welcome;
+
     return this.processor.process({
       ...data,
-      templateName: 'account_welcome_email',
+      templateName,
     });
   }
 
@@ -38,9 +52,11 @@ export class NotificationImplementation {
       recipientAddress: data.recipientAddress,
     });
 
+    const templateName = data.templateName || this.defaultTemplates.verification;
+
     return this.processor.process({
       ...data,
-      templateName: 'account_verification_email',
+      templateName,
     });
   }
 
@@ -51,9 +67,11 @@ export class NotificationImplementation {
       recipientAddress: data.recipientAddress,
     });
 
+    const templateName = data.templateName || this.defaultTemplates.passwordReset;
+
     return this.processor.process({
       ...data,
-      templateName: 'account_password_reset_email',
+      templateName,
     });
   }
 
@@ -65,11 +83,13 @@ export class NotificationImplementation {
       recipientAddress: data.recipientAddress,
     });
 
+    const templateName = data.templateName || this.defaultTemplates.eventRegistration;
+
     return this.processor.process({
       userId: data.userId,
       recipientAddress: data.recipientAddress,
       payloadJson: this.payloadHelper.enrichWithEventId(data.payloadJson, data.eventId),
-      templateName: 'event_registration_email',
+      templateName,
     });
   }
 
@@ -81,11 +101,13 @@ export class NotificationImplementation {
       recipientAddress: data.recipientAddress,
     });
 
+    const templateName = data.templateName || this.defaultTemplates.eventCancellation;
+
     return this.processor.process({
       userId: data.userId,
       recipientAddress: data.recipientAddress,
       payloadJson: this.payloadHelper.enrichWithEventId(data.payloadJson, data.eventId),
-      templateName: 'event_cancellation_email',
+      templateName,
     });
   }
 
@@ -96,11 +118,13 @@ export class NotificationImplementation {
       recipientAddress: data.recipientAddress,
     });
 
+    const templateName = data.templateName || this.defaultTemplates.eventReminder;
+
     return this.processor.process({
       userId: data.userId,
       recipientAddress: data.recipientAddress,
       payloadJson: this.payloadHelper.enrichWithEventId(data.payloadJson, data.eventId),
-      templateName: 'event_reminder_email',
+      templateName,
     });
   }
 
@@ -111,11 +135,13 @@ export class NotificationImplementation {
       recipientAddress: data.recipientAddress,
     });
 
+    const templateName = data.templateName || this.defaultTemplates.paymentConfirmation;
+
     return this.processor.process({
       userId: data.userId,
       recipientAddress: data.recipientAddress,
       payloadJson: this.payloadHelper.enrichWithPaymentId(data.payloadJson, data.paymentId),
-      templateName: 'payment_confirmation_email',
+      templateName,
     });
   }
 
@@ -125,12 +151,14 @@ export class NotificationImplementation {
       userId: data.userId,
       recipientAddress: data.recipientAddress,
     });
-
+    
+    const templateName = data.templateName || this.defaultTemplates.paymentFailed;
+    
     return this.processor.process({
       userId: data.userId,
       recipientAddress: data.recipientAddress,
       payloadJson: this.payloadHelper.enrichWithPaymentId(data.payloadJson, data.paymentId),
-      templateName: 'payment_failed_email',
+      templateName,
     });
   }
 }

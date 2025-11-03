@@ -3,4 +3,5 @@ export interface EventNotificationRequest {
   recipientAddress: string;
   eventId: string;
   payloadJson: string;
+  templateName?: string;
 }
