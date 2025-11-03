@@ -3,23 +3,13 @@ import { UserPreferenceService } from '../user-preference/user-preference.servic
 import { NotificationEnqueuer } from './notification-enqueuer';
 import { RequestLogDecorator } from '../decorator/request-log.decorator';
 import { NotificationTemplateValidator } from '../notification-template/notification-template-validator';
-
-interface ProcessNotificationInput {
-  userId: string;
-  recipientAddress: string;
-  templateName: string;
-  payloadJson: string;
-}
-
-interface ProcessNotificationOutput {
-  notificationId: string;
-  status: string;
-}
+import { ProcessNotificationInput } from 'src/common/interfaces/iProcessNotificationInput';
+import { ProcessNotificationOutput } from 'src/common/interfaces/iProcessNotificationOutput';
 
 @Injectable()
 export class NotificationProcessorService {
   constructor(
-    private readonly templateValidator: NotificationTemplateValidator, // ← Usa service direto!
+    private readonly templateValidator: NotificationTemplateValidator,
     private readonly userPreferenceService: UserPreferenceService,
     private readonly enqueuer: NotificationEnqueuer,
     private readonly requestLog: RequestLogDecorator,

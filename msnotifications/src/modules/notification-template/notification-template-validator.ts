@@ -1,4 +1,3 @@
-// src/modules/notification-template/notification-template-validator.service.ts
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { NotificationTemplate } from '@prisma/client';
 import { NotificationTemplateRepository } from './notification-template.repository';

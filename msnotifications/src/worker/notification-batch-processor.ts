@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationLog } from '@prisma/client';
 import { NotificationProcessor } from './notification-processor';
+import { BatchResult } from 'src/common/interfaces/iBathResult';
 
-interface BatchResult {
-  successCount: number;
-  failureCount: number;
-}
 
 @Injectable()
 export class NotificationBatchProcessor {
