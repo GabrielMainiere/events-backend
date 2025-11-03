@@ -39,5 +39,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3002/ || exit 1
 
 # Run migrations and start the app. Use exec to forward signals.
-# NOTE: NestJS compiles src/main.ts to dist/main.js (not dist/src/main.js)
-CMD ["sh", "-c", "npx prisma migrate deploy && exec node --experimental-global-webcrypto dist/main.js"]
+# Auto-detect main.js location to handle different NestJS CLI configurations
+CMD ["sh", "-c", "npx prisma migrate deploy && MAIN_FILE=$(find dist -name 'main.js' | head -1) && exec node $MAIN_FILE"]
