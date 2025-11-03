@@ -28,3 +28,10 @@ services:
         paths:
           - /mspayments
         strip_path: true
+  - name: msusers
+    url: http://msusers:3000
+    routes:
+      - name: msusers-route
+        paths:
+          - /msusers
+        strip_path: true

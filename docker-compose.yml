@@ -134,6 +134,32 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+  msusers-postgres:
+    container_name: msusers-postgres
+    image: postgres:17.2-alpine
+    ports:
+      - "5437:5432"
+    env_file:
+      - ./msusers/.env.docker
+    volumes:
+      - msusers-data:/var/lib/postgresql/data
+    networks:
+      - msusers
+    restart: unless-stopped
+
+  msusers:
+    container_name: msusers
+    build:
+      context: ./msusers
+      dockerfile: Dockerfile
+    env_file:
+      - ./msusers/.env.docker
+    depends_on:
+      - msusers-postgres
+    networks:
+      - msusers
+      - events-backend
+    restart: unless-stopped
 
   kong:
     image: kong:3.4
@@ -160,7 +186,9 @@ volumes:
     driver: local
   mseventsregistration-data:
     driver: local
-
+  msusers-data:
+    driver: local
+    
 networks:
   events-backend:
     driver: bridge
@@ -171,4 +199,6 @@ networks:
   msevents:
     driver: bridge
   mseventsregistration:
+    driver: bridge
+  msusers:
     driver: bridge

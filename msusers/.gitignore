@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+# Prisma generated client
+/generated
+
 # Logs
 logs
 *.log
@@ -41,6 +44,7 @@ lerna-debug.log*
 .env.test.local
 .env.production.local
 .env.local
+.env.docker
 
 # temp directory
 .temp
