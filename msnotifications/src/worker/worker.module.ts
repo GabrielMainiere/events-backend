@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { FactoryModule } from 'src/modules/factory/factory.module';
+import { NotificationStrategyProviderModule } from 'src/modules/strategy/strategy-provider/notification-strategy-provider.module';
 import { NotificationLogModule } from 'src/modules/notification-log/notification-log.module';
 import { DecoratorModule } from 'src/modules/decorator/decorator.module';
 import { WorkerScheduler } from './worker-schedule';
@@ -11,7 +11,7 @@ import { NotificationSender } from './notification-sender';
 
 @Module({
   imports: [
-    FactoryModule,
+    NotificationStrategyProviderModule,
     NotificationLogModule,
     DecoratorModule,
   ],
