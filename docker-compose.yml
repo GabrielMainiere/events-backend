@@ -5,12 +5,11 @@ services:
     build: /mspayments
     env_file:
       - /mspayments/.env
-    ports:
-      - 8081:8080
     depends_on:
       - mspayments-postgres
     networks:
       - mspayments
+      - events-backend
   mspayments-postgres:
     container_name: mspayments-postgres
     image: postgres:17.4-alpine
@@ -24,9 +23,152 @@ services:
     networks:
       - mspayments
   
+  msnotifications:
+    container_name: msnotifications
+    build:
+      context: ./msnotifications
+      dockerfile: Dockerfile
+    env_file:
+      - ./msnotifications/.env.docker
+    depends_on:
+      msnotifications-postgres:
+        condition: service_healthy
+    networks:
+      - msnotifications
+      - events-backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  msnotifications-postgres:
+    container_name: msnotifications-postgres
+    image: postgres:17.2-alpine
+    ports:
+      - "5434:5432"
+    env_file:
+      - ./msnotifications/.env.docker
+    volumes:
+      - msnotifications-data:/var/lib/postgresql/data
+    networks:
+      - msnotifications
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-msnotifications}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  msevents-postgres:
+    container_name: msevents-postgres
+    image: postgres:17.2-alpine
+    ports:
+      - "5435:5432"
+    env_file:
+      - ./msevents/.env.docker
+    volumes:
+      - msevents-data:/var/lib/postgresql/data
+    networks:
+      - msevents
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-msevents}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  msevents:
+    container_name: msevents
+    build:
+      context: ./msevents
+      dockerfile: Dockerfile
+    env_file:
+      - ./msevents/.env.docker
+    depends_on:
+      msevents-postgres:
+        condition: service_healthy
+    networks:
+      - msevents
+      - events-backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  mseventsregistration-postgres:
+    container_name: mseventsregistration-postgres
+    image: postgres:17.2-alpine
+    ports:
+      - "5436:5432"
+    env_file:
+      - ./mseventsregistration/.env.docker
+    volumes:
+      - mseventsregistration-data:/var/lib/postgresql/data
+    networks:
+      - mseventsregistration
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-mseventsregistration}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  mseventsregistration:
+    container_name: mseventsregistration
+    build:
+      context: ./mseventsregistration
+      dockerfile: Dockerfile
+    env_file:
+      - ./mseventsregistration/.env.docker
+    depends_on:
+      mseventsregistration-postgres:
+        condition: service_healthy
+    networks:
+      - mseventsregistration
+      - events-backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  kong:
+    image: kong:3.4
+    container_name: kong
+    restart: unless-stopped
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+      KONG_PROXY_LISTEN: '0.0.0.0:8000'
+      KONG_ADMIN_LISTEN: '0.0.0.0:8001'
+      KONG_ANONYMOUS_REPORTS: 'off'
+    volumes:
+      - ./gateway/kong.yml:/usr/local/kong/declarative/kong.yml:ro
+    networks:
+      - events-backend
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+
+volumes:
+  msnotifications-data:
+    driver: local
+  msevents-data:
+    driver: local
+  mseventsregistration-data:
+    driver: local
 
 networks:
   events-backend:
     driver: bridge
   mspayments:
+    driver: bridge
+  msnotifications:
+    driver: bridge
+  msevents:
+    driver: bridge
+  mseventsregistration:
     driver: bridge

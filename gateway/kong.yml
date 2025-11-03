@@ -1,0 +1,30 @@
+_format_version: "2.1"
+services:
+  - name: msevents
+    url: http://msevents:3000
+    routes:
+      - name: msevents-route
+        paths:
+          - /msevents
+        strip_path: true
+  - name: mseventsregistration
+    url: http://mseventsregistration:3000
+    routes:
+      - name: mseventsregistration-route
+        paths:
+          - /mseventsregistration
+        strip_path: true
+  - name: msnotifications
+    url: http://msnotifications:3000
+    routes:
+      - name: msnotifications-route
+        paths:
+          - /msnotifications
+        strip_path: true
+  - name: mspayments
+    url: http://mspayments:8080
+    routes:
+      - name: mspayments-route
+        paths:
+          - /mspayments
+        strip_path: true

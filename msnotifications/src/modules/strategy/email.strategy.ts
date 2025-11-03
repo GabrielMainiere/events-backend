@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { INotificationStrategy } from 'src/interfaces/iNotificationStategy';
+import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 import { NotificationLog } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { NotificationTemplateService } from '../notification-template/notification-template.service';
-import { HandlebarsTemplateProcessor } from '../template-processor/template-processor.service';
+import { HandlebarsTemplateProcessor } from './template-processor/template-processor.service';
 
 
 @Injectable()
@@ -16,12 +16,10 @@ export class EmailStrategy implements INotificationStrategy {
 
   async send(notification: NotificationLog): Promise<void> {
     const template = await this.getTemplate(notification.template_name);
-
     const { subject, body } = this.processTemplate(
       template,
       notification.payload as Record<string, any>,
     );
-
     await this.sendEmail(notification.recipient_address, subject, body);
   }
 

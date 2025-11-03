@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma-ds/prisma.service';
 import { UserPreference, NotificationType, NotificationChannel } from '@prisma/client';
-import { UpsertUserPreferenceInput } from 'src/dto/upsertUserPreference.input';
+import { UpsertUserPreferenceInput } from 'src/common/dto/upsertUserPreference.input';
 
 @Injectable()
 export class UserPreferenceRepository {

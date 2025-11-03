@@ -30,4 +30,17 @@ public class PaymentResponse {
         this.payment = payment;
         this.creditCardData = creditCardData;
     }
+
+    public String getTransactionId() {
+        if (pixData != null && pixData.getId() != null) return pixData.getId();
+        if (creditCardData != null && creditCardData.getId() != null) return creditCardData.getId();
+        return null;
+    }
+
+    public boolean isApproved() {
+        if (creditCardData != null && creditCardData.getStatus() != null) {
+            return "approved".equalsIgnoreCase(creditCardData.getStatus());
+        }
+        return false;
+    }
 }
