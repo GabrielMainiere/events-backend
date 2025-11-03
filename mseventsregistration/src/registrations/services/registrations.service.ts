@@ -27,6 +27,17 @@ export class RegistrationService {
       throw new Error('User not found');
     }
 
+    await this.registrationRepo.createUser({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      cpf: user.cpf,
+      birthDate: user.birthDate,
+      phone: user.phone,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
     const event = await this.registrationRepo.findEventById(eventId);
     if (!event) throw new Error('Event not found');
 

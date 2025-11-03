@@ -40,6 +40,20 @@ model tb_events_registration {
   updated_at          DateTime @updatedAt
 
   registered_event    tb_registered_event @relation(fields: [registered_event_id], references: [id], name: "EventRegistrations")
+  user                tb_user @relation(fields: [user_id], references: [id])
+}
+
+model tb_user {
+  id        String @id
+  name      String
+  email     String
+  cpf       String
+  birthDate DateTime?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  registrations tb_events_registration[]
 }
 
 enum RegistrationStatus {
