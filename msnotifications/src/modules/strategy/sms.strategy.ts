@@ -8,7 +8,7 @@ export class SmsStrategy implements INotificationStrategy {
 
   async send(notification: NotificationLog): Promise<void> {
     this.logger.log(
-      `MOCK Enviando SMS para: ${
+      `[MOCK] Enviando SMS para: ${
         notification.recipient_address
       } com payload: ${JSON.stringify(notification.payload)}`,
     );

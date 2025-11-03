@@ -3,4 +3,5 @@ export interface PaymentNotificationRequest {
   recipientAddress: string;
   paymentId: string;
   payloadJson: string;
+  templateName?: string;
 }
