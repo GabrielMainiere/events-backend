@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PrismaSingleton } from 'src/core/prismaSingleton';
 import { IRegistrationRepository } from './IRegistration.repository';
 import { Registration } from '../entities/registration.entity';
-import { RegistrationStatus, tb_registered_event } from "@prisma/client";
+import { RegistrationStatus, tb_registered_event, tb_user  } from "@prisma/client";
 import { RegistrationMapper } from 'src/mappers/registrationMapper';
 
 @Injectable()
 export class RegistrationRepository implements IRegistrationRepository {
     private prisma = PrismaSingleton.getInstance();
 
-    async create(data: { userId: string; eventId: string; status: string }): Promise<Registration> {
+    async createRegistration(data: { userId: string; eventId: string; status: string }): Promise<Registration> {
         const result = await this.prisma.tb_events_registration.create({
         data: {
             user_id: data.userId,
@@ -19,6 +19,14 @@ export class RegistrationRepository implements IRegistrationRepository {
         });
 
         return RegistrationMapper.toEntity(result);
+    }
+
+    async createUser(user: tb_user ): Promise<tb_user> {
+        return this.prisma.tb_user.upsert({
+        where: { id: user.id },
+        update: { ...user },
+        create: { ...user },
+        });
     }
 
     async findByUserAndEvent(userId: string, eventId: string): Promise<Registration | null> {

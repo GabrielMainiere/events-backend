@@ -1,14 +1,18 @@
-import { tb_registered_event } from "@prisma/client";
+import { tb_registered_event, tb_user } from "@prisma/client";
 import { Registration } from "../entities/registration.entity";
 
 export interface IRegistrationRepository {
-    create(data: {
+    createRegistration(data: {
         userId: string;
         eventId: string;
         status: string;
     }): Promise<Registration>;
 
+    createUser(user: tb_user): Promise<tb_user>;
+
     findByUserAndEvent(userId: string, eventId: string): Promise<Registration | null>;
+
     countByEvent(eventId: string): Promise<number>;
+    
     findEventById(eventId: string): Promise<tb_registered_event | null>;
 }

@@ -11,7 +11,7 @@ export class PaidRegistrationStrategy implements IRegistrationStrategy {
     @Inject('IRegistrationRepository') private readonly registrationRepo: IRegistrationRepository,) {}
 
   async execute(userId: string, event: tb_registered_event): Promise<Registration> {
-    const created = await this.registrationRepo.create({
+    const created = await this.registrationRepo.createRegistration({
         userId,
         eventId: event.id,
         status: RegistrationStatus.WAITING_PAYMENT,
