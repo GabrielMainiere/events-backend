@@ -5,6 +5,7 @@ import { INotificationStrategy } from 'src/common/interfaces/iNotificationStateg
 import { SmsStrategy } from '../strategy/sms.strategy';
 import { PerformanceLogDecorator } from 'src/modules/decorator/performance-log.decorator';
 import { AuditLogDecorator } from 'src/modules/decorator/audit-log.decorator';
+import { PushStrategy } from '../strategy/push.strategy';
 
 @Injectable()
 export class NotificationFactory {
@@ -13,6 +14,7 @@ export class NotificationFactory {
   constructor(
     private readonly emailStrategy: EmailStrategy,
     private readonly smsStrategy: SmsStrategy,
+    private readonly pushStrategy: PushStrategy,
     private readonly auditDecorator: AuditLogDecorator,
     private readonly performanceDecorator: PerformanceLogDecorator,
   ) {
@@ -22,6 +24,7 @@ export class NotificationFactory {
   private registerStrategies(): void {
     this.strategies.set(NotificationChannel.EMAIL, this.emailStrategy);
     this.strategies.set(NotificationChannel.SMS, this.smsStrategy);
+    this.strategies.set(NotificationChannel.PUSH, this.pushStrategy);
   }
 
   public getStrategy(channel: NotificationChannel): INotificationStrategy {
