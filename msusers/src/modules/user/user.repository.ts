@@ -1,8 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common'
 
 import { PRISMA_CLIENT } from 'src/core/constants'
-import { UserCreateInput, UserUpdateInput } from 'generated/prisma/models'
-import { PrismaClient } from 'generated/prisma/client'
+import { PrismaClient, Prisma } from 'generated/prisma'
+
+type UserCreateInput = Prisma.UserCreateInput
+type UserUpdateInput = Prisma.UserUpdateInput
 
 @Injectable()
 export class UserRepository {

@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common'
 
 import { UserRepository } from './user.repository'
-import { UserCreateInput, UserUpdateInput } from 'generated/prisma/models'
+import { Prisma } from 'generated/prisma'
 import { sign } from 'jsonwebtoken'
+
+type UserCreateInput = Prisma.UserCreateInput
+type UserUpdateInput = Prisma.UserUpdateInput
 import { environment } from 'src/core/environment'
 import { hash, compare } from 'bcrypt'
 import { CreateUserDto } from './dto/create-user.dto'

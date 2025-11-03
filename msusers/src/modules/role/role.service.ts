@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { RoleRepository } from './role.repository'
 import { CreateRoleInput, UpdateRoleInput } from 'src/types/graphql'
-import { RoleUpdateInput } from 'generated/prisma/models'
+import { Prisma } from 'generated/prisma'
+
+type RoleUpdateInput = Prisma.RoleUpdateInput
 
 @Injectable()
 export class RoleService {

@@ -9,7 +9,7 @@ RUN npm ci
 
 COPY . .
 
-ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5432/msnotifications?schema=public"
+ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5434/msnotifications?schema=public"
 ENV DATABASE_URL=$DATABASE_URL
 
 RUN npx prisma generate

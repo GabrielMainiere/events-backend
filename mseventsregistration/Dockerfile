@@ -9,7 +9,7 @@ RUN npm ci
 
 COPY . .
 
-ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5435/msevents?schema=public"
+ARG DATABASE_URL="postgresql://postgres:postgres@localhost:5436/mseventsregistration?schema=public"
 ENV DATABASE_URL=$DATABASE_URL
 
 RUN npx prisma generate
