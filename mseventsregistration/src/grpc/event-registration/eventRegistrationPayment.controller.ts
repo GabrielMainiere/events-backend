@@ -1,8 +1,8 @@
 import { Controller } from "@nestjs/common";
 import { GrpcMethod } from "@nestjs/microservices";
 import { EventsRegistrationService } from "../event-registration/eventsRegistration.service";
-import type { IGetEventByIdRequest } from "./interfaces/IGetEventByIdRequest";
-import type { IGetEventByIdResponse } from "./interfaces/IGetEventByIdResponse";
+import type { IGetRegistrationRequest } from "./interfaces/IGetRegistrationRequest";
+import type { IGetRegistrationResponse } from "./interfaces/IGetRegistrationResponse";
 import type { IPaymentUpdateRequest } from "./interfaces/IPaymentUpdateRequest";
 import { IPaymentUpdateResponse } from "./interfaces/IPaymentUpdateResponse";
 
@@ -10,9 +10,9 @@ import { IPaymentUpdateResponse } from "./interfaces/IPaymentUpdateResponse";
 export class EventRegistrationPaymentsGrpcController {
   constructor(private readonly service: EventsRegistrationService) {}
 
-  @GrpcMethod('EventRegistrationPaymentsService', 'GetEventById')
-  async getEventById(data: IGetEventByIdRequest): Promise<IGetEventByIdResponse> {
-    return this.service.getEventById({ id: data.id });
+  @GrpcMethod('EventRegistrationPaymentsService', 'GetRegistration')
+  async getRegistration(data: IGetRegistrationRequest): Promise<IGetRegistrationResponse> {
+    return this.service.getRegistration(data);
   }
 
   @GrpcMethod('EventRegistrationPaymentsService', 'ReceivePaymentUpdate')

@@ -1,14 +1,14 @@
-export interface IGetEventByIdResponse {
+export interface IGetRegistrationResponse {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   startAt: string;
   endAt: string;
-  price?: number;
-  saleStartAt?: string;
-  saleEndAt?: string;
+  price: number;
+  saleStartAt: string;
+  saleEndAt: string;
   addressStreet: string;
-  addressNumber?: string;
+  addressNumber: string;
   addressCity: string;
   addressState: string;
   addressZipcode: string;
@@ -20,4 +20,7 @@ export interface IGetEventByIdResponse {
   createdAt: string;
   updatedAt: string;
   hasVacancy: boolean;
+  name: string;
+  email: string;
+  cpf: string;
 }
