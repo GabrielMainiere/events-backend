@@ -3,7 +3,7 @@ syntax = "proto3";
 package eventregistration.payments;
 
 service EventRegistrationPaymentsService {
-    rpc GetEventById(GetEventByIdRequest) returns (GetEventByIdResponse);
+    rpc GetRegistration(GetRegistrationRequest) returns (GetRegistrationResponse);
     rpc ReceivePaymentUpdate(PaymentUpdateRequest) returns (PaymentUpdateResponse);
 }
 
@@ -12,11 +12,12 @@ enum PaymentStatus {
     REJECTED = 1;
 }
 
-message GetEventByIdRequest {
-    string id = 1;
+message GetRegistrationRequest {
+    string userId = 1;
+    string eventId = 2;
 }
 
-message GetEventByIdResponse {
+message GetRegistrationResponse {
     string id = 1;
     string title = 2;
     string description = 3;
@@ -38,7 +39,9 @@ message GetEventByIdResponse {
     string createdAt = 19;
     string updatedAt = 20;
     bool hasVacancy = 21;
+    string cpf = 22;
 }
+
 
 message PaymentUpdateRequest {
     string eventId = 1;

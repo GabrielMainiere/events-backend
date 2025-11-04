@@ -1,4 +1,4 @@
-export interface IGetEventByIdResponse {
+export interface IGetRegistrationResponse {
   id: string;
   title: string;
   description?: string;
@@ -20,4 +20,5 @@ export interface IGetEventByIdResponse {
   createdAt: string;
   updatedAt: string;
   hasVacancy: boolean;
+  cpf: string;
 }
