@@ -175,7 +175,27 @@ services:
       KONG_ANONYMOUS_REPORTS: 'off'
       KONG_PLUGINS: 'bundled,jwt-claims-injector'
     volumes:
-      - ./.env:/tmp/.env:ro
+      - ./gateway/kong.yml:/usr/local/kong/declarative/kong.yml.template:ro
+      - ./.env:/.env:ro
+    command:
+      - sh
+      - -c
+      - |
+        echo "=== Starting Kong configuration ==="
+        if [ ! -f /.env ]; then
+          echo "Error: .env not found"
+          exit 1
+        fi
+        echo "Loading .env file..."
+        . /.env
+        echo "Generating kong.yml from template..."
+        sed -e "s|__JWT_KEY__|$$JWT_KEY|g" \
+            -e "s|__JWT_SECRET__|$$JWT_SECRET|g" \
+            -e "s|__JWT_ALGORITHM__|$$JWT_ALGORITHM|g" \
+            /usr/local/kong/declarative/kong.yml.template > /usr/local/kong/declarative/kong.yml
+        echo "Config generated successfully!"
+        echo "Starting Kong..."
+        exec /usr/local/bin/kong start --v
     networks:
       - events-backend
     ports:
