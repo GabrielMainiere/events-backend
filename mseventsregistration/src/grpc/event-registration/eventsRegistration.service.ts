@@ -9,6 +9,7 @@ import { IPaymentUpdateRequest } from "./interfaces/IPaymentUpdateRequest";
 import { IPaymentUpdateResponse } from "./interfaces/IPaymentUpdateResponse";
 import { RegistrationStatus } from "@prisma/client";
 import { PaymentStatusMapper } from "src/mappers/paymentStatusMapper";
+import { EventRegistrationMapper } from "src/mappers/getRegistrationMapper";
 
 @Injectable()
 export class EventsRegistrationService implements IEventRegistrationService {
@@ -55,30 +56,7 @@ export class EventsRegistrationService implements IEventRegistrationService {
         const totalRegistrations = await this.repository.countRegistrations(event.id);
         const hasVacancy = totalRegistrations < event.capacity;
 
-        return {
-            id: event.id,
-            title: event.title,
-            description: event.description ?? '',
-            startAt: event.start_at.toISOString(),
-            endAt: event.end_at.toISOString(),
-            price: event.price ?? 0,
-            saleStartAt: event.sale_start_at?.toISOString() ?? '',
-            saleEndAt: event.sale_end_at?.toISOString() ?? '',
-            addressStreet: event.address_street,
-            addressNumber: event.address_number ?? '',
-            addressCity: event.address_city,
-            addressState: event.address_state,
-            addressZipcode: event.address_zipcode,
-            addressCountry: event.address_country,
-            capacity: event.capacity,
-            isFree: event.is_free,
-            eventType: event.event_type,
-            status: event.status,
-            createdAt: event.created_at.toISOString(),
-            updatedAt: event.updated_at.toISOString(),
-            hasVacancy,
-            cpf: user.cpf,
-        };
+        return EventRegistrationMapper.toGetRegistrationResponse(event, user, hasVacancy);
     }
 
     async receivePaymentUpdate(data: IPaymentUpdateRequest): Promise<IPaymentUpdateResponse> {
