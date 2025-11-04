@@ -4,9 +4,9 @@ _format_version: "2.1"
 consumers:
   - username: api-client
     jwt_secrets:
-      - key: "${JWT_KEY}"
-        secret: "${JWT_SECRET}"
-        algorithm: "${JWT_ALGORITHM}"
+      - key: ${JWT_KEY}
+        secret: ${JWT_SECRET}
+        algorithm: ${JWT_ALGORITHM}
 
 services:
   - name: msevents

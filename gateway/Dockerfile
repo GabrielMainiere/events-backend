@@ -18,4 +18,3 @@ RUN chown -R kong:kong /usr/local/share/lua/5.1/kong/plugins && \
 USER kong
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["/usr/local/bin/kong", "start", "--v"]

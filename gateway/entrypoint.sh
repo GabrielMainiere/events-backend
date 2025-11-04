@@ -9,4 +9,7 @@ fi
 envsubst < /usr/local/kong/declarative/kong.yml.template > /usr/local/kong/declarative/kong.yml
 
 # Inicia o Kong
-exec "$@"
+/usr/local/bin/kong start --v
+
+# Mantém o container vivo seguindo os logs
+tail -f /usr/local/kong/logs/error.log
