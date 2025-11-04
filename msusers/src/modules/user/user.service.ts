@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 
 import { UserRepository } from './user.repository'
-import { Prisma } from 'generated/prisma'
+import { Prisma, Role } from 'generated/prisma'
 import { sign } from 'jsonwebtoken'
 
 type UserCreateInput = Prisma.UserCreateInput
@@ -25,7 +25,7 @@ export class UserService {
     }
 
     const user = await this.userRepository.create(serializedCreateUserInput)
-    const token = this.getToken(user.id, user.roles[0].name)
+    const token = this.getToken(user.id, user.roles)
     return { email: user.email, name: user.name, roles: user.roles, token }
   }
 
@@ -61,12 +61,12 @@ export class UserService {
       throw new Error('Credenciais inválidas ou usuário não encontrado.')
     }
 
-    const token = this.getToken(user.id, user.roles[0].name)
+    const token = this.getToken(user.id, user.roles)
     return { email: user.email, name: user.name, roles: user.roles, token }
   }
 
-  private getToken(userId: string, roleName: string) {
-    return sign({ id: userId, roleName }, environment.jwtPass, {
+  private getToken(userId: string, roles: Role[]) {
+    return sign({ id: userId, roleNames: roles.map(role => role.name) }, environment.jwtPass, {
       expiresIn: '8h',
     })
   }
