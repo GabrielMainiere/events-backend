@@ -25,7 +25,7 @@ export class UserService {
     }
 
     const user = await this.userRepository.create(serializedCreateUserInput)
-    const token = this.getToken(user.id)
+    const token = this.getToken(user.id, user.roles[0].name)
     return { email: user.email, name: user.name, roles: user.roles, token }
   }
 
@@ -61,12 +61,12 @@ export class UserService {
       throw new Error('Credenciais inválidas ou usuário não encontrado.')
     }
 
-    const token = this.getToken(user.id)
+    const token = this.getToken(user.id, user.roles[0].name)
     return { email: user.email, name: user.name, roles: user.roles, token }
   }
 
-  private getToken(userId: string) {
-    return sign({ id: userId }, environment.jwtPass, {
+  private getToken(userId: string, roleName: string) {
+    return sign({ id: userId, roleName }, environment.jwtPass, {
       expiresIn: '8h',
     })
   }
