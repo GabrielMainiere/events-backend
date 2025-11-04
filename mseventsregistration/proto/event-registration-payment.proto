@@ -39,7 +39,9 @@ message GetRegistrationResponse {
     string createdAt = 19;
     string updatedAt = 20;
     bool hasVacancy = 21;
-    string cpf = 22;
+    string name = 22;
+    string email = 23;
+    string cpf = 24;
 }
 
 

@@ -29,6 +29,8 @@ export class EventRegistrationMapper {
       createdAt: event.created_at.toISOString(),
       updatedAt: event.updated_at.toISOString(),
       hasVacancy,
+      name: user.name,
+      email: user.email,
       cpf: user.cpf,
     };
   }
