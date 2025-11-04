@@ -66,7 +66,11 @@ export class UserService {
   }
 
   private getToken(userId: string, roles: Role[]) {
-    return sign({ id: userId, roleNames: roles.map(role => role.name) }, environment.jwtPass, {
+    return sign({ 
+      iss: 'events-api',
+      id: userId, 
+      roleNames: roles.map(role => role.name) 
+    }, environment.jwtPass, {
       expiresIn: '8h',
     })
   }

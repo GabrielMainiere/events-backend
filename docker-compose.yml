@@ -162,17 +162,20 @@ services:
     restart: unless-stopped
 
   kong:
-    image: kong:3.4
+    build: ./gateway
     container_name: kong
     restart: unless-stopped
+    env_file:
+      - ./.env
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
       KONG_PROXY_LISTEN: '0.0.0.0:8000'
       KONG_ADMIN_LISTEN: '0.0.0.0:8001'
       KONG_ANONYMOUS_REPORTS: 'off'
+      KONG_PLUGINS: 'bundled,jwt-claims-injector'
     volumes:
-      - ./gateway/kong.yml:/usr/local/kong/declarative/kong.yml:ro
+      - ./.env:/tmp/.env:ro
     networks:
       - events-backend
     ports:
