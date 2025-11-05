@@ -15,4 +15,8 @@ export interface IRegistrationRepository {
     countByEvent(eventId: string): Promise<number>;
     
     findEventById(eventId: string): Promise<tb_registered_event | null>;
+
+    findRegistrationById(registrationId: string): Promise<Registration | null>;
+
+    updateRegistrationStatus(registrationId: string, status: string): Promise<Registration>;
 }

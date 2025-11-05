@@ -46,4 +46,25 @@ export class RegistrationRepository implements IRegistrationRepository {
     async findEventById(eventId: string): Promise<tb_registered_event | null> {
         return this.prisma.tb_registered_event.findUnique({ where: { id: eventId } });
     }
+
+    async findRegistrationById(registrationId: string): Promise<Registration | null> {
+        const result = await this.prisma.tb_events_registration.findUnique({
+            where: { id: registrationId },
+            include: { registered_event: true },
+        });
+
+        return result ? RegistrationMapper.toEntity(result) : null;
+    }
+
+    async updateRegistrationStatus(registrationId: string, status: string): Promise<Registration> {
+        const result = await this.prisma.tb_events_registration.update({
+            where: { id: registrationId },
+            data: { 
+                status: status as RegistrationStatus,
+                updated_at: new Date(),
+            },
+        });
+
+        return RegistrationMapper.toEntity(result);
+    }
 }

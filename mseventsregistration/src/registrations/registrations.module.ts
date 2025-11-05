@@ -4,6 +4,9 @@ import { RegistrationRepository } from './repositories/registration.repository';
 import { EventCapacityValidator } from './services/validators/validateCapacity';
 import { UserRegisteredValidator } from './services/validators/userRegisteredValidation';
 import { IRegistrationValidator } from './services/validators/IRegistrationValidator';
+import { CheckInStatusValidator } from './services/validators/checkInStatusValidator';
+import { CheckInDateValidator } from './services/validators/checkInDateValidator';
+import { ICheckInValidator } from './services/validators/ICheckInValidator';
 import { RegistrationStrategyService } from './strategies/registrationStrategyService';
 import { FreeRegistrationStrategy } from './strategies/freeRegistrationStrategy';
 import { PaidRegistrationStrategy } from './strategies/paidRegistrationStrategy';
@@ -34,6 +37,18 @@ import { RegistrationService } from './services/registrations.service';
       ],
       inject: [EventCapacityValidator, UserRegisteredValidator],
     },
+    
+    CheckInStatusValidator,
+    CheckInDateValidator,
+    {
+      provide: 'ICheckInValidators',
+      useFactory: (status: CheckInStatusValidator, date: CheckInDateValidator): ICheckInValidator[] => [
+        status,
+        date,
+      ],
+      inject: [CheckInStatusValidator, CheckInDateValidator],
+    },
+
     FreeRegistrationStrategy,
     PaidRegistrationStrategy,
     RegistrationStrategyService,
