@@ -7,6 +7,7 @@ import { join } from 'path'
 import { RoleModule } from './modules/role/role.module'
 import { DatabaseModule } from './modules/database/database.module'
 import { UserModule } from './modules/user/user.module'
+import { GrpcClientsModule } from './modules/clients/grpc-clients.module'
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UserModule } from './modules/user/user.module'
     }),
     RoleModule,
     UserModule,
+    GrpcClientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
