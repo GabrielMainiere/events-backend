@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
-import { EventRepository } from '../repositories/events.repository';
 import { CreateEventInput } from '../dto/create-event.input';
 import { UpdateEventInput } from '../dto/update-event-input';
 import { Event } from '../entities/event.entity';
@@ -11,12 +10,14 @@ import { EventDirector } from '../builder/eventDirector';
 import { AddressProps } from '../builder/IEventsBuilder';
 import type { IEventNotifier } from './IEventNotifier';
 import type { IEventRepository } from '../repositories/IEventRepository';
+import type { IEventRegistrationCount } from 'src/grpc/interfaces/IEventRegistrationCount';
 
 @Injectable()
 export class EventsService {
   constructor(
     @Inject('IEventRepository') private readonly repository: IEventRepository,
-    @Inject('IEventNotifier') private readonly notifier: IEventNotifier
+    @Inject('IEventNotifier') private readonly notifier: IEventNotifier,
+    @Inject('IEventRegistrationCount') private readonly Registrationcount : IEventRegistrationCount
   ) {}
 
   async createEvent(input: CreateEventInput): Promise<Event> {
@@ -101,7 +102,14 @@ export class EventsService {
   async cancelEvent(id: string): Promise<Event> {
     const event = await this.repository.getById(id);
     if (!event) throw new NotFoundException(`Event with id ${id} not found`);
-    if (event.status === EventStatus.CANCELLED) throw new BadRequestException(`Event already cancelled`);
+    if (event.status === EventStatus.CANCELED) throw new BadRequestException(`Event already canceled`);
+    if (!event.isFree) throw new BadRequestException('Only free events can be canceled');
+  
+    const { count } = await this.Registrationcount.countEventRegistrations({ eventId: id });
+
+    if (count > 0) {
+      throw new BadRequestException(`Cannot cancel event with ${count} registered users`);
+    }
 
     const updated = await this.repository.cancel(id);
     await this.notifier.notifyCancelled(updated);

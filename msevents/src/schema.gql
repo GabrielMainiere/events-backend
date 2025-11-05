@@ -41,7 +41,7 @@ enum EventStatus {
   ARCHIVED
   CONFIRMED
   WAITING_PAYMENT
-  CANCELLED
+  CANCELED
 }
 
 """Tipo do evento"""
