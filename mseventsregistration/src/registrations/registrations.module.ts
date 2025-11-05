@@ -13,6 +13,7 @@ import { PaidRegistrationStrategy } from './strategies/paidRegistrationStrategy'
 import { GrpcModule } from 'src/grpc/grpc.module';
 import { UsersClient } from 'src/grpc/users/client/userClient';
 import { RegistrationService } from './services/registrations.service';
+import { ValidateCanceledEvent } from './services/validators/validateCanceledEvent';
 
 @Module({
   imports: [GrpcModule],
@@ -29,13 +30,15 @@ import { RegistrationService } from './services/registrations.service';
 
     EventCapacityValidator,
     UserRegisteredValidator,
+    ValidateCanceledEvent,
     {
       provide: 'IRegistrationValidators',
-      useFactory: (capacity: EventCapacityValidator, already: UserRegisteredValidator): IRegistrationValidator[] => [
+      useFactory: (capacity: EventCapacityValidator, already: UserRegisteredValidator, canceled: ValidateCanceledEvent,): IRegistrationValidator[] => [
         capacity,
         already,
+        canceled,
       ],
-      inject: [EventCapacityValidator, UserRegisteredValidator],
+      inject: [EventCapacityValidator, UserRegisteredValidator, ValidateCanceledEvent],
     },
     
     CheckInStatusValidator,
