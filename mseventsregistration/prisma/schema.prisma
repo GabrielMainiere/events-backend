@@ -60,6 +60,7 @@ enum RegistrationStatus {
   CONFIRMED
   WAITING_PAYMENT
   CANCELED
+  CHECKED_IN
 }
 
 enum EventStatus {

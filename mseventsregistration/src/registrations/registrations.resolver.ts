@@ -1,6 +1,7 @@
 import { Resolver, Mutation, Query, Args } from '@nestjs/graphql';
 import { Registration } from './entities/registration.entity';
 import { CreateRegistrationInput } from './dto/create-registration.input';
+import { CheckInRegistrationInput } from './dto/check-in-registration.input';
 import { RegistrationService } from './services/registrations.service';
 
 @Resolver(() => Registration)
@@ -11,6 +12,13 @@ export class RegistrationResolver {
   async registerUser(
     @Args('data') data: CreateRegistrationInput,): Promise<Registration> {
       return this.registrationService.registerUser(data.userId, data.eventId);
+  }
+
+  @Mutation(() => Registration)
+  async checkInUser(
+    @Args('data') data: CheckInRegistrationInput,
+  ): Promise<Registration> {
+    return this.registrationService.checkInUser(data.userId, data.eventId);
   }
 
   @Query(() => String)
