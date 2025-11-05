@@ -61,6 +61,13 @@ export class EventsRegistrationRepository {
     });
   }
 
+  async findUserById(id: string) {
+    return this.prisma.tb_user.findUnique({
+      where: { id },
+    });
+  }
+
+
   async countRegistrations(eventId: string): Promise<number> {
     return this.prisma.tb_events_registration.count({
       where: { 

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 
 import { UserRepository } from './user.repository'
-import { Prisma, User } from 'generated/prisma'
+import { Prisma, User, Role } from 'generated/prisma'
 import { sign } from 'jsonwebtoken'
 
 type UserCreateInput = Prisma.UserCreateInput
@@ -85,10 +85,18 @@ export class UserService {
     return { id: user.id, email: user.email, name: user.name, roles: user.roles, token }
   }
 
-  private getToken(userId: string) {
-    return sign({ id: userId }, environment.jwtPass, {
-      expiresIn: '8h',
-    })
+  private getToken(userId: string, roles: Role[]) {
+    return sign(
+      {
+        iss: 'events-api',
+        id: userId,
+        roleNames: roles.map(role => role.name),
+      },
+      environment.jwtPass,
+      {
+        expiresIn: '8h',
+      }
+    )
   }
 
   private async getHashedPassword(password: string) {

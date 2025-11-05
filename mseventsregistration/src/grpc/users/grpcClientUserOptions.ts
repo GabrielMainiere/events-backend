@@ -7,6 +7,6 @@ export const grpcClientUserOptions: ClientOptions = {
   options: {
     package: 'msusers.user',
     protoPath: join(__dirname, '../../../proto/msusers.proto'),
-    url: `localhost:${environment.grpcPortMsusers}`,
+    url: `${environment.grpcUsers}`,
   },
 };

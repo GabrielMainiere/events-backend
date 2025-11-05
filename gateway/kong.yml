@@ -1,4 +1,13 @@
 _format_version: "2.1"
+
+# Consumidores JWT
+consumers:
+  - username: api-client
+    jwt_secrets:
+      - key: __JWT_KEY__
+        secret: __JWT_SECRET__
+        algorithm: __JWT_ALGORITHM__
+
 services:
   - name: msevents
     url: http://msevents:3000
@@ -7,6 +16,12 @@ services:
         paths:
           - /msevents
         strip_path: true
+    plugins:
+      - name: jwt
+        config:
+          key_claim_name: "iss"
+          secret_is_base64: false
+      - name: jwt-claims-injector    
   - name: mseventsregistration
     url: http://mseventsregistration:3000
     routes:
@@ -14,6 +29,12 @@ services:
         paths:
           - /mseventsregistration
         strip_path: true
+    plugins:
+      - name: jwt
+        config:
+          key_claim_name: "iss"
+          secret_is_base64: false
+      - name: jwt-claims-injector    
   - name: msnotifications
     url: http://msnotifications:3000
     routes:
@@ -21,6 +42,12 @@ services:
         paths:
           - /msnotifications
         strip_path: true
+    plugins:
+      - name: jwt
+        config:
+          key_claim_name: "iss"
+          secret_is_base64: false
+      - name: jwt-claims-injector    
   - name: mspayments
     url: http://mspayments:8080
     routes:
@@ -28,6 +55,13 @@ services:
         paths:
           - /mspayments
         strip_path: true
+    plugins:
+      - name: jwt
+        config:
+          key_claim_name: "iss"
+          secret_is_base64: false
+      - name: jwt-claims-injector
+          
   - name: msusers
     url: http://msusers:3000
     routes:
