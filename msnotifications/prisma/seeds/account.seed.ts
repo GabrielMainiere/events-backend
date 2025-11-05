@@ -303,11 +303,10 @@ export async function seedAccountTemplates(prisma: PrismaClient) {
             
             <div class="verification-box">
               <p style="margin: 0 0 20px 0; font-size: 16px; color: #1976D2;">
-                Clique no botão abaixo para verificar seu email:
+                O seu código de verificação é:
               </p>
-              <a href="{{verificationLink}}" class="btn">Verificar Minha Conta</a>
-              <p style="margin: 20px 0 0 0; font-size: 14px; color: #666;">
-                Este link é válido por <strong>24 horas</strong>
+              <p style="font-size: 24px; font-weight: bold; color: #1976D2;">
+                {{userActivationCode}}
               </p>
             </div>
             
@@ -318,13 +317,6 @@ export async function seedAccountTemplates(prisma: PrismaClient) {
               </p>
             </div>
             
-            <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px; font-size: 13px; color: #666;">
-              <p style="margin: 0;"><strong>Problemas com o botão?</strong></p>
-              <p style="margin: 5px 0 0 0;">
-                Copie e cole este link no seu navegador:<br>
-                <span style="word-break: break-all; color: #2196F3;">{{verificationLink}}</span>
-              </p>
-            </div>
           </div>
           
           <div class="footer">
