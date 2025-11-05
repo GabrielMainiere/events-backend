@@ -24,8 +24,18 @@ export class EventsRegistrationService implements IEventRegistrationService {
     }
 
     async notifyEventCancelled(data: IEventNotificationRequest): Promise<IEventNotificationResponse> {
-        return this.handleUpsert(data, 'CANCELLED');
+        return this.handleUpsert(data, 'CANCELED');
     }
+
+    async countEventRegistrations(data: { eventId: string }): Promise<{ count: number }> {
+        const { eventId } = data;
+
+        if (!eventId) throw new Error('eventId must be provided');
+
+        const count = await this.repository.countRegistrations(eventId);
+        return { count };
+    }
+
 
     async getRegistration(data: IGetRegistrationRequest): Promise<IGetRegistrationResponse> {
         const { userId, eventId } = data;
@@ -83,10 +93,16 @@ export class EventsRegistrationService implements IEventRegistrationService {
 
     private async handleUpsert(data: IEventNotificationRequest, action: string) {
         try {
-            await this.repository.upsertEvent(data);
-            return { success: true, message: `Event ${action} successfully`}
+        const existing = await this.repository.findById(data.id);
+        if (existing) {
+            await this.repository.updateEvent(data);
+        } else {
+            await this.repository.createEventIfNotExists(data);
+        }
+
+        return { success: true, message: `Event ${action} successfully` };
         } catch (error) {
-            return { success: false, message: `Failed to ${action} event: ${error.message}`}
+        return { success: false, message: `Failed to ${action} event: ${error.message}` };
         }
     }
 }

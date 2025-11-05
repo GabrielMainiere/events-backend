@@ -6,6 +6,15 @@ service EventRegistrationService {
     rpc NotifyEventCreated(EventNotificationRequest) returns (EventNotificationResponse);
     rpc NotifyEventUpdated(EventNotificationRequest) returns (EventNotificationResponse);
     rpc NotifyEventCancelled(EventNotificationRequest) returns (EventNotificationResponse);
+    rpc CountEventRegistrations(CountEventRegistrationsRequest) returns (CountEventRegistrationsResponse);
+}
+
+message CountEventRegistrationsRequest {
+    string eventId = 1;
+}
+
+message CountEventRegistrationsResponse {
+    int32 count = 1;
 }
 
 message EventNotificationRequest {

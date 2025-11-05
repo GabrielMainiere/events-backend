@@ -92,7 +92,7 @@ export class EventRepository implements IEventRepository{
     return this.prisma.tb_event.update({
       where: { id },
       data: {
-        status: EventStatus.CANCELLED,
+        status: EventStatus.CANCELED,
         updated_at: new Date(),
       },
       include: { address: true },

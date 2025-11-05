@@ -5,6 +5,7 @@ import { EventRepository } from './repositories/events.repository';
 import '../enum/registerEnums'
 import { GrpcModule } from 'src/grpc/grpc.module';
 import { EventsNotifier } from './services/eventsNotifier';
+import { EventRegistrationCount} from './services/eventsRegistrationCount';
 
 @Module({
   imports: [GrpcModule],
@@ -18,6 +19,10 @@ import { EventsNotifier } from './services/eventsNotifier';
     {
       provide: 'IEventNotifier',
       useClass: EventsNotifier,
+    },
+    {
+      provide: 'IEventRegistrationCount',
+      useClass: EventRegistrationCount
     },
   ],
   exports: [EventsService],

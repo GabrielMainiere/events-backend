@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { tb_registered_event, tb_events_registration, EventStatus, EventType, RegistrationStatus } from '@prisma/client'
+import { tb_registered_event, tb_events_registration, EventStatus, RegistrationStatus, EventType } from '@prisma/client'
 import { IEventNotificationRequest } from './interfaces/IEventRegistrationRequest';
 import { PrismaSingleton } from 'src/core/prismaSingleton';
 
@@ -7,13 +7,17 @@ import { PrismaSingleton } from 'src/core/prismaSingleton';
 export class EventsRegistrationRepository {
   private prisma = PrismaSingleton.getInstance();
 
-  async upsertEvent(data: IEventNotificationRequest): Promise<tb_registered_event> {
+  async createEventIfNotExists(data: IEventNotificationRequest) {
+    const existing = await this.prisma.tb_registered_event.findUnique({
+      where: { id: data.id },
+    });
     const eventStatus = data.status as EventStatus;
     const eventType = data.eventType as EventType;
 
-    return this.prisma.tb_registered_event.upsert({
-      where: { id: data.id },
-      update: {
+    if (!existing) {
+      return this.prisma.tb_registered_event.create({
+        data: {
+          id: data.id,
         title: data.title,
         description: data.description,
         start_at: new Date(data.startAt),
@@ -31,9 +35,18 @@ export class EventsRegistrationRepository {
         is_free: data.isFree,
         status: eventStatus,
         event_type: eventType,
-      },
-      create: {
-        id: data.id,
+        },
+      });
+    }
+  }
+
+  async updateEvent(data: IEventNotificationRequest) {
+    const eventStatus = data.status as EventStatus;
+    const eventType = data.eventType as EventType;
+
+    return this.prisma.tb_registered_event.update({
+      where: { id: data.id },
+      data: {
         title: data.title,
         description: data.description,
         start_at: new Date(data.startAt),
@@ -54,6 +67,14 @@ export class EventsRegistrationRepository {
       },
     });
   }
+
+  async updateEventStatus(id: string, status: EventStatus) {
+    return this.prisma.tb_registered_event.update({
+      where: { id },
+      data: { status },
+    });
+  }
+  
 
   async findById(id: string): Promise<tb_registered_event | null> {
     return this.prisma.tb_registered_event.findUnique({

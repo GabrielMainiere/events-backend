@@ -4,6 +4,7 @@ import { Client } from '@nestjs/microservices';
 import { grpcClientOptions } from 'src/grpc/grpcClientOptions';
 import { IEventNotificationRequest } from '../interfaces/IEventRegistrationRequest';
 import { IEventRegistrationService } from '../interfaces/IEventRegistrationService';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class EventRegistrationClient implements OnModuleInit {
@@ -27,5 +28,9 @@ export class EventRegistrationClient implements OnModuleInit {
 
   notifyEventCancelled(data: IEventNotificationRequest) {
     return this.service.notifyEventCancelled(data);
+  }
+
+  countEventRegistrations(data: { eventId: string }): Observable<{ count: number }> {
+    return this.service.countEventRegistrations(data);
   }
 }

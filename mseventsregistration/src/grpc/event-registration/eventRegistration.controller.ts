@@ -22,4 +22,10 @@ export class EventRegistrationGrpcController {
   async notifyEventCancelled(data: IEventNotificationRequest): Promise<IEventNotificationResponse> {
     return this.service.notifyEventCancelled(data);
   }
+
+  @GrpcMethod("EventRegistrationService", "CountEventRegistrations")
+  async countEventRegistrations(
+    data: { eventId: string } ): Promise<{ count: number }> {
+    return this.service.countEventRegistrations(data);
+  } 
 }
