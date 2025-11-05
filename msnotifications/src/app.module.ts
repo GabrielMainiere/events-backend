@@ -16,6 +16,7 @@ import './common/enum/notification-channel.enum';
 import './common/enum/notification-type.enum';
 import { UserPreferenceModule } from './modules/user-preference/user-preference.module';
 import { HealthModule } from './health/health.module';
+import { join } from 'path';
 
 
 @Module({
@@ -38,9 +39,10 @@ import { HealthModule } from './health/health.module';
     HealthModule,
     GraphQLModule.forRoot({
       driver: ApolloDriver,
-      autoSchemaFile: 'schema.gql',
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
       playground: true,
+      introspection: true,
     }),
   ],
   controllers: [],
