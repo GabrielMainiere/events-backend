@@ -37,7 +37,7 @@ export class NotificationTemplateService implements INotificationTemplateService
     return this.repository.update(id, data);
   }
   
-  async remove(id: string) {
+  async delete(id: string) {
     await this.validator.findByIdOrFail(id);
     return this.repository.delete(id);
   }

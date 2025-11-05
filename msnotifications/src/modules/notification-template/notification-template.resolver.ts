@@ -42,7 +42,7 @@ export class NotificationTemplateResolver {
   }
 
   @Mutation(() => NotificationTemplateEntity)
-  async removeNotificationTemplate(@Args('id') id: string) {
-    return this.templateService.remove(id);
+  async deleteNotificationTemplate(@Args('id') id: string) {
+    return this.templateService.delete(id);
   }
 }
