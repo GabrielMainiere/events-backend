@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer'
 import { IsEmail, IsISO8601, IsPhoneNumber, IsStrongPassword } from 'class-validator'
 
 export class CreateUserDto {
@@ -7,6 +8,7 @@ export class CreateUserDto {
   name: string
 
   @IsISO8601()
+  @Transform(({ value }) => new Date(value).toISOString())
   birthDatetime: string
 
   cpf: string

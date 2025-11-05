@@ -58,9 +58,10 @@ export interface IMutation {
     createRole(createRoleInput: CreateRoleInput): Role | Promise<Role>;
     updateRole(id: string, updateRoleInput: UpdateRoleInput): Role | Promise<Role>;
     deleteRole(id: string): string | Promise<string>;
-    createUser(createUserInput: CreateUserInput): AuthenticatedUser | Promise<AuthenticatedUser>;
+    createUser(createUserInput: CreateUserInput): CreatedUserResponse | Promise<CreatedUserResponse>;
     updateUser(id: string, updateUserInput: UpdateUserInput): User | Promise<User>;
     deleteUser(id: string): string | Promise<string>;
+    activateUser(activateUserId: string, activationCode: string): AuthenticatedUser | Promise<AuthenticatedUser>;
 }
 
 export interface User {
@@ -72,6 +73,13 @@ export interface User {
     phoneNumber: string;
     roles: Role[];
     deletedAt?: Nullable<string>;
+    isActive: boolean;
+    activationCode?: Nullable<string>;
+}
+
+export interface CreatedUserResponse {
+    id: string;
+    message: string;
 }
 
 export interface AuthenticatedUser {

@@ -7,6 +7,13 @@ type User {
   phoneNumber: String!
   roles: [Role!]!
   deletedAt: String
+  isActive: Boolean!
+  activationCode: String
+}
+
+type CreatedUserResponse {
+  id: ID!
+  message: String!
 }
 
 type AuthenticatedUser{
@@ -43,7 +50,8 @@ type Query {
 }
 
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): AuthenticatedUser!
+  createUser(createUserInput: CreateUserInput!): CreatedUserResponse!
   updateUser(id: ID!, updateUserInput: UpdateUserInput!): User!
   deleteUser(id: ID!): String!
+  activateUser(activateUserId: ID!, activationCode: String!): AuthenticatedUser!
 }

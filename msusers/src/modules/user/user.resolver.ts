@@ -40,4 +40,12 @@ export class UserResolver {
   async authenticateUser(@Args('email') email: string, @Args('password') password: string) {
     return await this.userService.authenticate(email, password)
   }
+
+  @Mutation('activateUser')
+  async activateUser(
+    @Args('activateUserId') activateUserId: string,
+    @Args('activationCode') activationCode: string
+  ) {
+    return await this.userService.activate(activateUserId, activationCode)
+  }
 }

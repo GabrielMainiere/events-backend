@@ -40,14 +40,22 @@ export class UserRepository {
   async deactivate(id: string) {
     const deletedUser = await this.prismaClient.user.update({
       where: { id },
-      data: { deletedAt: new Date() },
+      data: { deletedAt: new Date(), isActive: false },
     })
     return deletedUser.id
   }
 
   async findByEmail(email: string) {
     return await this.prismaClient.user.findUnique({
-      where: { email, deletedAt: null },
+      where: { email, deletedAt: null, isActive: true },
+      include: { roles: true },
+    })
+  }
+
+  async activate(id: string, activationCode: string) {
+    return await this.prismaClient.user.update({
+      where: { id, activationCode },
+      data: { isActive: true },
       include: { roles: true },
     })
   }
