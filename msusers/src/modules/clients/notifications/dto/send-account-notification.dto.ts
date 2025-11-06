@@ -1,4 +1,4 @@
-export class SendVerificationNotificationDto {
+export class SendAccountNotificationDto {
   userId: string
   recipientAddress: string
   payloadJson: string

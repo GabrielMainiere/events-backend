@@ -3,7 +3,7 @@ import { Client, ClientGrpc, Transport } from '@nestjs/microservices'
 import { join } from 'path'
 import { environment } from 'src/core/environment'
 import { INotificationsClientService } from './interfaces/INotificationsService'
-import { SendVerificationNotificationDto } from './dto/send-verification-notification.dto'
+import { SendAccountNotificationDto } from './dto/send-account-notification.dto'
 import { NotificationResponseDto } from './dto/notification-response.dto'
 import { Observable } from 'rxjs'
 
@@ -23,10 +23,18 @@ export class NotificationsClientService implements INotificationsClientService, 
     this.service = this.client.getService<INotificationsClientService>('NotificationService')
   }
   async sendVerificationNotification(
-    data: SendVerificationNotificationDto
+    data: SendAccountNotificationDto
   ): Promise<Observable<NotificationResponseDto>> {
     const resp = await this.service.sendVerificationNotification(data)
     resp.subscribe()
     return resp
+  }
+
+  async sendWelcomeNotification(
+    data: SendAccountNotificationDto
+  ): Promise<Observable<NotificationResponseDto>> {
+    const resp = await this.service.sendWelcomeNotification(data);
+    resp.subscribe();
+    return resp;
   }
 }
