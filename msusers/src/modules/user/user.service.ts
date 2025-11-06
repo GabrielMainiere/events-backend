@@ -81,6 +81,8 @@ export class UserService {
     const user = await this.userRepository.activate(id, activationCode)
     if (!user) throw new NotFoundException('Código de ativação inválido ou usuário não encontrado.')
 
+    await this.sendWelcomeEmail(user)
+
     const token = this.getToken(user.id, user.roles)
     return { id: user.id, email: user.email, name: user.name, roles: user.roles, token }
   }
@@ -110,5 +112,13 @@ export class UserService {
       payloadJson: JSON.stringify({ name: user.name, userActivationCode: user.activationCode }),
       templateName: NotificationsTemplateNames.ACCOUNT_VERIFICATION_EMAIL,
     })
+  }
+
+  private async sendWelcomeEmail(user: User) {
+    await this.notificationsClientService.sendWelcomeNotification({
+      userId: user.id,
+      recipientAddress: user.email,
+      payloadJson: JSON.stringify({ name: user.name })
+    });
   }
 }
