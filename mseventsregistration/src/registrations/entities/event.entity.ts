@@ -1,4 +1,5 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { GqlEventStatus, GqlEventType } from 'src/enum/registerEnum';
 
 @ObjectType()
 export class Event {
@@ -12,29 +13,53 @@ export class Event {
   description?: string;
 
   @Field()
-  start_at: Date;
+  startAt: Date;
 
   @Field()
-  end_at: Date;
+  endAt: Date;
+
+  @Field(() => Int, { nullable: true })
+  price?: number; //cents
 
   @Field({ nullable: true })
-  price?: number;
+  saleStartAt?: Date;
 
   @Field({ nullable: true })
-  sale_start_at?: Date;
+  saleEndAt?: Date;
+
+  @Field()
+  street: string;
+
+  @Field()
+  city: string;
+
+  @Field()
+  state: string;
 
   @Field({ nullable: true })
-  sale_end_at?: Date;
+  number?: string;
 
   @Field()
-  address_street: string;
+  zipcode: string;
 
   @Field()
-  address_city: string;
+  country: string;
 
   @Field()
-  address_state: string;
+  capacity: number;
 
   @Field()
-  address_zipcode: string;
+  isFree: boolean;
+
+  @Field(() => GqlEventStatus)
+  status: GqlEventStatus;
+
+  @Field(() => GqlEventType)
+  eventType: GqlEventType;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  updatedAt: Date;
 }
