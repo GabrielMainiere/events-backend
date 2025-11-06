@@ -1,10 +1,28 @@
 # -----------------------------
 # Types
 # -----------------------------
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  cpf: String!
+}
+
+type Event {
+  id: ID!
+  title: String!
+  description: String
+  startAt: String!
+  endAt: String!
+  price: Int! # valor em centavos
+  saleStartAt: String!
+  saleEndAt: String!
+}
+
 type Payment {
   id: ID!
-  eventId: String!
-  userDocument: String!
+  event: Event!
+  user: User!
   amount: Int!
   method: PaymentMethod!
   gateway: PaymentGateway!
@@ -27,6 +45,8 @@ type PaymentResponse {
   payment: Payment!
   pixData: PixData
   creditCardData: CreditCardData
+  transactionId: String
+  approved: Boolean!
 }
 
 # -----------------------------
@@ -54,8 +74,7 @@ enum PaymentStatus {
 # -----------------------------
 input CreatePaymentInput {
   eventId: String!
-  userDocument: String!
-  amount: Int!
+  userId: String!
   method: PaymentMethod!
   gateway: PaymentGateway!
   cardToken: String
@@ -70,6 +89,10 @@ type Query {
   payments: [Payment!]!
   paymentById(id: String!): Payment
   paymentsByEvent(eventId: String!): [Payment!]!
+  users: [User!]!
+  userById(id: String!): User
+  events: [Event!]!
+  eventById(id: String!): Event
 }
 
 # -----------------------------

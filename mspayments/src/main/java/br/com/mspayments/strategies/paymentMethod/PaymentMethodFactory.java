@@ -18,8 +18,8 @@ public class PaymentMethodFactory {
 
         return strategies.get(paymentMethod);
     }
-    public static PaymentMethodData createPaymentMethodData(CreatePaymentInput input) {
-        Payment payment = input.toPayment();
+    public static PaymentMethodData createPaymentMethodData(CreatePaymentInput input, br.com.mspayments.models.Event event, br.com.mspayments.models.User user) {
+        Payment payment = input.toPayment(event, user);
 
         if (payment.getMethod() == PaymentMethod.CREDIT_CARD) {
             String cardToken = input.getCardToken();

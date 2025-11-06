@@ -17,8 +17,16 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String eventId;
-    private String userDocument;
+
+    // Referências para as entidades Event e User
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     private Integer amount; // cents
     @Enumerated(EnumType.STRING)
     private PaymentMethod method;

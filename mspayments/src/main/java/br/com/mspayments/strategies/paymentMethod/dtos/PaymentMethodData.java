@@ -1,7 +1,9 @@
 package br.com.mspayments.strategies.paymentMethod.dtos;
 
 import br.com.mspayments.controllers.dtos.CreatePaymentInput;
+import br.com.mspayments.models.Event;
 import br.com.mspayments.models.Payment;
+import br.com.mspayments.models.User;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -27,8 +29,8 @@ public class PaymentMethodData {
         this.paymentMethodId = paymentMethodId;
     }
 
-    public static PaymentMethodData fromCreatePaymentInput(CreatePaymentInput input) {
-        Payment payment = input.toPayment();
+    public static PaymentMethodData fromCreatePaymentInput(CreatePaymentInput input, Event event, User user) {
+        Payment payment = input.toPayment(event, user);
         return new PaymentMethodData(
             payment,
             input.getCardToken(),
