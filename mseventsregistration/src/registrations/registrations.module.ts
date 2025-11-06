@@ -14,9 +14,10 @@ import { GrpcModule } from 'src/grpc/grpc.module';
 import { UsersClient } from 'src/grpc/users/client/userClient';
 import { RegistrationService } from './services/registrations.service';
 import { ValidateCanceledEvent } from './services/validators/validateCanceledEvent';
+import { NotificationsModule } from 'src/grpc/notifications/notifications.module';
 
 @Module({
-  imports: [GrpcModule],
+  imports: [GrpcModule, NotificationsModule],
   providers: [
 
     RegistrationResolver,
