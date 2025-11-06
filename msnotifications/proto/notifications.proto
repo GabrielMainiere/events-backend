@@ -8,6 +8,7 @@ service NotificationService {
   rpc SendPasswordResetNotification (AccountNotificationRequest) returns (NotificationResponse);
   
   rpc SendEventRegistrationNotification (EventNotificationRequest) returns (NotificationResponse);
+  rpc SendEventWaitinPaymentNotification (EventNotificationRequest) returns (NotificationResponse);
   rpc SendEventCancellationNotification (EventNotificationRequest) returns (NotificationResponse);
   rpc SendEventReminderNotification (EventNotificationRequest) returns (NotificationResponse);
 

@@ -2,7 +2,7 @@ import { IEventNotificationRequest } from "./interfaces/IEventRegistrationReques
 import { IEventNotificationResponse } from "./interfaces/IEventRegistrationResponse";
 import { IEventRegistrationService } from "./interfaces/IEventRegistrationService";
 import { EventsRegistrationRepository } from "./eventsRegistration.repository";
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { IGetRegistrationRequest } from "./interfaces/IGetRegistrationRequest";
 import { IGetRegistrationResponse } from "./interfaces/IGetRegistrationResponse";
 import { IPaymentUpdateRequest } from "./interfaces/IPaymentUpdateRequest";
@@ -10,13 +10,15 @@ import { IPaymentUpdateResponse } from "./interfaces/IPaymentUpdateResponse";
 import { RegistrationStatus } from "@prisma/client";
 import { PaymentStatusMapper } from "src/mappers/paymentStatusMapper";
 import { EventRegistrationMapper } from "src/mappers/getRegistrationMapper";
-import { RegistrationService } from "src/registrations/services/registrations.service";
+import { EventNotificationService } from "../notifications/event-notification.service";
+import type { IRegistrationRepository } from "src/registrations/repositories/IRegistration.repository";
 
 @Injectable()
 export class EventsRegistrationService implements IEventRegistrationService {
     constructor(
         private readonly repository : EventsRegistrationRepository,
-        private readonly registrationService: RegistrationService
+        private readonly eventNotificationService: EventNotificationService,
+        @Inject('IRegistrationRepository') private readonly registrationRepo: IRegistrationRepository
     ) {}
 
     async notifyEventCreated(data: IEventNotificationRequest): Promise<IEventNotificationResponse> {
@@ -91,7 +93,12 @@ export class EventsRegistrationService implements IEventRegistrationService {
         await this.repository.updateRegistrationStatus(eventId, userId, newStatus);
         
         if (newStatus === RegistrationStatus.CONFIRMED) {
-            await this.registrationService.notifyPaymentConfirmed(userId, eventId);
+            const user = await this.registrationRepo.findUserById(userId);
+            const event = await this.registrationRepo.findEventById(eventId);
+            
+            if (user && event) {
+                await this.eventNotificationService.sendEventRegistrationNotification(user, event);
+            }
         }
         
         return {
