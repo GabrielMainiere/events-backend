@@ -72,4 +72,25 @@ export class RegistrationRepository implements IRegistrationRepository {
 
         return RegistrationMapper.toEntity(result);
     }
+
+    async findAllConfirmedUsersByEvent(eventId: string): Promise<{ event: tb_registered_event; users: tb_user[] }> {
+        const event = await this.prisma.tb_registered_event.findUnique({
+            where: { id: eventId },
+        });
+        if (!event) {
+            throw new Error('Event not found');
+        }
+
+        const confirmedRegistrations = await this.prisma.tb_events_registration.findMany({
+            where: {
+                registered_event_id: eventId,
+                status: 'CONFIRMED',
+            },
+                include: {
+                user: true,
+            },
+        });
+        const users = confirmedRegistrations.map((r) => r.user);
+        return { event, users };
+    }
 }

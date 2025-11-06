@@ -5,6 +5,8 @@ import { IRegistrationValidator } from './validators/IRegistrationValidator';
 import { ICheckInValidator } from './validators/ICheckInValidator';
 import { Registration } from '../entities/registration.entity';
 import type { IRegistrationRepository } from '../repositories/IRegistration.repository';
+import { EventWithUsers } from '../entities/eventWithUsers.entity';
+import { EventMapper } from 'src/mappers/eventMapper';
 import { NotificationsTemplateNames } from 'src/core/enums';
 import { NotificationsClientService } from 'src/grpc/notifications/client/notifications.client.service';
 import { tb_user, tb_registered_event } from '@prisma/client';
@@ -76,6 +78,11 @@ export class RegistrationService {
     return this.registrationRepo.updateRegistrationStatus(registration.id, 'CHECKED_IN');
   }
 
+  async getAllUsersByEvent(eventId: string): Promise<EventWithUsers> {
+    const { event, users } = await this.registrationRepo.findAllConfirmedUsersByEvent(eventId);
+    return EventMapper.toGraphQL(event, users);
+  }
+ 
   private async sendEventRegistrationNotification(user: tb_user, event: tb_registered_event) {
     try {
       await this.notificationsClientService.sendEventRegistrationNotification({
