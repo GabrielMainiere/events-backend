@@ -80,7 +80,7 @@ export async function seedEventTemplates(prisma: PrismaClient) {
           <div class="content">
             <p>Olá <strong>{{name}}</strong>,</p>
             <p>Sua inscrição no evento <strong>{{eventName}}</strong> foi confirmada.</p>
-            <p>Data: {{eventDate}}</p>
+            <p>Data do evento: {{eventDate}}</p>
             <p>Local: {{eventLocation}}</p>
           </div>
           <div class="footer">
