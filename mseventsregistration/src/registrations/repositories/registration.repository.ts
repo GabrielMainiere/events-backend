@@ -72,4 +72,8 @@ export class RegistrationRepository implements IRegistrationRepository {
 
         return RegistrationMapper.toEntity(result);
     }
+
+    async findUserById(userId: string): Promise<tb_user | null> {
+        return this.prisma.tb_user.findUnique({ where: { id: userId } });
+    }
 }

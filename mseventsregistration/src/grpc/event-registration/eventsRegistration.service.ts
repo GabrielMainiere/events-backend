@@ -10,10 +10,14 @@ import { IPaymentUpdateResponse } from "./interfaces/IPaymentUpdateResponse";
 import { RegistrationStatus } from "@prisma/client";
 import { PaymentStatusMapper } from "src/mappers/paymentStatusMapper";
 import { EventRegistrationMapper } from "src/mappers/getRegistrationMapper";
+import { RegistrationService } from "src/registrations/services/registrations.service";
 
 @Injectable()
 export class EventsRegistrationService implements IEventRegistrationService {
-    constructor(private readonly repository : EventsRegistrationRepository) {}
+    constructor(
+        private readonly repository : EventsRegistrationRepository,
+        private readonly registrationService: RegistrationService
+    ) {}
 
     async notifyEventCreated(data: IEventNotificationRequest): Promise<IEventNotificationResponse> {
         return this.handleUpsert(data, 'CREATED');
@@ -85,6 +89,11 @@ export class EventsRegistrationService implements IEventRegistrationService {
         const newStatus = paymentStatus === 'ACCEPTED' ? RegistrationStatus.CONFIRMED : RegistrationStatus.CANCELED;
 
         await this.repository.updateRegistrationStatus(eventId, userId, newStatus);
+        
+        if (newStatus === RegistrationStatus.CONFIRMED) {
+            await this.registrationService.notifyPaymentConfirmed(userId, eventId);
+        }
+        
         return {
             success: true,
             message: `Payment ${paymentStatus === 'ACCEPTED' ? 'accepted' : 'rejected'}, registration updated to ${newStatus}`,

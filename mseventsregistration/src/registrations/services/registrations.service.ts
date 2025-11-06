@@ -8,6 +8,7 @@ import type { IRegistrationRepository } from '../repositories/IRegistration.repo
 import { NotificationsTemplateNames } from 'src/core/enums';
 import { NotificationsClientService } from 'src/grpc/notifications/client/notifications.client.service';
 import { tb_user, tb_registered_event } from '@prisma/client';
+import { RegistrationStatus } from "@prisma/client";
 
 @Injectable()
 export class RegistrationService {
@@ -53,8 +54,10 @@ export class RegistrationService {
 
     const registration = await this.strategyService.execute(userId, event);
 
-    await this.sendEventRegistrationNotification(user, event);
-    
+    if (registration.status === RegistrationStatus.CONFIRMED) {
+      await this.sendEventRegistrationNotification(user, event);
+    }
+
     return registration;
   }
 
@@ -75,6 +78,15 @@ export class RegistrationService {
 
     return this.registrationRepo.updateRegistrationStatus(registration.id, 'CHECKED_IN');
   }
+
+  async notifyPaymentConfirmed(userId: string, eventId: string) {
+    const user = await this.registrationRepo.findUserById(userId);
+    const event = await this.registrationRepo.findEventById(eventId);
+    
+    if (user && event) {
+      await this.sendEventRegistrationNotification(user, event);
+    }
+  }  
 
   private async sendEventRegistrationNotification(user: tb_user, event: tb_registered_event) {
     try {
