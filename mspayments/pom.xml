@@ -29,11 +29,11 @@
     <properties>
         <java.version>21</java.version>
         <!-- gRPC / Protobuf versions -->
-        <grpc.version>1.56.1</grpc.version>
-        <protobuf.version>3.24.3</protobuf.version>
+        <grpc.version>1.60.1</grpc.version>
+        <protobuf.version>3.25.1</protobuf.version>
         <protoc-gen-grpc-java.version>${grpc.version}</protoc-gen-grpc-java.version>
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
-        <os-maven-plugin.version>1.7.0</os-maven-plugin.version>
+        <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -117,6 +117,15 @@
     </dependencies>
 
     <build>
+        <extensions>
+            <!-- OS detection extension used by protobuf plugin to select native protoc -->
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>${os-maven-plugin.version}</version>
+            </extension>
+        </extensions>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -143,18 +152,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>kr.motd.maven</groupId>
-                <artifactId>os-maven-plugin</artifactId>
-                <version>${os-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>attach-classifier</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
