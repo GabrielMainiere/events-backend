@@ -2,6 +2,8 @@ package br.com.mspayments.services;
 
 import br.com.mspayments.controllers.PaymentResponse;
 import br.com.mspayments.controllers.dtos.CreatePaymentInput;
+import br.com.mspayments.integrations.grpc.registration.RegistrationGrpcClient;
+import br.com.mspayments.grpc.registration.GetRegistrationResponse;
 import br.com.mspayments.models.Payment;
 import br.com.mspayments.models.PaymentStatus;
 import br.com.mspayments.repositories.PaymentRepository;
@@ -21,10 +23,20 @@ import java.util.UUID;
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
+    private final RegistrationGrpcClient registrationGrpcClient;
 
     @Override
     public PaymentResponse create(CreatePaymentInput input) {
         try {
+            // Chamada gRPC para obter dados de registro
+            GetRegistrationResponse registrationResponse = registrationGrpcClient.getRegistration(
+                input.getUserDocument(),
+                input.getEventId()
+            );
+
+            log.info("Registration data obtained for userDocument: {} and eventId: {}",
+                input.getUserDocument(), input.getEventId());
+
             PaymentMethodData paymentData = PaymentMethodFactory.createPaymentMethodData(input);
 
             paymentData.getPayment().setCreatedAt(Instant.now());
