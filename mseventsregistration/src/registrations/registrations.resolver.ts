@@ -3,6 +3,7 @@ import { Registration } from './entities/registration.entity';
 import { CreateRegistrationInput } from './dto/create-registration.input';
 import { CheckInRegistrationInput } from './dto/check-in-registration.input';
 import { RegistrationService } from './services/registrations.service';
+import { EventWithUsers } from './entities/eventWithUsers.entity';
 
 @Resolver(() => Registration)
 export class RegistrationResolver {
@@ -21,8 +22,8 @@ export class RegistrationResolver {
     return this.registrationService.checkInUser(data.userId, data.eventId);
   }
 
-  @Query(() => String)
-  healthCheck(): string {
-    return 'OK';
+  @Query(() => EventWithUsers)
+  async getAllUsersByEvent(@Args('eventId') eventId: string): Promise<EventWithUsers> {
+    return this.registrationService.getAllUsersByEvent(eventId);
   }
 }

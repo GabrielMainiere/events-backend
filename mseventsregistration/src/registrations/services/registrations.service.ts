@@ -5,6 +5,8 @@ import { IRegistrationValidator } from './validators/IRegistrationValidator';
 import { ICheckInValidator } from './validators/ICheckInValidator';
 import { Registration } from '../entities/registration.entity';
 import type { IRegistrationRepository } from '../repositories/IRegistration.repository';
+import { EventWithUsers } from '../entities/eventWithUsers.entity';
+import { EventMapper } from 'src/mappers/eventMapper';
 
 @Injectable()
 export class RegistrationService {
@@ -66,5 +68,10 @@ export class RegistrationService {
     }
 
     return this.registrationRepo.updateRegistrationStatus(registration.id, 'CHECKED_IN');
+  }
+
+  async getAllUsersByEvent(eventId: string): Promise<EventWithUsers> {
+    const { event, users } = await this.registrationRepo.findAllConfirmedUsersByEvent(eventId);
+    return EventMapper.toGraphQL(event, users);
   }
 }
