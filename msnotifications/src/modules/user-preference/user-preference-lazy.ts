@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { NotificationType, NotificationChannel, UserPreference } from '@prisma/client';
-import { UserPreferenceRepository } from './user-preference.repository';
+import type{ IUserPreferenceRepository } from 'src/common/interfaces/iUserPreferenceRepository';
 import { UserPreferenceLogger } from '../logger/user-preference-logger';
 
 @Injectable()
 export class UserPreferenceLazy {
   constructor(
-    private readonly repository: UserPreferenceRepository,
+    @Inject('IUserPreferenceRepository')
+    private readonly repository: IUserPreferenceRepository,
     private readonly preferenceLog: UserPreferenceLogger,
   ) {}
 
@@ -34,11 +35,11 @@ export class UserPreferenceLazy {
     notification_type: NotificationType,
     channel: NotificationChannel,
   ): Promise<UserPreference> {
-    return this.repository.create(
+    return this.repository.create({
       user_id,
       notification_type,
       channel,
-      false,
-    );
+      is_enabled: true,
+    });
   }
 }

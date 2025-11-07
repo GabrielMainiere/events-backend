@@ -1,7 +1,7 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Inject } from '@nestjs/common';
 import { NotificationTemplate } from '@prisma/client';
-import { NotificationLogRepository } from '../notification-log/notification-log.repository';
 import { RequestLogger } from '../logger/request-logger';
+import type{ INotificationLogRepository } from 'src/common/interfaces/iNotificationLogRepository';
 
 export interface EnqueueNotificationInput {
   userId: string;
@@ -19,7 +19,8 @@ export interface EnqueueNotificationOutput {
 @Injectable()
 export class NotificationEnqueuer {
   constructor(
-    private readonly notificationLogRepository: NotificationLogRepository,
+    @Inject('INotificationLogRepository')
+    private readonly notificationLogRepository: INotificationLogRepository,
     private readonly requestLog: RequestLogger,
   ) {}
 

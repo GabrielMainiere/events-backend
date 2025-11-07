@@ -1,34 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { UpsertUserPreferenceInput } from 'src/common/dto/upsertUserPreference.input';
 import { NotificationType, NotificationChannel, UserPreference } from '@prisma/client';
-import { UserPreferenceRepository } from './user-preference.repository';
-
+import type{ IUserPreferenceRepository } from 'src/common/interfaces/iUserPreferenceRepository';
 import { UserPreferenceLogger } from '../logger/user-preference-logger';
 import { UserPreferenceValidator } from './user-preference-validator';
 import { UserPreferencePermissionChecker } from './user-preference-permission-checker';
-import { UserPreferenceLazy } from './user-preference-lazy';
 
 @Injectable()
 export class UserPreferenceService {
   constructor(
-    private readonly repository: UserPreferenceRepository,
+    @Inject('IUserPreferenceRepository')
+    private readonly repository: IUserPreferenceRepository,
     private readonly validator: UserPreferenceValidator,
     private readonly permissionChecker: UserPreferencePermissionChecker,
-    private readonly preferenceLazy: UserPreferenceLazy,
     private readonly preferenceLog: UserPreferenceLogger,
   ) {}
 
   async upsert(data: UpsertUserPreferenceInput): Promise<UserPreference> {
     this.validator.validateUpsert(data);
-    
-    const preference = await this.repository.upsert(data);
-    
+
+    const preference = await this.repository.upsert(
+      data.user_id,
+      data.notification_type,
+      data.channel,
+      data.is_enabled,
+    );
+
     this.preferenceLog.logPreferenceUpdated(
       data.user_id,
       data.notification_type,
       data.is_enabled,
     );
-    
+
     return preference;
   }
 

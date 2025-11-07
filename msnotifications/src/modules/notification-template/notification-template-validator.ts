@@ -1,12 +1,13 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { NotificationTemplate } from '@prisma/client';
-import { NotificationTemplateRepository } from './notification-template.repository';
+import type { INotificationTemplateRepository } from 'src/common/interfaces/iNotificationTemplateRepository';
 import { RequestLogger } from '../logger/request-logger';
 
 @Injectable()
 export class NotificationTemplateValidator {
   constructor(
-    private readonly repository: NotificationTemplateRepository,
+    @Inject('INotificationTemplateRepository')
+    private readonly repository: INotificationTemplateRepository,
     private readonly requestLog: RequestLogger,
   ) {}
 
@@ -36,16 +37,24 @@ export class NotificationTemplateValidator {
     return template;
   }
 
-    async validateUniqueTemplateName(
-      template_name: string,
-      excludeId?: string,
-    ): Promise<void> {
-      const existing = await this.repository.findByName(template_name);
-      
-      if (existing && existing.id !== excludeId) {
+  async validateUniqueTemplateName(
+    template_name: string,
+    excludeId?: string,
+  ): Promise<void> {
+    if (excludeId) {
+      const exists = await this.repository.findByName(template_name);
+      if (exists && exists.id !== excludeId) {
+        throw new ConflictException(
+          `Template with name "${template_name}" already exists`,
+        );
+      }
+    } else {
+      const exists = await this.repository.findByName(template_name);
+      if (exists) { 
         throw new ConflictException(
           `Template with name "${template_name}" already exists`,
         );
       }
     }
+  }
 }

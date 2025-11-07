@@ -1,44 +1,66 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { CreateTemplateInput } from 'src/common/dto/createNotificationTemplate.input';
 import { UpdateTemplateInput } from 'src/common/dto/updateNotificationTemplate.input';
-import { NotificationTemplateRepository } from './notification-template.repository';
-import { INotificationTemplateService } from 'src/common/interfaces/iNotificationTemplateService';
-import { NotificationTemplateValidator } from './notification-template-validator';
+import type { INotificationTemplateRepository } from 'src/common/interfaces/iNotificationTemplateRepository';
+import { NotificationTemplate } from '@prisma/client';
 
 @Injectable()
-export class NotificationTemplateService implements INotificationTemplateService {
+export class NotificationTemplateService {
   constructor(
-    private readonly repository: NotificationTemplateRepository,
-    private readonly validator: NotificationTemplateValidator,
+    @Inject('INotificationTemplateRepository')
+    private readonly repository: INotificationTemplateRepository,
   ) {}
 
-  async findByName(template_name: string) {
+  async findByName(template_name: string): Promise<NotificationTemplate | null> {
     return this.repository.findByName(template_name);
   }
 
-  async findOne(id: string) {
-    return this.validator.findByIdOrFail(id);
+  async findOne(id: string): Promise<NotificationTemplate> {
+    const template = await this.repository.findById(id);
+    if (!template) {
+      throw new NotFoundException(`Template with ID "${id}" not found`);
+    }
+    return template;
   }
 
-  async findAll() {
+  async findAll(): Promise<NotificationTemplate[]> {
     return this.repository.findAll();
   }
 
-  async create(data: CreateTemplateInput) {
-    await this.validator.validateUniqueTemplateName(data.template_name);
-    return this.repository.create(data);
+  async create(data: CreateTemplateInput): Promise<NotificationTemplate> {
+    const exists = await this.repository.findByName(data.template_name);
+    if (exists) {
+      throw new ConflictException(
+        `Template with name "${data.template_name}" already exists`,
+      );
+    }
+
+    return this.repository.create({
+      template_name: data.template_name,
+      notification_type: data.notification_type,
+      channel: data.channel,
+      subject_template: data.subject_template,
+      body_template: data.body_template,
+    });
   }
 
-  async update(id: string, data: UpdateTemplateInput) {
-    await this.findOne(id); 
+  async update(id: string, data: UpdateTemplateInput): Promise<NotificationTemplate> {
+    await this.findOne(id);
+
     if (data.template_name) {
-      await this.validator.validateUniqueTemplateName(data.template_name, id);
+      const exists = await this.repository.findByName(data.template_name);
+      if (exists && exists.id !== id) {
+        throw new ConflictException(
+          `Template with name "${data.template_name}" already exists`,
+        );
+      }
     }
+
     return this.repository.update(id, data);
   }
-  
-  async delete(id: string) {
-    await this.validator.findByIdOrFail(id);
+
+  async delete(id: string): Promise<NotificationTemplate> {
+    await this.findOne(id);
     return this.repository.delete(id);
   }
 }
