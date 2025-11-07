@@ -1,12 +1,7 @@
-import { NotificationLog } from '@prisma/client';
 import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 
 export abstract class BaseNotificationDecorator implements INotificationStrategy {
-  protected strategy: INotificationStrategy;
+  constructor(protected readonly strategy: INotificationStrategy) {}
 
-  public setStrategy(strategy: INotificationStrategy): void {
-    this.strategy = strategy;
-  }
-
-  abstract send(notification: NotificationLog): Promise<void>;
+  abstract send(recipient: string, subject: string, body: string): Promise<void>;
 }

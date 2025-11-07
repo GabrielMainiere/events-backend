@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { NotificationType, NotificationChannel } from '@prisma/client';
 
 @Injectable()
-export class UserPreferenceLogDecorator {
-  private readonly logger = new Logger(UserPreferenceLogDecorator.name);
+export class UserPreferenceLogger {
+  private readonly logger = new Logger(UserPreferenceLogger.name);
 
   logLazyCreation(userId: string, notificationType: NotificationType, channel: NotificationChannel): void {
     this.logger.log(

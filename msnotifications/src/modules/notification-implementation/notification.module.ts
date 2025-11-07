@@ -8,6 +8,7 @@ import { DecoratorModule } from '../decorator/decorator.module';
 import { NotificationProcessorService } from './notification-processor.service';
 import { NotificationEnqueuer } from './notification-enqueuer';
 import { PayloadHelper } from '../../common/helper/payload.helper';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PayloadHelper } from '../../common/helper/payload.helper';
     NotificationTemplateModule,
     UserPreferenceModule,
     DecoratorModule,
+    LoggerModule,
   ],
   controllers: [NotificationImplementation],
   providers: [

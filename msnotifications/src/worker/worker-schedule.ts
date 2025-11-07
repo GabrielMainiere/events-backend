@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { NotificationLogRepository } from 'src/modules/notification-log/notification-log.repository';
-import { WorkerLogDecorator } from 'src/modules/decorator/worker-log.decorator';
+import { WorkerLogger } from 'src/modules/logger/worker-logger';
 import { NotificationBatchProcessor } from './notification-batch-processor';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class WorkerScheduler {
   constructor(
     private readonly notificationLogRepository: NotificationLogRepository,
     private readonly batchProcessor: NotificationBatchProcessor,
-    private readonly workerLog: WorkerLogDecorator,
+    private readonly workerLog: WorkerLogger,
   ) {}
 
   @Cron(CronExpression.EVERY_10_SECONDS)

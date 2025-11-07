@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
-export class RequestLogDecorator {
-  private readonly logger = new Logger(RequestLogDecorator.name);
+export class RequestLogger {
+  private readonly logger = new Logger(RequestLogger.name);
 
   logRequestReceived(method: string, data: { userId: string; recipientAddress: string }): void {
     this.logger.log(

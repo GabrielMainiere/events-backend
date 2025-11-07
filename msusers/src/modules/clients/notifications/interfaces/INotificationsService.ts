@@ -3,11 +3,8 @@ import { NotificationResponseDto } from '../dto/notification-response.dto'
 import { Observable } from 'rxjs/internal/Observable'
 
 export interface INotificationsClientService {
-  sendVerificationNotification(
+  sendAccountNotification(
     data: SendAccountNotificationDto
   ): Promise<Observable<NotificationResponseDto>>
 
-  sendWelcomeNotification(
-    data: SendAccountNotificationDto
-  ): Promise<Observable<NotificationResponseDto>>;
 }

@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
-export class WorkerLogDecorator {
-  private readonly logger = new Logger(WorkerLogDecorator.name);
+export class WorkerLogger {
+  private readonly logger = new Logger(WorkerLogger.name);
 
   logBatchStart(count: number): void {
     this.logger.log(
