@@ -19,7 +19,7 @@ public class StripeCreditCardRequest {
         this.amount = BigDecimal.valueOf(payment.getAmount());
         this.currency = "brl";
         this.source = cardToken;
-//        this.description = payment.getDescription();
-//        this.receiptEmail = payment.getPayerEmail();
+        this.description = "Pagamento do Evento: " + payment.getEvent().getDescription();
+        this.receiptEmail = payment.getUser().getEmail();
     }
 }
