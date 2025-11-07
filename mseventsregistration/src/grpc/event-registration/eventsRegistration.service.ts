@@ -30,7 +30,14 @@ export class EventsRegistrationService implements IEventRegistrationService {
     }
 
     async notifyEventCancelled(data: IEventNotificationRequest): Promise<IEventNotificationResponse> {
-        return this.handleUpsert(data, 'CANCELED');
+        try {
+        await this.handleUpsert(data, 'CANCELED');
+        await this.notifyUsersAboutCancellation(data.id);
+
+        return { success: true, message: 'Event CANCELED and users notified' };
+        } catch (error) {
+        return { success: false, message: `Failed to CANCEL event: ${error.message}` };
+        }
     }
 
     async countEventRegistrations(data: { eventId: string }): Promise<{ count: number }> {
@@ -121,4 +128,23 @@ export class EventsRegistrationService implements IEventRegistrationService {
         return { success: false, message: `Failed to ${action} event: ${error.message}` };
         }
     }
-}
+
+    private async notifyUsersAboutCancellation(eventId: string): Promise<void> {
+        const [event, registrations] = await Promise.all([
+            this.repository.findById(eventId),
+            this.registrationRepo.findRegistrationsByEventId(eventId),
+        ]);
+
+        if (!event) {
+            throw new Error(`Event ${eventId} not found for cancellation notification`);
+        }
+
+        await Promise.allSettled(
+            registrations.map(async (registration) => {
+            const user = await this.registrationRepo.findUserById(registration.userId);
+            if (user) {
+                await this.eventNotificationService.sendEventCancellationNotification(user, event);
+            }
+        }));
+    }
+}    

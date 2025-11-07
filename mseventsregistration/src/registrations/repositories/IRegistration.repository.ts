@@ -21,4 +21,6 @@ export interface IRegistrationRepository {
     updateRegistrationStatus(registrationId: string, status: string): Promise<Registration>;
 
     findUserById(userId: string): Promise<tb_user | null>;
+
+    findRegistrationsByEventId(eventId: string): Promise<Array<{userId: string;status: string;}>>;
 }

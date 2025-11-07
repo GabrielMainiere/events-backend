@@ -6,4 +6,12 @@ export interface INotificationsClientService {
   sendEventRegistrationNotification(
     data: SendRegistrationNotificationDto
   ): Promise<Observable<NotificationResponseDto>>;
+
+  sendEventWaitingPaymentNotification(
+    data: SendRegistrationNotificationDto
+  ): Promise<Observable<NotificationResponseDto>>;
+
+  sendEventCancellationNotification(
+    data: SendRegistrationNotificationDto
+  ): Promise<Observable<NotificationResponseDto>>;
 }

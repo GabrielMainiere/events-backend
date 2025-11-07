@@ -31,4 +31,20 @@ export class NotificationsClientService implements INotificationsClientService, 
     resp.subscribe();
     return resp;
   }
+
+  async sendEventWaitingPaymentNotification(
+    data: SendRegistrationNotificationDto
+  ): Promise<Observable<NotificationResponseDto>> {
+    const resp = await this.service.sendEventWaitingPaymentNotification(data);
+    resp.subscribe();
+    return resp;
+  }
+
+  async sendEventCancellationNotification(
+    data: SendRegistrationNotificationDto
+  ): Promise<Observable<NotificationResponseDto>> {
+    const resp = await this.service.sendEventCancellationNotification(data);
+    resp.subscribe();
+    return resp;
+  }
 }

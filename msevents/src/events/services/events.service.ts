@@ -104,12 +104,6 @@ export class EventsService {
     if (!event) throw new NotFoundException(`Event with id ${id} not found`);
     if (event.status === EventStatus.CANCELED) throw new BadRequestException(`Event already canceled`);
     if (!event.isFree) throw new BadRequestException('Only free events can be canceled');
-  
-    const { count } = await this.Registrationcount.countEventRegistrations({ eventId: id });
-
-    if (count > 0) {
-      throw new BadRequestException(`Cannot cancel event with ${count} registered users`);
-    }
 
     const updated = await this.repository.cancel(id);
     await this.notifier.notifyCancelled(updated);
