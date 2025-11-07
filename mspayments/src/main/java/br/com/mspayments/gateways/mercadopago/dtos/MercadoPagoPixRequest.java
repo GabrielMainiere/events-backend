@@ -15,7 +15,7 @@ public class MercadoPagoPixRequest {
 
     public MercadoPagoPixRequest(Payment payment) {
         this.transactionAmount = payment.getAmount() / 100.0;
-        this.description = "EVENTS";
-        this.payerEmail = "test@gmail.com";
+        this.description = "Pagamento do evento " + payment.getEvent().getDescription();
+        this.payerEmail = payment.getUser().getEmail();
     }
 }

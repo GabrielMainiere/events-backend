@@ -1,10 +1,7 @@
 export class PaymentStatusMapper {
 
-    static map(status: number | 'ACCEPTED' | 'REJECTED'): 'ACCEPTED' | 'REJECTED' {
-        if (typeof status === 'number') {
-            return status === 0 ? 'ACCEPTED' : 'REJECTED';
-        }
-        
+    static map(status:'ACCEPTED' | 'REJECTED'): 'ACCEPTED' | 'REJECTED' {
+    
         if (status === 'ACCEPTED' || status === 'REJECTED') {
             return status;
         }

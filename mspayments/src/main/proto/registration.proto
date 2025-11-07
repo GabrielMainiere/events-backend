@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package eventregistration.payments;
 
+option java_multiple_files = true;
+option java_package = "br.com.mspayments.grpc.registration";
+option java_outer_classname = "RegistrationProto";
+
 service EventRegistrationPaymentsService {
     rpc GetRegistration(GetRegistrationRequest) returns (GetRegistrationResponse);
     rpc ReceivePaymentUpdate(PaymentUpdateRequest) returns (PaymentUpdateResponse);
@@ -38,7 +42,6 @@ message GetRegistrationResponse {
     string email = 23;
     string cpf = 24;
 }
-
 
 message PaymentUpdateRequest {
     string eventId = 1;
