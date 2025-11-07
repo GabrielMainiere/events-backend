@@ -23,4 +23,6 @@ export interface IRegistrationRepository {
     findUserById(userId: string): Promise<tb_user | null>;
 
     findRegistrationsByEventId(eventId: string): Promise<Array<{userId: string;status: string;}>>;
+  
+    findAllConfirmedUsersByEvent(eventId: string): Promise<{ event: tb_registered_event; users: tb_user[] }>;
 }
