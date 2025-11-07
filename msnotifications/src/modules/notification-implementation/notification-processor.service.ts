@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserPreferenceService } from '../user-preference/user-preference.service';
 import { NotificationEnqueuer } from './notification-enqueuer';
-import { RequestLogDecorator } from '../decorator/request-log.decorator';
+import { RequestLogger } from '../logger/request-logger';
 import { NotificationTemplateValidator } from '../notification-template/notification-template-validator';
 import { ProcessNotificationInput } from 'src/common/interfaces/iProcessNotificationInput';
 import { ProcessNotificationOutput } from 'src/common/interfaces/iProcessNotificationOutput';
@@ -12,7 +12,7 @@ export class NotificationProcessorService {
     private readonly templateValidator: NotificationTemplateValidator,
     private readonly userPreferenceService: UserPreferenceService,
     private readonly enqueuer: NotificationEnqueuer,
-    private readonly requestLog: RequestLogDecorator,
+    private readonly requestLog: RequestLogger,
   ) {}
 
   async process(data: ProcessNotificationInput): Promise<ProcessNotificationOutput> {

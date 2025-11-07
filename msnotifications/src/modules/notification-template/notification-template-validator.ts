@@ -1,13 +1,13 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { NotificationTemplate } from '@prisma/client';
 import { NotificationTemplateRepository } from './notification-template.repository';
-import { RequestLogDecorator } from '../decorator/request-log.decorator';
+import { RequestLogger } from '../logger/request-logger';
 
 @Injectable()
 export class NotificationTemplateValidator {
   constructor(
     private readonly repository: NotificationTemplateRepository,
-    private readonly requestLog: RequestLogDecorator,
+    private readonly requestLog: RequestLogger,
   ) {}
 
   async findByNameOrFail(templateName: string): Promise<NotificationTemplate> {

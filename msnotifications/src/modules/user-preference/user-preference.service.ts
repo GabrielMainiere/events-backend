@@ -3,7 +3,7 @@ import { UpsertUserPreferenceInput } from 'src/common/dto/upsertUserPreference.i
 import { NotificationType, NotificationChannel, UserPreference } from '@prisma/client';
 import { UserPreferenceRepository } from './user-preference.repository';
 
-import { UserPreferenceLogDecorator } from '../decorator/user-preference-log.decorator';
+import { UserPreferenceLogger } from '../logger/user-preference-logger';
 import { UserPreferenceValidator } from './user-preference-validator';
 import { UserPreferencePermissionChecker } from './user-preference-permission-checker';
 import { UserPreferenceLazy } from './user-preference-lazy';
@@ -15,7 +15,7 @@ export class UserPreferenceService {
     private readonly validator: UserPreferenceValidator,
     private readonly permissionChecker: UserPreferencePermissionChecker,
     private readonly preferenceLazy: UserPreferenceLazy,
-    private readonly preferenceLog: UserPreferenceLogDecorator,
+    private readonly preferenceLog: UserPreferenceLogger,
   ) {}
 
   async upsert(data: UpsertUserPreferenceInput): Promise<UserPreference> {

@@ -1,15 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { BaseNotificationDecorator } from './base-notification.decorator';
+import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 
-@Injectable()
 export class AuditLogDecorator extends BaseNotificationDecorator {
   private readonly logger = new Logger(AuditLogDecorator.name);
 
-  async send(recipient: string, subject: string, body: string): Promise<void> {
-    if (!this.strategy) {
-      throw new Error('Strategy não definida no Decorator');
-    }
+  constructor(strategy: INotificationStrategy) {
+    super(strategy);
+  }
 
+  async send(recipient: string, subject: string, body: string): Promise<void> {
     this.logStart(recipient, subject);
 
     try {

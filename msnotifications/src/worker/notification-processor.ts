@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationLog } from '@prisma/client';
 import { NotificationSender } from './notification-sender';
-import { WorkerLogDecorator } from 'src/modules/decorator/worker-log.decorator';
+import { WorkerLogger } from 'src/modules/logger/worker-logger';
 import { NotificationStatusUpdater } from './notification-status-updater';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class NotificationProcessor {
   constructor(
     private readonly statusUpdater: NotificationStatusUpdater,
     private readonly sender: NotificationSender,
-    private readonly workerLog: WorkerLogDecorator,
+    private readonly workerLog: WorkerLogger,
   ) {}
 
   async process(notification: NotificationLog): Promise<boolean> {

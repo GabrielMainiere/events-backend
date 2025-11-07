@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationType, NotificationChannel, UserPreference } from '@prisma/client';
 import { UserPreferenceRepository } from './user-preference.repository';
-import { UserPreferenceLogDecorator } from '../decorator/user-preference-log.decorator';
+import { UserPreferenceLogger } from '../logger/user-preference-logger';
 
 @Injectable()
 export class UserPreferenceLazy {
   constructor(
     private readonly repository: UserPreferenceRepository,
-    private readonly preferenceLog: UserPreferenceLogDecorator,
+    private readonly preferenceLog: UserPreferenceLogger,
   ) {}
 
   async getOrCreate(
