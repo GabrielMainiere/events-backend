@@ -7,11 +7,6 @@ service EventRegistrationPaymentsService {
     rpc ReceivePaymentUpdate(PaymentUpdateRequest) returns (PaymentUpdateResponse);
 }
 
-enum PaymentStatus {
-    ACCEPTED = 0;
-    REJECTED = 1;
-}
-
 message GetRegistrationRequest {
     string userId = 1;
     string eventId = 2;
@@ -48,7 +43,7 @@ message GetRegistrationResponse {
 message PaymentUpdateRequest {
     string eventId = 1;
     string userId = 2;
-    PaymentStatus status = 3;
+    string status = 3;
 }
 
 message PaymentUpdateResponse {

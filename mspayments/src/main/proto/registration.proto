@@ -8,6 +8,7 @@ option java_outer_classname = "RegistrationProto";
 
 service EventRegistrationPaymentsService {
     rpc GetRegistration(GetRegistrationRequest) returns (GetRegistrationResponse);
+    rpc ReceivePaymentUpdate(PaymentUpdateRequest) returns (PaymentUpdateResponse);
 }
 
 message GetRegistrationRequest {
@@ -40,4 +41,15 @@ message GetRegistrationResponse {
     string name = 22;
     string email = 23;
     string cpf = 24;
+}
+
+message PaymentUpdateRequest {
+    string eventId = 1;
+    string userId = 2;
+    string status = 3;
+}
+
+message PaymentUpdateResponse {
+    bool success = 1;
+    string message = 2;
 }

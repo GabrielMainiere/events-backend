@@ -15,7 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Event {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)

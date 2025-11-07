@@ -3,6 +3,8 @@ package br.com.mspayments.integrations.grpc.registration;
 import br.com.mspayments.grpc.registration.GetRegistrationRequest;
 import br.com.mspayments.grpc.registration.GetRegistrationResponse;
 import br.com.mspayments.grpc.registration.EventRegistrationPaymentsServiceGrpc;
+import br.com.mspayments.grpc.registration.PaymentUpdateRequest;
+import br.com.mspayments.grpc.registration.PaymentUpdateResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -44,10 +46,40 @@ public class RegistrationGrpcClient {
                     .build();
 
             GetRegistrationResponse response = stub.getRegistration(request);
+
+            log.info("Registration response: {}", response);
             return response;
         } catch (Exception e) {
             log.error("Error calling registration service", e);
             throw new RuntimeException("Failed to get registration from ms-events-registration", e);
+        }
+    }
+
+    public void notifyPaymentUpdate(String eventId, String userId, String status) {
+        try {
+            log.info("Preparing to send payment update notification - eventId: {}, userId: {}, status: {}",
+                eventId, userId, status);
+
+            PaymentUpdateRequest request = PaymentUpdateRequest.newBuilder()
+                    .setEventId(eventId)
+                    .setUserId(userId)
+                    .setStatus(status)
+                    .build();
+
+            log.info("Built PaymentUpdateRequest with status: (value: {})", status);
+
+            PaymentUpdateResponse response = stub.receivePaymentUpdate(request);
+
+            if (response.getSuccess()) {
+                log.info("Payment status notification sent successfully for eventId: {} and userId: {}", eventId, userId);
+            } else {
+                log.warn("Payment status notification failed: {}", response.getMessage());
+            }
+        } catch (io.grpc.StatusRuntimeException e) {
+            log.error("gRPC error sending payment status notification for eventId: {} and userId: {} - Status: {}, Description: {}",
+                eventId, userId, e.getStatus().getCode(), e.getStatus().getDescription());
+        } catch (Exception e) {
+            log.error("Unexpected error sending payment status notification for eventId: {} and userId: {}", eventId, userId, e);
         }
     }
 
