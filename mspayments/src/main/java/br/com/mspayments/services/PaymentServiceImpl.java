@@ -132,6 +132,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         var payment = paymentOpt.get();
         payment.setStatus(paymentStatus);
+        notifyPaymentStatusIfApproved(paymentStatus, String.valueOf(payment.getEvent().getId()), String.valueOf(payment.getUser().getId()));
         paymentRepository.save(payment);
     }
 
