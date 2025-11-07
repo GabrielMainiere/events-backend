@@ -1,17 +1,11 @@
 import { Module } from '@nestjs/common';
 import { EmailStrategy } from './email.strategy';
 import { SmsStrategy } from './sms.strategy';
-import { EmailModule } from '../email/email.module';
-import { NotificationTemplateModule } from '../notification-template/notification-template.module';
-import { TemplateProcessorModule } from './template-processor/template-processor.module';
 import { PushStrategy } from './push.strategy';
+import { EmailModule } from '../email/email.module';
 
 @Module({
-  imports: [
-    EmailModule,
-    NotificationTemplateModule,
-    TemplateProcessorModule,
-  ],
+  imports: [EmailModule],
   providers: [
     EmailStrategy,
     SmsStrategy,

@@ -1,4 +1,3 @@
-import { NotificationLog } from '@prisma/client';
 import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 
 export abstract class BaseNotificationDecorator implements INotificationStrategy {
@@ -8,5 +7,5 @@ export abstract class BaseNotificationDecorator implements INotificationStrategy
     this.strategy = strategy;
   }
 
-  abstract send(notification: NotificationLog): Promise<void>;
+  abstract send(recipient: string, subject: string, body: string): Promise<void>;
 }

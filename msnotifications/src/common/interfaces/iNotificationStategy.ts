@@ -1,6 +1,4 @@
-import { NotificationLog } from '@prisma/client';
 
 export interface INotificationStrategy {
-    
-  send(notification: NotificationLog): Promise<void>;
+  send(recipient: string, subject: string, body: string): Promise<void>;
 }
