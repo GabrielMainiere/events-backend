@@ -7,6 +7,7 @@ import { NotificationTemplateResolver as GraphQLResolver } from './notification-
 import { PrismaModule } from 'src/prisma-ds/prisma.module';
 import { DecoratorModule } from '../decorator/decorator.module';
 import { TemplateProcessorModule } from '../strategy/template-processor/template-processor.module';
+import { LoggerModule } from '../logger/logger.module';
 
 
 @Module({
@@ -14,6 +15,7 @@ import { TemplateProcessorModule } from '../strategy/template-processor/template
     PrismaModule,
     DecoratorModule,
     TemplateProcessorModule,
+    LoggerModule,
   ],
   providers: [
     NotificationTemplateRepository,

@@ -43,7 +43,7 @@ export class NotificationStrategyProvider {
 
     if (!strategy) {
       throw new NotFoundException(
-        `Estratégia para o canal ${channel} não encontrada.`,
+        `Strategy for channel ${channel} not found.`,
       );
     }
 
@@ -56,20 +56,5 @@ export class NotificationStrategyProvider {
     const withPerformance = new PerformanceLogDecorator(withAudit);
 
     return withPerformance;
-  }
-
-  public getStrategyWithoutDecorators(channel: NotificationChannel): INotificationStrategy {
-    switch (channel) {
-      case NotificationChannel.EMAIL:
-        return this.emailStrategy;
-      case NotificationChannel.SMS:
-        return this.smsStrategy;
-      case NotificationChannel.PUSH:
-        return this.pushStrategy;
-      default:
-        throw new NotFoundException(
-          `Estratégia para o canal ${channel} não encontrada.`,
-        );
-    }
   }
 }

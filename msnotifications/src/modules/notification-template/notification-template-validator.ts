@@ -15,7 +15,7 @@ export class NotificationTemplateValidator {
 
     if (!template) {
       this.requestLog.logTemplateNotFound(templateName);
-      throw new NotFoundException(`Template não encontrado: ${templateName}`);
+      throw new NotFoundException(`Template not found: ${templateName}`);
     }
 
     return template;
@@ -30,7 +30,7 @@ export class NotificationTemplateValidator {
     const template = await this.repository.findById(id);
 
     if (!template) {
-      throw new NotFoundException(`Template com ID "${id}" não encontrado`);
+      throw new NotFoundException(`Template with ID "${id}" not found`);
     }
 
     return template;
@@ -44,7 +44,7 @@ export class NotificationTemplateValidator {
       
       if (existing && existing.id !== excludeId) {
         throw new ConflictException(
-          `Template com nome "${template_name}" já existe`,
+          `Template with name "${template_name}" already exists`,
         );
       }
     }

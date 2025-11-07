@@ -106,7 +106,7 @@ export class UserService {
   }
 
   private async sendActivationEmail(user: User) {
-    await this.notificationsClientService.sendVerificationNotification({
+    await this.notificationsClientService.sendAccountNotification({
       userId: user.id,
       recipientAddress: user.email,
       payloadJson: JSON.stringify({ name: user.name, userActivationCode: user.activationCode }),
@@ -115,10 +115,11 @@ export class UserService {
   }
 
   private async sendWelcomeEmail(user: User) {
-    await this.notificationsClientService.sendWelcomeNotification({
+    await this.notificationsClientService.sendAccountNotification({
       userId: user.id,
       recipientAddress: user.email,
-      payloadJson: JSON.stringify({ name: user.name })
+      payloadJson: JSON.stringify({ name: user.name }),
+      templateName: NotificationsTemplateNames.ACCOUNT_WELCOME_EMAIL,
     });
   }
 }

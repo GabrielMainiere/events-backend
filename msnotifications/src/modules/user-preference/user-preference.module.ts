@@ -7,11 +7,13 @@ import { DecoratorModule } from '../decorator/decorator.module';
 import { UserPreferenceValidator } from './user-preference-validator';
 import { UserPreferencePermissionChecker } from './user-preference-permission-checker';
 import { UserPreferenceLazy } from './user-preference-lazy';
+import { LoggerModule } from '../logger/logger.module';
 
 @Module({
   imports: [
     PrismaModule,
     DecoratorModule,
+    LoggerModule,
   ],
   providers: [
     UserPreferenceRepository,

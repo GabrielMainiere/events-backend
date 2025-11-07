@@ -8,6 +8,7 @@ import { NotificationBatchProcessor } from './notification-batch-processor';
 import { NotificationProcessor } from './notification-processor';
 import { NotificationStatusUpdater } from './notification-status-updater';
 import { NotificationSender } from './notification-sender';
+import { LoggerModule } from 'src/modules/logger/logger.module';
 
 @Module({
   imports: [
@@ -15,13 +16,14 @@ import { NotificationSender } from './notification-sender';
     NotificationLogModule,
     NotificationTemplateModule,
     DecoratorModule,
+    LoggerModule,
   ],
   providers: [
     WorkerScheduler,               
     NotificationBatchProcessor,     
     NotificationProcessor,          
     NotificationStatusUpdater,     
-    NotificationSender,            
+    NotificationSender,
   ],
 })
 export class WorkerModule {}

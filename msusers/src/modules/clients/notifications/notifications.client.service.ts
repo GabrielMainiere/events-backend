@@ -22,19 +22,11 @@ export class NotificationsClientService implements INotificationsClientService, 
   onModuleInit() {
     this.service = this.client.getService<INotificationsClientService>('NotificationService')
   }
-  async sendVerificationNotification(
+  async sendAccountNotification(
     data: SendAccountNotificationDto
   ): Promise<Observable<NotificationResponseDto>> {
-    const resp = await this.service.sendVerificationNotification(data)
+    const resp = await this.service.sendAccountNotification(data)
     resp.subscribe()
     return resp
-  }
-
-  async sendWelcomeNotification(
-    data: SendAccountNotificationDto
-  ): Promise<Observable<NotificationResponseDto>> {
-    const resp = await this.service.sendWelcomeNotification(data);
-    resp.subscribe();
-    return resp;
   }
 }

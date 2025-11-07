@@ -14,7 +14,7 @@ export class UserPreferenceValidator {
     if (!data.is_enabled && this.isMandatoryType(data.notification_type)) {
       this.preferenceLog.logBlockedAttempt(data.user_id, data.notification_type);
       throw new BadRequestException(
-        `Notificações do tipo "${data.notification_type}" são obrigatórias e não podem ser desabilitadas.`,
+        `Notifications of type "${data.notification_type}" are mandatory and cannot be disabled.`,
       );
     }
   }
