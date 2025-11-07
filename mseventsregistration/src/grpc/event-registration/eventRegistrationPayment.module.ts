@@ -1,10 +1,20 @@
 import { Module } from "@nestjs/common";
-import { EventRegistrationPaymentsGrpcController } from "./eventRegistrationPayment.controller";
 import { EventsRegistrationRepository } from "./eventsRegistration.repository";
 import { EventsRegistrationService } from "./eventsRegistration.service";
+import { RegistrationRepository } from "src/registrations/repositories/registration.repository";
+import { EventNotificationModule } from "../notifications/event-notification.module";
+import { EventRegistrationGrpcController } from "./eventRegistration.controller";
 
 @Module({
-  controllers: [EventRegistrationPaymentsGrpcController],
-  providers: [EventsRegistrationService, EventsRegistrationRepository],
+  imports: [EventNotificationModule],
+  controllers: [EventRegistrationGrpcController],
+  providers: [
+    EventsRegistrationService,
+    EventsRegistrationRepository,
+    {
+      provide: 'IRegistrationRepository',
+      useClass: RegistrationRepository,
+    },
+  ],
 })
 export class EventRegistrationPaymentsModule {}
