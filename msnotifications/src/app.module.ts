@@ -13,7 +13,7 @@ import { ApolloDriver } from '@nestjs/apollo';
 import './common/enum/notification-channel.enum';
 import './common/enum/notification-type.enum';
 import { UserPreferenceModule } from './modules/user-preference/user-preference.module';
-import { HealthModule } from './health/health.module';
+import { HealthModule } from './common/health/health.module';
 import { join } from 'path';
 import { StrategyFactoryModule } from './modules/factory/strategy-factory.module';
 

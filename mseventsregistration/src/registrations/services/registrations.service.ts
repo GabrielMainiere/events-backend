@@ -80,6 +80,12 @@ export class RegistrationService {
       await validator.validate(registration, event);
     }
 
+    const user = await this.registrationRepo.findUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    await this.eventNotificationService.sendEventCheckInNotification(user, event);
     return this.registrationRepo.updateRegistrationStatus(registration.id, 'CHECKED_IN');
   }
   
@@ -87,26 +93,6 @@ export class RegistrationService {
     const { event, users } = await this.registrationRepo.findAllConfirmedUsersByEvent(eventId);
     return EventMapper.toGraphQL(event, users);
   }
- /*
-  private async sendEventRegistrationNotification(user: tb_user, event: tb_registered_event) {
-    try {
-      await this.notificationsClientService.sendEventRegistrationNotification({
-        userId: user.id,
-        recipientAddress: user.email,
-        eventId: event.id,
-        payloadJson: JSON.stringify({
-          name: user.name,
-          eventName: event.title,
-          eventDate: `${event.start_at.toLocaleString('pt-BR')} - ${event.end_at.toLocaleString('pt-BR')}`,
-          eventLocation: `${event.address_country}, ${event.address_state} - ${event.address_city}, ${event.address_street} ${event.address_number || 'S/N'} - ${event.address_zipcode}`,
-        }),
-        templateName: NotificationsTemplateNames.EVENT_REGISTRATION_EMAIL,
-      });
-    } catch (error) {
-      console.error('Failed to send event registration notification:', error);
-    }
-  }
-*/
 
   async generateCheckInQRCode(userId: string, eventId: string): Promise<QRCode> {
     const registration = await this.registrationRepo.findByUserAndEvent(userId, eventId);

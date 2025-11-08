@@ -393,5 +393,76 @@ await prisma.notificationTemplate.create({
   },
 });
 
+  await prisma.notificationTemplate.create({
+  data: {
+      template_name: 'event_checkin_email',
+      notification_type: NotificationType.EVENT,
+      channel: NotificationChannel.EMAIL,
+      subject_template: 'Confirmação de check-in - {{eventName}}',
+      body_template: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #F5F5F5;
+          }
+          .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+          .header {
+            background: #274156;
+            color: #fff;
+            padding: 40px 20px;
+            text-align: center;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 26px;
+          }
+          .content {
+            padding: 30px 20px;
+          }
+          .footer {
+            background: #f9f9f9;
+            text-align: center;
+            padding: 15px;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #eee;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Confirmação de Check-in</h1>
+          </div>
+          <div class="content">
+            <p>Olá <strong>{{name}}</strong>,</p>
+            <p>Seu check-in para o evento <strong>{{eventName}}</strong> foi confirmado com sucesso!</p>
+            <p>Aguardamos você no dia {{eventDate}}.</p>
+          </div>
+          <div class="footer">
+            <p>Events Project © 2025</p>
+          </div>
+        </div>
+      </body>
+      </html>
+      `,
+    }, 
+  });
+
   console.log('Templates de Event criados.');
 }
