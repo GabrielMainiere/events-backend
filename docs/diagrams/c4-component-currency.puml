@@ -1,0 +1,41 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/refs/heads/master/C4_Component.puml
+
+title Diagrama de Componentes - MS Currency
+
+' --- Sistemas Externos ---
+Component_Ext(ms_payments, "MS Payments", "gRPC Server", "Serviço de Pagamentos")
+Component_Ext(ext_currency_api, "External Currency API", "REST API", "API Externa de Cotação de Moedas")
+ComponentDb(database, "Currency DB", "PostgreSQL", "Armazena preços de moedas (BRL)")
+Person_Ext(admin, "Administrador", "Usuário com permissão de gerenciar moedas")
+
+Container_Boundary(mscurrency, "MS Currency") {
+    
+    Component(graphqlController, "GraphQL Controller", "Spring GraphQL", "Recebe requisições de Admin para CRUD de moedas")
+    
+    Component(scheduler, "Currency Rate Scheduler", "Spring @Scheduled", "Dispara atualizações a cada 3 horas e na inicialização")
+    
+    Component(priceService, "CurrencyPrice Service", "Service", "Lógica de negócio para CRUD de moedas")
+    Component(updateService, "CurrencyRateUpdate Service", "Service", "Busca cotações na API externa e atualiza o DB")
+    
+    Component(grpcClient, "Payment gRPC Client", "gRPC Client", "Envia atualizações de preço para o MS Payments")
+    
+    Component(repository, "CurrencyPrice Repository", "JPA Repository", "Persiste e consulta preços de moedas")
+}
+
+Rel(admin, graphqlController, "Gerencia moedas", "GraphQL/HTTPS")
+Rel(graphqlController, priceService, "Usa")
+Rel(priceService, repository, "Lê/Grava")
+
+Rel(scheduler, updateService, "Dispara atualização via API")
+Rel(scheduler, grpcClient, "Envia cotações salvas (na inicialização)")
+
+Rel(updateService, ext_currency_api, "Busca cotações", "REST")
+Rel(updateService, repository, "Salva cotações")
+Rel(updateService, grpcClient, "Envia cotação atualizada", "gRPC") ' Assumindo que o updateService também notifica
+
+Rel(grpcClient, ms_payments, "UpdateCurrencyPrice()", "gRPC")
+Rel(repository, database, "Lê/Grava", "JPA")
+
+SHOW_LEGEND()
+@enduml

@@ -48,6 +48,9 @@ Um "zoom" em cada microsserviço, mostrando seus componentes internos e responsa
 ### Componentes - MS Users
 ![Componentes do MS Users](./images/c4-component-users.png)
 
+### Componentes - MS Currency
+![Componentes do MS Users](./images/c4-component-currency.png)
+
 ---
 
 ## Nível 4: Diagramas de Código (Padrões de Projeto)
@@ -70,4 +73,4 @@ Diagramas de classe que ilustram a implementação de padrões de projeto chave.
 ![Padrão Singleton](./images/c4-code-singleton-pattern.png)
 
 ### Padrão Strategy + Factory (MS Payments)
-![Padrão Strategy/Factory Acoplado](./images/c4-code-strategy-factory-pattern.png)
+![Padrão Strategy/Factory](./images/c4-code-strategy-factory-pattern.png)

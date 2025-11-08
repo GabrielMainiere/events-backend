@@ -9,14 +9,14 @@ Este documento detalha as principais decisões arquiteturais tomadas durante o d
 1. [Arquitetura de Microsserviços](#arquitetura-de-microsserviços)
 2. [Escolha de Tecnologias](#escolha-de-tecnologias)
 3. [Comunicação Entre Serviços](#comunicação-entre-serviços)
-4. [Gerenciamento de Dados](#gerenciamento-de-dados)
-5. [Segurança](#segurança)
+4. [Padrões de Projeto](#padroes-de-projeto)
+5. [Gerenciamento de Dados](#gerenciamento-de-dados)
+6. [Segurança](#segurança)
 
 ---
 
 ## Arquitetura de Microsserviços
 
-### Decisão: Por que Microsserviços?
 
 **Escolha**: Arquitetura de microsserviços
 
@@ -65,11 +65,6 @@ Este documento detalha as principais decisões arquiteturais tomadas durante o d
 - Gerenciamento de templates
 - Processamento assíncrono
 
-**Justificativa**:
-- Processamento assíncrono não bloqueia operações críticas
-- Permite retry sem afetar outros serviços
-- Facilita implementação de novos canais
-
 ---
 
 ## Escolha de Tecnologias
@@ -106,6 +101,34 @@ Este documento detalha as principais decisões arquiteturais tomadas durante o d
 - MS Registration → MS Payments (solicitar pagamento)
 - MS Events → MS Registration (consultar total de inscritos)
 - Qualquer MS → MS Notifications (enviar notificação)
+
+---
+
+## Padrões de Projeto
+
+**Singleton**
+
+O PrismaClient gerencia o pool de conexões com o banco de dados. Criar uma nova instância do PrismaClient para cada repositório ou serviço esgotaria rapidamente o limite de conexões do PostgreSQL. O Singleton garante que todos os repositórios em um microsserviço compartilhem a mesma instância e o mesmo pool de conexões.
+
+**Builder (MSEVENTS)**
+
+A entidade Evento é complexa, possuindo muitos campos obrigatórios (título, datas, capacidade) e opcionais (descrição, preço, datas de venda). Em vez de um construtor com 10+ argumentos, o EventBuilder é usado pelo EventDirector para construir um objeto EventProps passo a passo, garantindo que o objeto final seja sempre válido antes de ser enviado ao repositório.
+
+**Strategy**
+
+- (MSNOTIFICATIONS) Permite que a lógica de envio seja trocada. O NotificationSender não precisa saber como enviar um e-mail, ele apenas chama o método send() de uma INotificationStrategy. Podemos adicionar SMSStrategy ou PushStrategy sem alterar o NotificationSender.
+
+- (MSPAYMENTS) É a base do serviço, o PaymentService usa duas estratégias: PaymentMethodStrategy (para tratar a lógica de Pix vs. CreditCard) e PaymentGatewayStrategy (para tratar a lógica de MercadoPago vs. Stripe).
+
+- (MSEVENTSREGISTRATION) O RegistrationService usa o RegistrationStrategyService para escolher entre FreeRegistrationStrategy (status CONFIRMED) ou PaidRegistrationStrategy (status WAITING_PAYMENT) com base no is_free do evento.
+
+**Factory (MSPAYMENTS)**
+
+O PaymentService não contém new MercadoPagoGateway(). Ele pede ao PaymentGatewayFactory.getPaymentGateway(...) pela estratégia necessária. A Factory esconde a complexidade de qual classe concreta instanciar.
+
+**Decorator (MSNOTIFICATIONS)**
+
+EmailStrategy tem apenas uma responsabilidade: enviar o e-mail. Para adicionar funcionalidades de logs, novas tentativas (retry) e monitoramento de performance, não modificamos a EmailStrategy. Em vez disso, o StrategyFactory "embrulha" a estratégia em RetryDecorator, AuditLogDecorator e PerformanceLogDecorator. Isso permite que essas funcionalidades sejam adicionadas ou removidas sem alterar a lógica de negócio principal.
 
 ---
 
