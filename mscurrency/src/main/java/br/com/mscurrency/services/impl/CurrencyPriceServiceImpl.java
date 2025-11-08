@@ -31,25 +31,25 @@ public class CurrencyPriceServiceImpl implements CurrencyPriceService {
     }
 
     @Override
-    public CurrencyPrice createCurrencyPrice(String currencyCode, Integer priceInCentsBRL) {
+    public CurrencyPrice createCurrencyPrice(String currencyCode, Float priceBRL) {
         if (currencyPriceRepository.existsByCurrencyCode(currencyCode)) {
             throw new IllegalArgumentException("Currency with code " + currencyCode + " already exists");
         }
 
         CurrencyPrice currencyPrice = new CurrencyPrice();
         currencyPrice.setCurrencyCode(currencyCode.toUpperCase());
-        currencyPrice.setPriceInCentsBRL(priceInCentsBRL);
+        currencyPrice.setPriceBRL(priceBRL);
         currencyPrice.setLastUpdated(LocalDateTime.now());
 
         return currencyPriceRepository.save(currencyPrice);
     }
 
     @Override
-    public CurrencyPrice updateCurrencyPrice(String currencyCode, Integer priceInCentsBRL) {
+    public CurrencyPrice updateCurrencyPrice(String currencyCode, Float priceBRL) {
         CurrencyPrice currencyPrice = currencyPriceRepository.findByCurrencyCode(currencyCode)
                 .orElseThrow(() -> new IllegalArgumentException("Currency with code " + currencyCode + " not found"));
 
-        currencyPrice.setPriceInCentsBRL(priceInCentsBRL);
+        currencyPrice.setPriceBRL(priceBRL);
         currencyPrice.setLastUpdated(LocalDateTime.now());
 
         return currencyPriceRepository.save(currencyPrice);

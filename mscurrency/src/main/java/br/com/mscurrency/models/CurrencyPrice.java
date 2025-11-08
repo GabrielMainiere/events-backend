@@ -17,8 +17,8 @@ public class CurrencyPrice {
     @Column(length = 3, nullable = false, unique = true)
     private String currencyCode; // Ex: "USD", "EUR", "BRL"
 
-    @Column(name = "price_in_cents_brl", nullable = false)
-    private Integer priceInCentsBRL; // preço em centavos de real
+    @Column(name = "price_brl", nullable = false)
+    private Float priceBRL; // preço em real
 
     @Column(name = "last_updated", nullable = false)
     private LocalDateTime lastUpdated; // data/hora da última atualização

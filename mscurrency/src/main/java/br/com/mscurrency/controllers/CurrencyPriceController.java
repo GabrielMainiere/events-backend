@@ -31,12 +31,12 @@ public class CurrencyPriceController {
 
     @MutationMapping
     public CurrencyPrice createCurrencyPrice(@Argument CreateCurrencyPriceInput input) {
-        return currencyPriceService.createCurrencyPrice(input.getCurrencyCode(), input.getPriceInCentsBRL());
+        return currencyPriceService.createCurrencyPrice(input.getCurrencyCode(), input.getPriceBRL());
     }
 
     @MutationMapping
     public CurrencyPrice updateCurrencyPrice(@Argument UpdateCurrencyPriceInput input) {
-        return currencyPriceService.updateCurrencyPrice(input.getCurrencyCode(), input.getPriceInCentsBRL());
+        return currencyPriceService.updateCurrencyPrice(input.getCurrencyCode(), input.getPriceBRL());
     }
 
     @MutationMapping

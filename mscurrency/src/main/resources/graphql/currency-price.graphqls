@@ -14,16 +14,16 @@ type Mutation {
 
 type CurrencyPrice {
     currencyCode: String!
-    priceInCentsBRL: Int!
+    priceBRL: Float!
     lastUpdated: LocalDateTime!
 }
 
 input CreateCurrencyPriceInput {
     currencyCode: String!
-    priceInCentsBRL: Int!
+    priceBRL: Float!
 }
 
 input UpdateCurrencyPriceInput {
     currencyCode: String!
-    priceInCentsBRL: Int!
+    priceBRL: Float!
 }
