@@ -62,7 +62,7 @@ O sistema utilizou  5 padrões de projeto distintos, espalhandos pelos microsser
 2.  **Strategy**: Define famílias de algoritmos e permite trocar o comportamento em tempo de execução sem alterar o código cliente
 3.  **Factory**: Centraliza a criação de objetos sem expor a lógica de instanciamento, delegando a subclasses ou métodos
 4.  **Decorator**: Adiciona funcionalidades extras dinamicamente a um objeto sem alterar sua estrutura original
-5.  **Builder**: Adiciona funcionalidades extras dinamicamente a um objeto sem alterar sua estrutura original
+5.  **Builder**: Permite construir objetos complexos passo a passo, controlando o processo de criação e possibilitando diferentes configurações do mesmo objeto.
 
 Para saber mais profundado sobre a implementação de cada um acesse: 
 * [Decisões de Arquitetura (SOLID, Patterns)](./docs/ARCHITECTURE.md) - Para justificativas
