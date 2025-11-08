@@ -10,6 +10,7 @@ public class MercadoPagoCreditCardRequest {
     private final String description;
     private final String paymentMethodId;
     private final String payerEmail;
+    private final Integer installments;
 
     public MercadoPagoCreditCardRequest(Payment payment, String token, String paymentMethodId) {
         // Usar o valor final convertido para a moeda especificada
@@ -18,5 +19,6 @@ public class MercadoPagoCreditCardRequest {
         this.description = "Pagamento do evento " + payment.getEvent().getDescription() + " (" + payment.getCurrencyCode() + ")";
         this.paymentMethodId = paymentMethodId;
         this.payerEmail = payment.getUser().getEmail();
+        this.installments = 1;
     }
 }

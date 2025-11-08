@@ -58,6 +58,7 @@ public class MercadoPagoPaymentGateway implements  PaymentGatewayStrategy {
                 "token", request.getToken(),
                 "description", request.getDescription(),
                 "payment_method_id", request.getPaymentMethodId(),
+                "installments", request.getInstallments(),
                 "payer", Map.of("email", request.getPayerEmail())
         );
     }
