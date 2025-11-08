@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package mspayments.currency;
+
+option java_multiple_files = true;
+option java_package = "br.com.mscurrency.grpc.registration";
+option java_outer_classname = "CurrencyProto";
+
+service CurrencyPriceService {
+    rpc UpdateCurrencyPrice(CurrencyPriceUpdateRequest) returns (CurrencyPriceUpdateResponse);
+}
+
+message CurrencyPriceUpdateRequest {
+    string currencyCode = 1;
+    float priceBRL = 2;
+}
+
+message CurrencyPriceUpdateResponse {
+    bool success = 1;
+    string message = 2;
+}

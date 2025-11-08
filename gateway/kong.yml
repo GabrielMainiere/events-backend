@@ -62,6 +62,19 @@ services:
           secret_is_base64: false
       - name: jwt-claims-injector
           
+  - name: mscurrency
+    url: http://mscurrency:8081
+    routes:
+      - name: mscurrency-route
+        paths:
+          - /mscurrency
+        strip_path: true
+    plugins:
+      - name: jwt
+        config:
+          key_claim_name: "iss"
+          secret_is_base64: false
+      - name: jwt-claims-injector
   - name: msusers
     url: http://msusers:3000
     routes:

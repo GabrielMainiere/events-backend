@@ -1,7 +1,7 @@
 spring:
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5433/mspayments}
-    username: ${DATABASE_USERNAME:mspayments}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5438/mscurrency}
+    username: ${DATABASE_USERNAME:mscurrency}
     password: ${DATABASE_PASSWORD:1234567}
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -14,16 +14,17 @@ spring:
     locations: classpath:db/migration
 
 grpc:
-  server:
-    port: 50053
-
-ms:
-  events:
-    registration:
-      url: ${MSEVENTSREGISTRATION_URL:http://localhost:50054}
+  client:
+    payment-service:
+      address: ${PAYMENT_SERVICE_GRPC_URL:static://localhost:50053}
+      negotiationType: plaintext
 
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
     org.springframework.security: DEBUG
+    net.devh.boot.grpc: DEBUG
+
+server:
+  port: 8081

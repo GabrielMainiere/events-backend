@@ -146,7 +146,6 @@ services:
     networks:
       - msusers
     restart: unless-stopped
-
   msusers:
     container_name: msusers
     build:
@@ -160,7 +159,29 @@ services:
       - msusers
       - events-backend
     restart: unless-stopped
-
+  mscurrency:
+    container_name: mscurrency
+    build: /mscurrency
+    env_file:
+      - /mscurrency/.env
+    depends_on:
+      - mscurrency-postgres
+      - mspayments
+    networks:
+      - mscurrency
+      - events-backend
+  mscurrency-postgres:
+    container_name: mscurrency-postgres
+    image: postgres:17.4-alpine
+    ports:
+      - "5438:5433"
+    volumes:
+      - ./.data/postgresql/data:/var/lib/postgresql
+    env_file:
+      - /mscurrency/.env
+    command: -p 5433
+    networks:
+      - mscurrency
   kong:
     build: ./gateway
     container_name: kong
@@ -211,7 +232,7 @@ volumes:
     driver: local
   msusers-data:
     driver: local
-    
+
 networks:
   events-backend:
     driver: bridge
@@ -224,4 +245,6 @@ networks:
   mseventsregistration:
     driver: bridge
   msusers:
+    driver: bridge
+  mscurrency:
     driver: bridge

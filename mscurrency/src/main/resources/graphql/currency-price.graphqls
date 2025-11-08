@@ -1,0 +1,29 @@
+scalar LocalDateTime
+
+type Query {
+    getAllCurrencyPrices: [CurrencyPrice!]!
+    getCurrencyPriceByCurrencyCode(currencyCode: String!): CurrencyPrice
+    currencyPriceExists(currencyCode: String!): Boolean!
+}
+
+type Mutation {
+    createCurrencyPrice(input: CreateCurrencyPriceInput!): CurrencyPrice!
+    updateCurrencyPrice(input: UpdateCurrencyPriceInput!): CurrencyPrice!
+    deleteCurrencyPrice(currencyCode: String!): Boolean!
+}
+
+type CurrencyPrice {
+    currencyCode: String!
+    priceBRL: Float!
+    lastUpdated: LocalDateTime!
+}
+
+input CreateCurrencyPriceInput {
+    currencyCode: String!
+    priceBRL: Float!
+}
+
+input UpdateCurrencyPriceInput {
+    currencyCode: String!
+    priceBRL: Float!
+}
