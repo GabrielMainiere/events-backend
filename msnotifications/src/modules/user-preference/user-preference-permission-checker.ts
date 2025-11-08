@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationType, NotificationChannel } from '@prisma/client';
-import { UserPreferenceValidator } from './user-preference-validator';
+import { UserPreferenceValidator } from './validator/user-preference-validator';
 import { UserPreferenceLazy } from './user-preference-lazy';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationTemplate } from '@prisma/client';
-import { INotificationTemplateRepository } from 'src/common/interfaces/iNotificationTemplateRepository';
+import { INotificationTemplateRepository } from 'src/modules/notification-template/interfaces/iNotificationTemplateRepository';
 import { PrismaClientSingleton } from 'src/core/prismaClientSingleton';
 
 @Injectable()

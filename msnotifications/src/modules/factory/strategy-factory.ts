@@ -1,42 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { NotificationChannel } from '@prisma/client';
-import { EmailStrategy } from '../strategy/email.strategy';
-import { SmsStrategy } from '../strategy/sms.strategy';
-import { PushStrategy } from '../strategy/push.strategy';
-import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 import { AuditLogDecorator } from 'src/modules/decorator/audit-log.decorator';
 import { PerformanceLogDecorator } from 'src/modules/decorator/performance-log.decorator';
 import { RetryDecorator } from 'src/modules/decorator/retry.decorator';
+import { IStrategyFactory } from './interfaces/iStrategyFactory';
+import { INotificationStrategy } from '../strategy/interfaces/iNotificationStrategy';
+import { NOTIFICATION_STRATEGIES } from '../strategy/interfaces/constants';
+import { IChannelStrategy } from '../strategy/interfaces/iChannelStrategy';
 
 
 @Injectable()
-export class StrategyFactory {
+export class StrategyFactory implements IStrategyFactory {
   private readonly strategies = new Map<NotificationChannel, INotificationStrategy>();
 
   constructor(
-    private readonly emailStrategy: EmailStrategy,
-    private readonly smsStrategy: SmsStrategy,
-    private readonly pushStrategy: PushStrategy,
+    @Inject(NOTIFICATION_STRATEGIES)
+    private readonly allStrategies: IChannelStrategy[],
   ) {
     this.registerStrategies();
   }
 
-
   private registerStrategies(): void {
-    this.strategies.set(
-      NotificationChannel.EMAIL,
-      this.wrapWithDecorators(this.emailStrategy),
-    );
-
-    this.strategies.set(
-      NotificationChannel.SMS,
-      this.wrapWithDecorators(this.smsStrategy),
-    );
-
-    this.strategies.set(
-      NotificationChannel.PUSH,
-      this.wrapWithDecorators(this.pushStrategy),
-    );
+    for (const strategy of this.allStrategies) {
+      this.strategies.set(
+        strategy.channel,
+        this.wrapWithDecorators(strategy),
+      );
+    }
   }
 
   public getStrategy(channel: NotificationChannel): INotificationStrategy {

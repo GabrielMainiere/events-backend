@@ -1,35 +1,40 @@
 import { Module } from '@nestjs/common';
 import { NotificationTemplateService } from './notification-template.service';
 import { NotificationTemplateResolver } from './notification-resolver-template.service';
-import { NotificationTemplateValidator } from './notification-template-validator';
+import { TemplateProcessorModule } from '../template-processor/template-processor.module';
 import { NotificationTemplateRepository } from './notification-template.repository';
-import { NotificationTemplateResolver as GraphQLResolver } from './notification-template.resolver';
-import { TemplateProcessorModule } from '../strategy/template-processor/template-processor.module';
+import { NotificationTemplateResolver as GraphQLResolver } from './notification-template.resolver'; 
+import { NotificationTemplateValidator } from './validator/notification-template-validator';
 import { LoggerModule } from '../logger/logger.module';
 import { DecoratorModule } from '../decorator/decorator.module';
 
 @Module({
-  imports: [
-    DecoratorModule,
-    TemplateProcessorModule,
-    LoggerModule,
-  ],
+  imports: [DecoratorModule, TemplateProcessorModule, LoggerModule],
   providers: [
     NotificationTemplateRepository,
     {
       provide: 'INotificationTemplateRepository',
       useClass: NotificationTemplateRepository,
     },
-    NotificationTemplateService,
-    NotificationTemplateValidator,
-    NotificationTemplateResolver,
+    {
+      provide: 'INotificationTemplateService',
+      useClass: NotificationTemplateService,
+    },
+    {
+      provide: 'INotificationTemplateValidator',
+      useClass: NotificationTemplateValidator,
+    },
+    {
+      provide: 'INotificationTemplateResolver',
+      useClass: NotificationTemplateResolver,
+    },
     GraphQLResolver,
   ],
   exports: [
     'INotificationTemplateRepository',
-    NotificationTemplateService,
-    NotificationTemplateValidator,
-    NotificationTemplateResolver,
+    'INotificationTemplateService',
+    'INotificationTemplateValidator',
+    'INotificationTemplateResolver', 
   ],
 })
 export class NotificationTemplateModule {}

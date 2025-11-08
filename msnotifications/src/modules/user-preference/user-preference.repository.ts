@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserPreference, NotificationType, NotificationChannel } from '@prisma/client';
-import { IUserPreferenceRepository } from 'src/common/interfaces/iUserPreferenceRepository';
+import { IUserPreferenceRepository } from 'src/modules/user-preference/interfaces/iUserPreferenceRepository';
 import { PrismaClientSingleton } from 'src/core/prismaClientSingleton';
 
 @Injectable()

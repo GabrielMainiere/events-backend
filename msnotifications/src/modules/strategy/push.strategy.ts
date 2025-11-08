@@ -1,8 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
+import { NotificationChannel } from '@prisma/client';
+import { IChannelStrategy } from './interfaces/iChannelStrategy';
 
 @Injectable()
-export class PushStrategy implements INotificationStrategy {
+export class PushStrategy implements IChannelStrategy {
+  public readonly channel = NotificationChannel.PUSH;
   private readonly logger = new Logger(PushStrategy.name);
 
   async send(recipient: string, subject: string, body: string): Promise<void> {

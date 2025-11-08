@@ -1,12 +1,12 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { NotificationProcessorService } from './notification-processor.service';
-import { RequestLogger } from '../logger/request-logger';
 import { PayloadHelper } from '../../common/helper/payload.helper';
 import type { AccountNotificationRequest } from '../../common/interfaces/iAccountNotificationRequest';
 import type { EventNotificationRequest } from '../../common/interfaces/iEventNotificationRequest';
 import type { PaymentNotificationRequest } from '../../common/interfaces/iPaymentNotificationRequest';
 import type { NotificationResponse } from '../../common/interfaces/iNotificationResponse';
+import type{ IRequestLogger } from '../logger/interfaces/iLogger';
 
 
 @Controller()
@@ -14,7 +14,8 @@ export class NotificationImplementation {
 
   constructor(
     private readonly processor: NotificationProcessorService,
-    private readonly requestLogger: RequestLogger,
+    @Inject('IRequestLogger')
+    private readonly requestLogger: IRequestLogger,
     private readonly payloadHelper: PayloadHelper,
   ) {}
 

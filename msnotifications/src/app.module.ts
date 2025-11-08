@@ -7,7 +7,6 @@ import { NotificationImplementationModule } from './modules/notification-impleme
 import { WorkerModule } from './worker/worker.module';
 import { EmailModule } from './modules/email/email.module';
 import { StrategyModule } from './modules/strategy/strategy.module';
-import { StrategyFactory } from './modules/factory/strategy-factory';
 import { DecoratorModule } from './modules/decorator/decorator.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
@@ -16,6 +15,7 @@ import './common/enum/notification-type.enum';
 import { UserPreferenceModule } from './modules/user-preference/user-preference.module';
 import { HealthModule } from './health/health.module';
 import { join } from 'path';
+import { StrategyFactoryModule } from './modules/factory/strategy-factory.module';
 
 
 
@@ -32,7 +32,7 @@ import { join } from 'path';
     NotificationImplementationModule,
     WorkerModule,
     StrategyModule,
-    StrategyFactory,
+    StrategyFactoryModule,
     DecoratorModule,
     UserPreferenceModule,
     HealthModule,

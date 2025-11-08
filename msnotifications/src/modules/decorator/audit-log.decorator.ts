@@ -1,19 +1,20 @@
 import { Logger } from '@nestjs/common';
 import { BaseNotificationDecorator } from './base-notification.decorator';
-import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
+import { INotifier } from './interfaces/iNotifier';
+
 
 export class AuditLogDecorator extends BaseNotificationDecorator {
   private readonly logger = new Logger(AuditLogDecorator.name);
 
-  constructor(strategy: INotificationStrategy) {
-    super(strategy);
+  constructor(notifier: INotifier) {
+    super(notifier);
   }
 
   async send(recipient: string, subject: string, body: string): Promise<void> {
     this.logStart(recipient, subject);
 
     try {
-      await this.strategy.send(recipient, subject, body);
+      await this.notifier.send(recipient, subject, body);
       this.logSuccess(recipient);
     } catch (error) {
       this.logError(recipient, error);

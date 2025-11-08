@@ -1,18 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { UserPreferenceService } from '../user-preference/user-preference.service';
-import { NotificationEnqueuer } from './notification-enqueuer';
-import { RequestLogger } from '../logger/request-logger';
-import { NotificationTemplateValidator } from '../notification-template/notification-template-validator';
-import { ProcessNotificationInput } from 'src/common/interfaces/iProcessNotificationInput';
-import { ProcessNotificationOutput } from 'src/common/interfaces/iProcessNotificationOutput';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ProcessNotificationInput } from 'src/modules/notification-implementation/interfaces/iProcessNotificationInput';
+import { ProcessNotificationOutput } from 'src/modules/notification-implementation/interfaces/iProcessNotificationOutput';
+import type { INotificationTemplateValidator } from '../notification-template/interfaces/iNotificationTemplateValidator';
+import type { IUserPreferenceService } from '../user-preference/interfaces/iUserPreferenceService';
+import type { INotificationEnqueuer } from './interfaces/iNotificationEnqueuer';
+import type{ IRequestLogger } from '../logger/interfaces/iLogger';
+
 
 @Injectable()
 export class NotificationProcessorService {
   constructor(
-    private readonly templateValidator: NotificationTemplateValidator,
-    private readonly userPreferenceService: UserPreferenceService,
-    private readonly enqueuer: NotificationEnqueuer,
-    private readonly requestLog: RequestLogger,
+    @Inject('INotificationTemplateValidator')
+    private readonly templateValidator: INotificationTemplateValidator,
+    @Inject('IUserPreferenceService')
+    private readonly userPreferenceService: IUserPreferenceService,
+    @Inject('INotificationEnqueuer')
+    private readonly enqueuer: INotificationEnqueuer,
+    @Inject('IRequestLogger')
+    private readonly requestLog: IRequestLogger,
   ) {}
 
   async process(data: ProcessNotificationInput): Promise<ProcessNotificationOutput> {

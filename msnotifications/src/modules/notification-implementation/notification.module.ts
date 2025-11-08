@@ -11,7 +11,7 @@ import { LoggerModule } from '../logger/logger.module';
 
 @Module({
   imports: [
-    NotificationLogModule, 
+    NotificationLogModule,
     NotificationTemplateModule,
     UserPreferenceModule,
     DecoratorModule,
@@ -20,7 +20,10 @@ import { LoggerModule } from '../logger/logger.module';
   controllers: [NotificationImplementation],
   providers: [
     NotificationProcessorService,
-    NotificationEnqueuer,
+    {
+      provide: 'INotificationEnqueuer',
+      useClass: NotificationEnqueuer,
+    },
     PayloadHelper,
   ],
 })
