@@ -34,7 +34,7 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
             var stripeResponse = stripeClient.createCreditCardPayment(payload);
             return StripeCreditCardMapper.toCreditCardResponse(stripeResponse);
         } catch (Exception e) {
-            log.error("Erro ao processar pagamento com cartão no Stripe: {}", e.getMessage(), e);
+            log.error("Error processing credit card payment on Stripe: {}", e.getMessage(), e);
             // Retorna um pagamento rejeitado em caso de erro
             CreditCardResponse errorResponse = new CreditCardResponse();
             errorResponse.setStatus("rejected");
