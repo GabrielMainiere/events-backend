@@ -33,7 +33,7 @@ Este projeto é um sistema completo de gerenciamento de eventos, desenvolvido ut
 ### Requisitos Arquiteturais
 
 -   **API Gateway (Kong)**: Ponto único de entrada que centraliza todas as requisições externas.
--   **Arquitetura de Microsserviços**: 5 microsserviços independentes (NestJS e Spring Boot).
+-   **Arquitetura de Microsserviços**: 6 microsserviços independentes (NestJS e Spring Boot).
 -   **GraphQL**: Comunicação otimizada com frontend.
 -   **gRPC**: Comunicação de alta performance entre microsserviços.
 -   **Isolamento de Dados**: Cada microsserviço possui seu próprio banco de dados PostgreSQL.
