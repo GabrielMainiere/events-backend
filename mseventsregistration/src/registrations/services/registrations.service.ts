@@ -9,7 +9,9 @@ import { EventWithUsers } from '../entities/eventWithUsers.entity';
 import { EventMapper } from 'src/mappers/eventMapper';
 import { NotificationsTemplateNames } from 'src/core/enums';
 import { NotificationsClientService } from 'src/grpc/notifications/client/notifications.client.service';
-import { tb_user, tb_registered_event } from '@prisma/client';
+import { tb_user, tb_registered_event, RegistrationStatus } from '@prisma/client';
+import { QRCodeGenerator } from 'src/utils/qrCodeGenerator';
+import { QRCode } from '../entities/qrCode.entity';
 
 @Injectable()
 export class RegistrationService {
@@ -102,4 +104,44 @@ export class RegistrationService {
     }
   }
 
+
+  async generateCheckInQRCode(userId: string, eventId: string): Promise<QRCode> {
+    const registration = await this.registrationRepo.findByUserAndEvent(userId, eventId);
+    if (!registration || registration.status !== RegistrationStatus.CONFIRMED) {
+      throw new Error('This user does not have a confirmed registration for this event.');
+    }
+
+    const event = await this.registrationRepo.findEventById(eventId);
+    if (!event) throw new Error('Event not found');
+
+    const eventStartLocal = new Date(
+      event.start_at.getFullYear(),
+      event.start_at.getMonth(),
+      event.start_at.getDate(),
+      event.start_at.getHours(),
+      event.start_at.getMinutes(),
+      event.start_at.getSeconds()
+    );
+
+    const nowLocal = new Date();
+
+    const diffMs = eventStartLocal.getTime() - nowLocal.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    if (diffHours > 3) {
+      throw new Error('The QRcode can only be generated 3 hours before the start of the event.');
+    }
+
+    if (diffHours < 0) {
+      throw new Error('The event has already started or ended. QRcode can no longer be generated.');
+    }
+
+    const qrData = JSON.stringify({ userId, eventId });
+    const base64 = await QRCodeGenerator.generateBase64(qrData);
+
+    return {
+      base64,
+      expiresAt: event.end_at,
+    };
+  }
 }
