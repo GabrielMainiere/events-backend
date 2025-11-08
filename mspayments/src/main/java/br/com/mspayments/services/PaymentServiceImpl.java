@@ -30,11 +30,18 @@ public class PaymentServiceImpl implements PaymentService {
     private final RegistrationGrpcClient registrationGrpcClient;
     private final UserService userService;
     private final EventService eventService;
+    private final CurrencyConversionService currencyConversionService;
 
     @Override
     @Transactional
     public PaymentResponse create(CreatePaymentInput input) {
         try {
+            // Validar se a moeda é suportada antes de processar
+            String targetCurrency = input.getCurrencyCode() != null ? input.getCurrencyCode().toUpperCase() : "BRL";
+            if (!currencyConversionService.isCurrencySupported(targetCurrency)) {
+                throw new RuntimeException("Moeda não suportada: " + targetCurrency);
+            }
+
             // Chamada gRPC para obter dados de registro
             GetRegistrationResponse registrationResponse = registrationGrpcClient.getRegistration(
                 input.getUserId(),
@@ -54,13 +61,16 @@ public class PaymentServiceImpl implements PaymentService {
             Event event = eventService.createOrUpdateEvent(registrationData.getEvent(), input.getEventId());
             User user = userService.createOrUpdateUser(registrationData.getUser(), input.getUserId());
 
-            PaymentMethodData paymentData = PaymentMethodFactory.createPaymentMethodData(input, event, user);
+            // Criar o pagamento com conversão de moeda
+            Payment payment = input.toPayment(event, user, currencyConversionService);
 
-            paymentData.getPayment().setCreatedAt(Instant.now());
-            paymentData.getPayment().setStatus(PaymentStatus.PENDING);
+            log.info("Payment created with basePrice: {} BRL, finalPrice: {} {}",
+                payment.getBasePrice(), payment.getFinalPrice(), payment.getCurrencyCode());
 
-            var gatewayStrategy = PaymentGatewayFactory.getPaymentGateway(paymentData.getPayment().getGateway());
-            var methodStrategy = PaymentMethodFactory.getPaymentMethod(paymentData.getPayment().getMethod());
+            PaymentMethodData paymentData = PaymentMethodFactory.createPaymentMethodData(input, payment);
+
+            var gatewayStrategy = PaymentGatewayFactory.getPaymentGateway(payment.getGateway());
+            var methodStrategy = PaymentMethodFactory.getPaymentMethod(payment.getMethod());
 
             PaymentResponse response = methodStrategy.pay(gatewayStrategy, paymentData);
 

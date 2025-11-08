@@ -1,12 +1,10 @@
 package br.com.mspayments.strategies.paymentMethod;
 
-import br.com.mspayments.models.Event;
 import br.com.mspayments.models.PaymentMethod;
 
 import java.util.Map;
 
 import br.com.mspayments.controllers.dtos.CreatePaymentInput;
-import br.com.mspayments.models.User;
 import br.com.mspayments.strategies.paymentMethod.dtos.PaymentMethodData;
 import br.com.mspayments.models.Payment;
 
@@ -20,9 +18,8 @@ public class PaymentMethodFactory {
 
         return strategies.get(paymentMethod);
     }
-    public static PaymentMethodData createPaymentMethodData(CreatePaymentInput input, Event event, User user) {
-        Payment payment = input.toPayment(event, user);
 
+    public static PaymentMethodData createPaymentMethodData(CreatePaymentInput input, Payment payment) {
         if (payment.getMethod() == PaymentMethod.CREDIT_CARD) {
             String cardToken = input.getCardToken();
             Integer installments = input.getInstallments() != null ? input.getInstallments() : 1;

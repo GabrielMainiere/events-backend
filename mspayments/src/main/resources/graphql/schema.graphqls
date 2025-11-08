@@ -24,6 +24,9 @@ type Payment {
   event: Event!
   user: User!
   amount: Int!
+  basePrice: Int! # preço base em centavos BRL
+  finalPrice: Int! # preço final convertido em centavos
+  currencyCode: String! # código da moeda utilizada
   method: PaymentMethod!
   gateway: PaymentGateway!
   gatewayTransactionId: String
@@ -77,6 +80,7 @@ input CreatePaymentInput {
   userId: String!
   method: PaymentMethod!
   gateway: PaymentGateway!
+  currencyCode: String # código da moeda (USD, EUR, BRL) - padrão BRL se não informado
   cardToken: String
   installments: Int
   paymentMethodId: String

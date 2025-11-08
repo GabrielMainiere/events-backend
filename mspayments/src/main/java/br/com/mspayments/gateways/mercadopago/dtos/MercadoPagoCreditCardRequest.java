@@ -13,9 +13,9 @@ public class MercadoPagoCreditCardRequest {
     private final String payerEmail;
 
     public MercadoPagoCreditCardRequest(Payment payment, String token, Integer installments, String paymentMethodId) {
-        this.transactionAmount = payment.getAmount() / 100.00;
+        this.transactionAmount = payment.getFinalPrice() / 100.00;
         this.token = token;
-        this.description = "Pagamento do evento " + payment.getEvent().getDescription();
+        this.description = "Pagamento do evento " + payment.getEvent().getDescription() + " (" + payment.getCurrencyCode() + ")";
         this.installments = installments;
         this.paymentMethodId = paymentMethodId;
         this.payerEmail = payment.getUser().getEmail();
