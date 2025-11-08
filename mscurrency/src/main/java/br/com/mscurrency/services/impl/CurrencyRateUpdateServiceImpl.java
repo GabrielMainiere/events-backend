@@ -4,6 +4,7 @@ import br.com.mscurrency.models.CurrencyPrice;
 import br.com.mscurrency.repositories.CurrencyPriceRepository;
 import br.com.mscurrency.services.CurrencyRateUpdateService;
 import br.com.mscurrency.services.ExchangeRateApiService;
+import br.com.mscurrency.services.PaymentGrpcService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class CurrencyRateUpdateServiceImpl implements CurrencyRateUpdateService 
 
     private final ExchangeRateApiService exchangeRateApiService;
     private final CurrencyPriceRepository currencyPriceRepository;
+    private final PaymentGrpcService paymentGrpcService;
 
     @Override
     @Transactional
@@ -43,6 +45,7 @@ public class CurrencyRateUpdateServiceImpl implements CurrencyRateUpdateService 
 
             int updatedCount = 0;
 
+            // Para cada moeda no banco, verificar se existe na API e atualizar
             for (CurrencyPrice currency : existingCurrencies) {
                 String currencyCode = currency.getCurrencyCode();
 
@@ -53,8 +56,11 @@ public class CurrencyRateUpdateServiceImpl implements CurrencyRateUpdateService 
                     if (newRate != null && !newRate.equals(currentRate)) {
                         currency.setPriceBRL(newRate);
                         currency.setLastUpdated(LocalDateTime.now());
-                        currencyPriceRepository.save(currency);
+                        CurrencyPrice updatedCurrency = currencyPriceRepository.save(currency);
                         updatedCount++;
+
+                        // Enviar atualização via gRPC para o microsserviço de pagamentos
+                        paymentGrpcService.sendCurrencyPriceUpdate(updatedCurrency.getCurrencyCode(), updatedCurrency.getPriceBRL());
 
                         log.info("Updated {} from {} to {}", currencyCode, currentRate, newRate);
                     } else {
