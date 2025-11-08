@@ -70,8 +70,19 @@ type EventWithUsers {
   confirmedUsers: [User!]!
 }
 
+type QRCode {
+  base64: String!
+  expiresAt: DateTime!
+}
+
 type Query {
   getAllUsersByEvent(eventId: String!): EventWithUsers!
+  generateCheckInQRCode(data: GenerateQRCodeInput!): QRCode!
+}
+
+input GenerateQRCodeInput {
+  userId: String!
+  eventId: String!
 }
 
 type Mutation {
