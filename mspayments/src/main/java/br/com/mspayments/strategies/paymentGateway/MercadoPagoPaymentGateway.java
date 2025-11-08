@@ -30,6 +30,11 @@ public class MercadoPagoPaymentGateway implements  PaymentGatewayStrategy {
 
     @Override
     public CreditCardResponse processCreditCard(Payment payment, String cardToken, String paymentMethodId) {
+        // Validação: MercadoPago só aceita pagamentos em BRL
+        if (!"BRL".equalsIgnoreCase(payment.getCurrencyCode())) {
+            throw new RuntimeException("MercadoPago só aceita pagamentos em Real Brasileiro (BRL). Moeda informada: " + payment.getCurrencyCode());
+        }
+
         //regras de negocio do cartao de credito
         var payload = generateCreateCreditCardPayload(payment, cardToken, paymentMethodId);
         var mpCreditCardResponse = mercadoPagoClient.createCreditCardPayment(payload);
