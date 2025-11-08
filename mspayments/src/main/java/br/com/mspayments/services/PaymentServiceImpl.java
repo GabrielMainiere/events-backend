@@ -88,7 +88,7 @@ public class PaymentServiceImpl implements PaymentService {
             return response;
 
         } catch (Exception e) {
-            log.error("Erro ao processar pagamento", e);
+            log.error("Error processing payment", e);
             throw new RuntimeException(e.getMessage());
         }
     }

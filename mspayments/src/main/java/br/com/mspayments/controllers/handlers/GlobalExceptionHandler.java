@@ -16,10 +16,10 @@ public class GlobalExceptionHandler extends DataFetcherExceptionResolverAdapter 
     @Override
     protected GraphQLError resolveToSingleError(Throwable ex, DataFetchingEnvironment env) {
         if (ex instanceof RuntimeException) {
-            log.error("Erro capturado pelo handler global: {}", ex.getMessage(), ex);
+            log.error("Error caught by global handler: {}", ex.getMessage(), ex);
 
             return GraphqlErrorBuilder.newError()
-                .message(ex.getMessage() != null ? ex.getMessage() : "Erro interno do servidor")
+                .message(ex.getMessage() != null ? ex.getMessage() : "Internal server error")
                 .errorType(ErrorType.BAD_REQUEST)
                 .location(env.getField().getSourceLocation())
                 .path(env.getExecutionStepInfo().getPath())
