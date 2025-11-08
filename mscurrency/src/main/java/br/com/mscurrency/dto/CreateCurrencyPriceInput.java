@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class CreateCurrencyPriceInput {
     private String currencyCode;
-    private Long priceInCentsBRL;
+    private Integer priceInCentsBRL;
 }

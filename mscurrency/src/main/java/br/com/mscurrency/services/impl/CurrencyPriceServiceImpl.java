@@ -31,7 +31,7 @@ public class CurrencyPriceServiceImpl implements CurrencyPriceService {
     }
 
     @Override
-    public CurrencyPrice createCurrencyPrice(String currencyCode, Long priceInCentsBRL) {
+    public CurrencyPrice createCurrencyPrice(String currencyCode, Integer priceInCentsBRL) {
         if (currencyPriceRepository.existsByCurrencyCode(currencyCode)) {
             throw new IllegalArgumentException("Currency with code " + currencyCode + " already exists");
         }
@@ -45,7 +45,7 @@ public class CurrencyPriceServiceImpl implements CurrencyPriceService {
     }
 
     @Override
-    public CurrencyPrice updateCurrencyPrice(String currencyCode, Long priceInCentsBRL) {
+    public CurrencyPrice updateCurrencyPrice(String currencyCode, Integer priceInCentsBRL) {
         CurrencyPrice currencyPrice = currencyPriceRepository.findByCurrencyCode(currencyCode)
                 .orElseThrow(() -> new IllegalArgumentException("Currency with code " + currencyCode + " not found"));
 
