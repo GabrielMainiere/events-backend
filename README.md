@@ -1,9 +1,5 @@
 # Sistema de Gerenciamento de Eventos
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
-![Language](https://img.shields.io/badge/language-TypeScript%20%7C%20Java-blue)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
-
 Sistema de gerenciamento de eventos similar ao Sympla, desenvolvido com arquitetura de microsserviços (NestJS e Spring Boot), gRPC, GraphQL e Kong API Gateway.
 
 ---
