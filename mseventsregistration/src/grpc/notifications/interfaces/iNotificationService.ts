@@ -1,9 +1,9 @@
 import { Observable } from 'rxjs/internal/Observable';
 import { NotificationResponseDto } from '../dto/notification-response.dto';
-import { SendRegistrationNotificationDto } from '../dto/send-registration-notification.dto';
+import { SendEventNotificationDto } from '../dto/send-event-notification.dto';
 
 export interface INotificationsClientService {
-  sendEventRegistrationNotification(
-    data: SendRegistrationNotificationDto
+  sendEventNotification(
+    data: SendEventNotificationDto
   ): Promise<Observable<NotificationResponseDto>>;
 }

@@ -6,7 +6,8 @@ import { environment } from 'src/core/environment';
 import { NotificationResponseDto } from '../dto/notification-response.dto';
 import { Observable } from 'rxjs';
 import { INotificationsClientService } from '../interfaces/iNotificationService';
-import { SendRegistrationNotificationDto } from '../dto/send-registration-notification.dto';
+import { SendEventNotificationDto } from '../dto/send-event-notification.dto';
+
 
 export class NotificationsClientService implements INotificationsClientService, OnModuleInit {
   @Client({
@@ -24,10 +25,10 @@ export class NotificationsClientService implements INotificationsClientService, 
     this.service = this.client.getService<INotificationsClientService>('NotificationService');
   }
 
-  async sendEventRegistrationNotification(
-    data: SendRegistrationNotificationDto
+  async sendEventNotification(
+    data: SendEventNotificationDto
   ): Promise<Observable<NotificationResponseDto>> {
-    const resp = await this.service.sendEventRegistrationNotification(data);
+    const resp = await this.service.sendEventNotification(data);
     resp.subscribe();
     return resp;
   }

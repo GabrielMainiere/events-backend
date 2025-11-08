@@ -73,6 +73,30 @@ export class RegistrationRepository implements IRegistrationRepository {
         return RegistrationMapper.toEntity(result);
     }
 
+    async findUserById(userId: string): Promise<tb_user | null> {
+        return this.prisma.tb_user.findUnique({ where: { id: userId } });
+    }
+
+    async findRegistrationsByEventId(eventId: string) {
+        const results = await this.prisma.tb_events_registration.findMany({
+            where: {
+                registered_event_id: eventId,
+                status: {
+                    in: [RegistrationStatus.CONFIRMED, RegistrationStatus.CHECKED_IN, RegistrationStatus.WAITING_PAYMENT],
+                },
+            },
+            select: {
+                user_id: true,
+                status: true,
+            },
+        });
+
+        return results.map(r => ({
+            userId: r.user_id,
+            status: r.status,
+        }));
+    }
+      
     async findAllConfirmedUsersByEvent(eventId: string): Promise<{ event: tb_registered_event; users: tb_user[] }> {
         const event = await this.prisma.tb_registered_event.findUnique({
             where: { id: eventId },
@@ -80,7 +104,7 @@ export class RegistrationRepository implements IRegistrationRepository {
         if (!event) {
             throw new Error('Event not found');
         }
-
+    
         const confirmedRegistrations = await this.prisma.tb_events_registration.findMany({
             where: {
                 registered_event_id: eventId,
@@ -90,6 +114,7 @@ export class RegistrationRepository implements IRegistrationRepository {
                 user: true,
             },
         });
+        
         const users = confirmedRegistrations.map((r) => r.user);
         return { event, users };
     }

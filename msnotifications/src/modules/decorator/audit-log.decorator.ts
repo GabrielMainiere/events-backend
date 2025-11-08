@@ -1,55 +1,53 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { NotificationLog } from '@prisma/client';
+import { Logger } from '@nestjs/common';
 import { BaseNotificationDecorator } from './base-notification.decorator';
+import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 
-
-@Injectable()
 export class AuditLogDecorator extends BaseNotificationDecorator {
   private readonly logger = new Logger(AuditLogDecorator.name);
 
-  async send(notification: NotificationLog): Promise<void> {
-    if (!this.strategy) {
-      throw new Error('Strategy não definida no Decorator');
-    }
+  constructor(strategy: INotificationStrategy) {
+    super(strategy);
+  }
 
-    this.logStart(notification);
+  async send(recipient: string, subject: string, body: string): Promise<void> {
+    this.logStart(recipient, subject);
 
     try {
-      await this.strategy.send(notification);
-      this.logSuccess(notification);
+      await this.strategy.send(recipient, subject, body);
+      this.logSuccess(recipient);
     } catch (error) {
-      this.logError(notification, error);
+      this.logError(recipient, error);
       throw error;
     }
   }
 
-  private logStart(notification: NotificationLog): void {
+  private logStart(recipient: string, subject: string): void {
     this.logger.log(
       `[SEND_START] Iniciando envio | ${JSON.stringify({
-        id: notification.id,
-        type: notification.notification_type,
-        channel: notification.channel,
-        user: notification.user_id,
-        recipient: notification.recipient_address,
+        recipient,
+        subject,
+        timestamp: new Date().toISOString(),
       })}`,
     );
   }
 
-  private logSuccess(notification: NotificationLog): void {
+  private logSuccess(recipient: string): void {
     this.logger.log(
       `[SEND_SUCCESS] Notificação enviada com sucesso | ${JSON.stringify({
-        id: notification.id,
+        recipient,
         status: 'delivered',
+        timestamp: new Date().toISOString(),
       })}`,
     );
   }
 
-  private logError(notification: NotificationLog, error: Error): void {
+  private logError(recipient: string, error: Error): void {
     this.logger.error(
       `[SEND_ERROR] Falha no envio | ${JSON.stringify({
-        id: notification.id,
+        recipient,
         error: error.message,
         stack: error.stack,
+        timestamp: new Date().toISOString(),
       })}`,
     );
   }

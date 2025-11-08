@@ -1,13 +1,14 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { NotificationTemplate } from '@prisma/client';
-import { NotificationTemplateRepository } from './notification-template.repository';
-import { RequestLogDecorator } from '../decorator/request-log.decorator';
+import type { INotificationTemplateRepository } from 'src/common/interfaces/iNotificationTemplateRepository';
+import { RequestLogger } from '../logger/request-logger';
 
 @Injectable()
 export class NotificationTemplateValidator {
   constructor(
-    private readonly repository: NotificationTemplateRepository,
-    private readonly requestLog: RequestLogDecorator,
+    @Inject('INotificationTemplateRepository')
+    private readonly repository: INotificationTemplateRepository,
+    private readonly requestLog: RequestLogger,
   ) {}
 
   async findByNameOrFail(templateName: string): Promise<NotificationTemplate> {
@@ -15,7 +16,7 @@ export class NotificationTemplateValidator {
 
     if (!template) {
       this.requestLog.logTemplateNotFound(templateName);
-      throw new NotFoundException(`Template não encontrado: ${templateName}`);
+      throw new NotFoundException(`Template not found: ${templateName}`);
     }
 
     return template;
@@ -30,22 +31,30 @@ export class NotificationTemplateValidator {
     const template = await this.repository.findById(id);
 
     if (!template) {
-      throw new NotFoundException(`Template com ID "${id}" não encontrado`);
+      throw new NotFoundException(`Template with ID "${id}" not found`);
     }
 
     return template;
   }
 
-    async validateUniqueTemplateName(
-      template_name: string,
-      excludeId?: string,
-    ): Promise<void> {
-      const existing = await this.repository.findByName(template_name);
-      
-      if (existing && existing.id !== excludeId) {
+  async validateUniqueTemplateName(
+    template_name: string,
+    excludeId?: string,
+  ): Promise<void> {
+    if (excludeId) {
+      const exists = await this.repository.findByName(template_name);
+      if (exists && exists.id !== excludeId) {
         throw new ConflictException(
-          `Template com nome "${template_name}" já existe`,
+          `Template with name "${template_name}" already exists`,
+        );
+      }
+    } else {
+      const exists = await this.repository.findByName(template_name);
+      if (exists) { 
+        throw new ConflictException(
+          `Template with name "${template_name}" already exists`,
         );
       }
     }
+  }
 }

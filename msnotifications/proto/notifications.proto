@@ -3,16 +3,11 @@ syntax = "proto3";
 package notifications;
 
 service NotificationService {
-  rpc SendWelcomeNotification (AccountNotificationRequest) returns (NotificationResponse);
-  rpc SendVerificationNotification (AccountNotificationRequest) returns (NotificationResponse);
-  rpc SendPasswordResetNotification (AccountNotificationRequest) returns (NotificationResponse);
-  
-  rpc SendEventRegistrationNotification (EventNotificationRequest) returns (NotificationResponse);
-  rpc SendEventCancellationNotification (EventNotificationRequest) returns (NotificationResponse);
-  rpc SendEventReminderNotification (EventNotificationRequest) returns (NotificationResponse);
 
-  rpc SendPaymentConfirmationNotification (PaymentNotificationRequest) returns (NotificationResponse);
-  rpc SendPaymentFailedNotification (PaymentNotificationRequest) returns (NotificationResponse);
+  rpc SendAccountNotification (AccountNotificationRequest) returns (NotificationResponse);
+  rpc SendEventNotification (EventNotificationRequest) returns (NotificationResponse);
+  rpc SendPaymentNotification (PaymentNotificationRequest) returns (NotificationResponse);
+
 }
 
 message AccountNotificationRequest {

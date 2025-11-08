@@ -12,6 +12,12 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+ms:
+  events:
+    registration:
+      url: ${MSEVENTSREGISTRATION_URL:http://localhost:50054}
+
 logging:
   level:
     org.hibernate.SQL: DEBUG

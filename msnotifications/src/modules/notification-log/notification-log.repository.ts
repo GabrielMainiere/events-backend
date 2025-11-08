@@ -1,27 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma-ds/prisma.service';
 import { NotificationLog, NotificationStatus } from '@prisma/client';
-import { CreateNotificationLogDto } from 'src/common/dto/createNotificationLogDto';
 import { INotificationLogRepository } from 'src/common/interfaces/iNotificationLogRepository';
+
 
 @Injectable()
 export class NotificationLogRepository implements INotificationLogRepository {
   constructor(private readonly prisma: PrismaService) {}
-
-  async create(data: CreateNotificationLogDto): Promise<NotificationLog> {
-    return this.prisma.notificationLog.create({
-      data: {
-        ...data,
-        status: NotificationStatus.PENDENTE,
-      },
-    });
-  }
 
   async findById(id: string): Promise<NotificationLog | null> {
     return this.prisma.notificationLog.findUnique({
       where: { id },
     });
   }
+
+  async create(data: Partial<NotificationLog>): Promise<NotificationLog> {
+    return this.prisma.notificationLog.create({
+      data: {
+        user_id: data.user_id!,
+        notification_type: data.notification_type!,
+        channel: data.channel!,
+        recipient_address: data.recipient_address!,
+        template_name: data.template_name!,
+        payload: data.payload!,
+        status: data.status || NotificationStatus.PENDENTE,
+      },
+    });
+  }
+
 
   async findPending(): Promise<NotificationLog[]> {
     return this.prisma.notificationLog.findMany({
@@ -34,16 +40,30 @@ export class NotificationLogRepository implements INotificationLogRepository {
     });
   }
 
+  async findByUserId(userId: string): Promise<NotificationLog[]> {
+    return this.prisma.notificationLog.findMany({
+      where: { user_id: userId },
+      orderBy: { created_at: 'desc' },
+    });
+  }
+
+  async findByStatus(status: NotificationStatus): Promise<NotificationLog[]> {
+    return this.prisma.notificationLog.findMany({
+      where: { status },
+      orderBy: { created_at: 'desc' },
+    });
+  }
+
   async updateStatus(
     id: string,
     status: NotificationStatus,
-    error_message?: string,
+    errorMessage?: string,
   ): Promise<NotificationLog> {
     return this.prisma.notificationLog.update({
       where: { id },
       data: {
         status,
-        error_message,
+        error_message: errorMessage,
         sent_at: status === NotificationStatus.ENVIADO ? new Date() : undefined,
       },
     });

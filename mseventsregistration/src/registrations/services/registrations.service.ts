@@ -7,18 +7,21 @@ import { Registration } from '../entities/registration.entity';
 import type { IRegistrationRepository } from '../repositories/IRegistration.repository';
 import { EventWithUsers } from '../entities/eventWithUsers.entity';
 import { EventMapper } from 'src/mappers/eventMapper';
-import { NotificationsTemplateNames } from 'src/core/enums';
+import { NotificationsTemplateNames } from 'src/enum/notificationTemplateEnum';
 import { NotificationsClientService } from 'src/grpc/notifications/client/notifications.client.service';
 import { tb_user, tb_registered_event, RegistrationStatus } from '@prisma/client';
 import { QRCodeGenerator } from 'src/utils/qrCodeGenerator';
 import { QRCode } from '../entities/qrCode.entity';
+import { tb_user, tb_registered_event } from '@prisma/client';
+import { RegistrationStatus } from "@prisma/client";
+import { EventNotificationService } from 'src/grpc/notifications/event-notification.service';
 
 @Injectable()
 export class RegistrationService {
   constructor(
     @Inject('IUsersClient') private readonly usersClient: IUsersClient,
     private readonly strategyService: RegistrationStrategyService,
-    private readonly notificationsClientService: NotificationsClientService,
+    private readonly eventNotificationService: EventNotificationService,
     @Inject('IRegistrationValidators') private readonly validators: IRegistrationValidator[],
     @Inject('ICheckInValidators') private readonly checkInValidators: ICheckInValidator[],
     @Inject('IRegistrationRepository') private readonly registrationRepo: IRegistrationRepository,
@@ -57,8 +60,12 @@ export class RegistrationService {
 
     const registration = await this.strategyService.execute(userId, event);
 
-    await this.sendEventRegistrationNotification(user, event);
-    
+    if (registration.status === RegistrationStatus.CONFIRMED) {
+      await this.eventNotificationService.sendEventRegistrationNotification(user, event);
+    } else if (registration.status === RegistrationStatus.WAITING_PAYMENT) {
+      await this.eventNotificationService.sendWaitingPaymentNotification(user, event);
+    }
+
     return registration;
   }
 
@@ -79,7 +86,7 @@ export class RegistrationService {
 
     return this.registrationRepo.updateRegistrationStatus(registration.id, 'CHECKED_IN');
   }
-
+  
   async getAllUsersByEvent(eventId: string): Promise<EventWithUsers> {
     const { event, users } = await this.registrationRepo.findAllConfirmedUsersByEvent(eventId);
     return EventMapper.toGraphQL(event, users);
@@ -144,4 +151,6 @@ export class RegistrationService {
       expiresAt: event.end_at,
     };
   }
+}
+  }  
 }
