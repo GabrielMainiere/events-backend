@@ -25,9 +25,6 @@ export class UserService {
     const serializedCreateUserInput: UserCreateInput = {
       ...createUserInput,
       password: await this.getHashedPassword(createUserInput.password),
-      roles: {
-        connect: createUserInput.roles.map(roleId => ({ id: roleId })),
-      },
       activationCode: randomInt(100000, 999999).toString(),
     }
 
@@ -120,6 +117,6 @@ export class UserService {
       recipientAddress: user.email,
       payloadJson: JSON.stringify({ name: user.name }),
       templateName: NotificationsTemplateNames.ACCOUNT_WELCOME_EMAIL,
-    });
+    })
   }
 }

@@ -3,12 +3,15 @@ import { NotificationTemplateService } from './notification-template.service';
 import { NotificationTemplateEntity } from 'src/common/entities/notification-template.entity';
 import { CreateTemplateInput } from 'src/common/dto/createNotificationTemplate.input';
 import { UpdateTemplateInput } from 'src/common/dto/updateNotificationTemplate.input';
+import { Inject } from '@nestjs/common';
+import type { INotificationTemplateService } from './interfaces/iNotificationTemplateService';
 
 
 @Resolver(() => NotificationTemplateEntity)
 export class NotificationTemplateResolver {
   constructor(
-    private readonly templateService: NotificationTemplateService,
+    @Inject('INotificationTemplateService')
+    private readonly templateService: INotificationTemplateService,
   ) {}
 
   @Query(() => [NotificationTemplateEntity], { name: 'notificationTemplates' })

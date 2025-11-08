@@ -1,19 +1,20 @@
 import { Logger } from '@nestjs/common';
 import { BaseNotificationDecorator } from './base-notification.decorator';
-import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
+import { INotifier } from './interfaces/iNotifier';
+
 
 export class PerformanceLogDecorator extends BaseNotificationDecorator {
   private readonly logger = new Logger(PerformanceLogDecorator.name);
   private readonly SLOW_THRESHOLD_MS = 5000;
 
-  constructor(strategy: INotificationStrategy) {
-    super(strategy);
+  constructor(notifier: INotifier) {
+    super(notifier);
   }
 
   async send(recipient: string, subject: string, body: string): Promise<void> {
     const startTime = Date.now();
 
-    await this.strategy.send(recipient, subject, body);
+    await this.notifier.send(recipient, subject, body);
 
     const duration = Date.now() - startTime;
 

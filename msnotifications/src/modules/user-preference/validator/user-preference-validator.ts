@@ -1,13 +1,14 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Inject } from '@nestjs/common';
 import { UpsertUserPreferenceInput } from 'src/common/dto/upsertUserPreference.input';
 import { NotificationTypeHelper } from 'src/common/helper/notification-type.helper';
 import { NotificationType } from '@prisma/client';
-import { UserPreferenceLogger } from '../logger/user-preference-logger';
+import type { IUserPreferenceLogger } from 'src/modules/logger/interfaces/iLogger';
 
 @Injectable()
 export class UserPreferenceValidator {
   constructor(
-    private readonly preferenceLog: UserPreferenceLogger,
+    @Inject('IUserPreferenceLogger')
+    private readonly preferenceLog: IUserPreferenceLogger,
   ) {}
 
   validateUpsert(data: UpsertUserPreferenceInput): void {

@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { NotificationLog } from '@prisma/client';
-import { NotificationSender } from './notification-sender';
-import { WorkerLogger } from 'src/modules/logger/worker-logger';
-import { NotificationStatusUpdater } from './notification-status-updater';
+import { INotificationProcessor } from './interfaces/iNotificationProcessor';
+import type { INotificationSender } from './interfaces/iNotificationSender';
+import type { IWorkerLogger } from 'src/modules/logger/interfaces/iLogger';
+import type { INotificationStatusUpdater } from './interfaces/iNotificationStatusUpdater';
 
 @Injectable()
-export class NotificationProcessor {
+export class NotificationProcessor implements INotificationProcessor {
   constructor(
-    private readonly statusUpdater: NotificationStatusUpdater,
-    private readonly sender: NotificationSender,
-    private readonly workerLog: WorkerLogger,
+    @Inject('INotificationStatusUpdater')
+    private readonly statusUpdater: INotificationStatusUpdater,
+    @Inject('INotificationSender')
+    private readonly sender: INotificationSender,
+    @Inject('IWorkerLogger')
+    private readonly workerLog: IWorkerLogger,
   ) {}
 
   async process(notification: NotificationLog): Promise<boolean> {

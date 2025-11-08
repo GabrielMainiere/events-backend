@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma-ds/prisma.service';
 import { NotificationTemplate } from '@prisma/client';
-import { INotificationTemplateRepository } from 'src/common/interfaces/iNotificationTemplateRepository';
+import { INotificationTemplateRepository } from 'src/modules/notification-template/interfaces/iNotificationTemplateRepository';
+import { PrismaClientSingleton } from 'src/core/prismaClientSingleton';
 
 @Injectable()
 export class NotificationTemplateRepository implements INotificationTemplateRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  private prisma = PrismaClientSingleton.getInstance();
 
   async findById(id: string): Promise<NotificationTemplate | null> {
     return this.prisma.notificationTemplate.findUnique({

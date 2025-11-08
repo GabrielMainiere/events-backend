@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { NotificationStatus } from '@prisma/client';
-import { NotificationLogRepository } from 'src/modules/notification-log/notification-log.repository';
+import { INotificationStatusUpdater } from './interfaces/iNotificationStatusUpdater';
+import type { INotificationLogRepository } from 'src/modules/notification-log/interfaces/iNotificationLogRepository';
 
 @Injectable()
-export class NotificationStatusUpdater {
+export class NotificationStatusUpdater implements INotificationStatusUpdater{
   constructor(
-    private readonly notificationLogRepository: NotificationLogRepository,
+    @Inject('INotificationLogRepository')
+    private readonly notificationLogRepository: INotificationLogRepository,
   ) {}
 
   async markAsProcessing(notificationId: string): Promise<void> {

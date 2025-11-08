@@ -4,13 +4,16 @@ import { UserPreferenceEntity } from 'src/common/entities/user-preference.entity
 import { UpsertUserPreferenceInput } from 'src/common/dto/upsertUserPreference.input';
 import { NotificationTypeHelper } from 'src/common/helper/notification-type.helper';
 import { NotificationType } from 'src/common/enum/notification-type.enum';
+import { Inject } from '@nestjs/common';
+import type{ IUserPreferenceService } from './interfaces/iUserPreferenceService';
 
 
 @Resolver(() => UserPreferenceEntity)
 export class UserPreferenceResolver {
 
   constructor(
-    private readonly userPreferenceService: UserPreferenceService,
+    @Inject('IUserPreferenceService')
+    private readonly userPreferenceService: IUserPreferenceService,
   ) {}
 
   @Query(() => [UserPreferenceEntity], { name: 'userOptionalPreferences' })

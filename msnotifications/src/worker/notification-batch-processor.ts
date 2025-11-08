@@ -1,13 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { NotificationLog } from '@prisma/client';
-import { NotificationProcessor } from './notification-processor';
-import { BatchResult } from 'src/common/interfaces/iBathResult';
+import { BatchResult } from 'src/worker/interfaces/iBathResult';
+import type { INotificationProcessor } from './interfaces/iNotificationProcessor';
 
 
 @Injectable()
 export class NotificationBatchProcessor {
   constructor(
-    private readonly notificationProcessor: NotificationProcessor,
+    @Inject('INotificationProcessor')
+    private readonly notificationProcessor: INotificationProcessor,
   ) {}
 
   async process(notifications: NotificationLog[]): Promise<BatchResult> {

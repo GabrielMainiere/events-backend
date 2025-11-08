@@ -5,7 +5,6 @@ export class NotificationTypeHelper {
   private static readonly MANDATORY_TYPES: NotificationType[] = [
     NotificationType.ACCOUNT,
     NotificationType.PAYMENTS,
-    NotificationType.EVENT,
   ];
 
   static isMandatory(notificationType: NotificationType): boolean {
