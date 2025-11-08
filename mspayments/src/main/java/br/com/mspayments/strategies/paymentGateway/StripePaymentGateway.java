@@ -27,7 +27,7 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
     }
 
     @Override
-    public CreditCardResponse processCreditCard(Payment payment, String cardToken, Integer installments, String paymentMethodId) {
+    public CreditCardResponse processCreditCard(Payment payment, String cardToken, String paymentMethodId) {
         try {
             // Regras de negócio do cartão de crédito no Stripe
             var payload = generateCreateCreditCardPayload(payment, cardToken);
@@ -50,6 +50,7 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
         payload.put("source", request.getSource());
         payload.put("description", request.getDescription());
         payload.put("receipt_email", request.getReceiptEmail());
+
         return payload;
     }
 }
