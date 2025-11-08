@@ -1,0 +1,57 @@
+@startuml
+title Design Pattern - Strategy & Factory (MS Notifications)
+
+interface INotificationStrategy {
+  + send(recipient: string, subject: string, body: string): Promise<void>
+}
+
+interface IChannelStrategy extends INotificationStrategy {
+  + readonly channel: NotificationChannel
+}
+
+interface IStrategyFactory {
+  + getStrategy(channel: NotificationChannel): INotificationStrategy
+}
+
+class StrategyFactory {
+  - strategies: Map<NotificationChannel, INotificationStrategy>
+  + constructor(allStrategies: IChannelStrategy[])
+  + getStrategy(channel): INotificationStrategy
+  - registerStrategies(): void
+  - wrapWithDecorators(strategy: INotificationStrategy): INotificationStrategy
+}
+
+class EmailStrategy {
+  + readonly channel: NotificationChannel
+  + send(recipient, subject, body): Promise<void>
+}
+
+class SmsStrategy {
+  + readonly channel: NotificationChannel
+  + send(recipient, subject, body): Promise<void>
+}
+
+class PushStrategy {
+  + readonly channel: NotificationChannel
+  + send(recipient, subject, body): Promise<void>
+}
+
+INotificationStrategy <|-- IChannelStrategy
+IChannelStrategy <|.. EmailStrategy
+IChannelStrategy <|.. SmsStrategy
+IChannelStrategy <|.. PushStrategy
+
+IStrategyFactory <|.. StrategyFactory
+StrategyFactory ..> INotificationStrategy : "retorna"
+StrategyFactory ..> IChannelStrategy : "registra (todas)"
+
+
+note right of StrategyFactory
+  - Recebe todas as estratégias (Email, SMS, Push)
+    via injeção de dependência.
+  - Aplica decoradores (Retry, AuditLog, Performance)
+    antes de armazenar.
+  - Retorna a estratégia correta conforme o canal.
+end note
+
+@enduml

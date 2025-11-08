@@ -1,7 +1,7 @@
-import { INotifier } from "./interfaces/iNotifier";
+import { INotificationStrategy } from "../strategy/interfaces/iNotificationStrategy";
 
-export abstract class BaseNotificationDecorator implements INotifier {
-  constructor(protected readonly notifier: INotifier) {}
+export abstract class BaseNotificationDecorator implements INotificationStrategy {
+  constructor(protected readonly strategy: INotificationStrategy) {}
 
   abstract send(recipient: string, subject: string, body: string): Promise<void>;
 }

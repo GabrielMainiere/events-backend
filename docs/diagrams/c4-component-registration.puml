@@ -1,0 +1,58 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/refs/heads/master/C4_Component.puml
+
+title Diagrama de Componentes - MS Events Registration
+
+Component_Ext(ms_users, "MS Users", "gRPC Server", "Serviço de Usuários")
+Component_Ext(ms_notifications, "MS Notifications", "gRPC Server", "Serviço de Notificações")
+Component_Ext(ms_payments, "MS Payments", "gRPC Server", "Serviço de Pagamentos")
+Component_Ext(ms_events, "MS Events", "gRPC Server", "Serviço de Eventos")
+ComponentDb(database, "Registration DB", "PostgreSQL", "Armazena inscrições, cache de eventos e usuários")
+
+Container_Boundary(msregistration, "MS Events Registration") {
+    
+    Component(graphqlResolver, "Registration Resolver", "GraphQL Resolver", "API GraphQL para criar/consultar inscrições")
+    Component(grpcEvents, "Events gRPC Controller", "gRPC Server", "Recebe dados de eventos (cache) do MS Events")
+    Component(grpcPayments, "Payments gRPC Controller", "gRPC Server", "Recebe atualizações de pagamento do MS Payments")
+    
+    Component(registrationService, "Registration Service", "Service", "Orquestra inscrições de usuários")
+    Component(eventsRegService, "EventsReg. Service", "Service", "Orquestra cache de eventos e atualizações de pagamento")
+    Component(validationService, "Validation Service", "Validators", "Coleção de validadores de negócio (Ex: duplicidade, capacidade)")
+    
+    Component(strategyService, "Strategy Service", "Service", "Seleciona estratégia de registro (Paga ou Gratuita)")
+    Component(freeStrategy, "Free Reg. Strategy", "Strategy Pattern", "Processa inscrições gratuitas (Status: CONFIRMED)")
+    Component(paidStrategy, "Paid Reg. Strategy", "Strategy Pattern", "Processa inscrições pagas (Status: WAITING_PAYMENT)")
+    
+    Component(registrationRepo, "Registration Repository", "Repository", "Persiste inscrições (tb_events_registration)")
+    Component(eventsRepo, "EventsReg. Repository", "Repository", "Persiste cache de eventos (tb_registered_event)")
+    Component(prismaSingleton, "Prisma Singleton", "Singleton Pattern", "Gerencia a instância única do PrismaClient")
+    
+    Component(userClient, "User Client", "gRPC Client", "Cliente para MS Users")
+    Component(notificationClient, "Notification Client", "gRPC Client", "Cliente para MS Notifications")
+}
+Rel(graphqlResolver, registrationService, "Chama 'registerUser'")
+Rel(registrationService, userClient, "Busca/Cria usuário")
+Rel(registrationService, validationService, "Executa validadores")
+Rel(registrationService, strategyService, "Usa")
+Rel(strategyService, freeStrategy, "Chama 'execute'")
+Rel(strategyService, paidStrategy, "Chama 'execute'")
+Rel(freeStrategy, registrationRepo, "Grava 'CONFIRMED'")
+Rel(paidStrategy, registrationRepo, "Grava 'WAITING_PAYMENT'")
+Rel(registrationService, notificationClient, "Envia notificação")
+
+Rel(grpcEvents, eventsRegService, "Chama 'notifyEventCreated', etc.")
+Rel(eventsRegService, eventsRepo, "Grava/Atualiza cache de eventos")
+
+Rel(grpcPayments, eventsRegService, "Chama 'receivePaymentUpdate'")
+Rel(eventsRegService, registrationRepo, "Atualiza status (CONFIRMED/CANCELED)")
+Rel(eventsRegService, notificationClient, "Envia notificação")
+
+Rel(userClient, ms_users, "FindOne()", "gRPC")
+Rel(notificationClient, ms_notifications, "sendEventNotification()", "gRPC")
+
+Rel(registrationRepo, prismaSingleton, "Usa", "getInstance()")
+Rel(eventsRepo, prismaSingleton, "Usa", "getInstance()")
+Rel(prismaSingleton, database, "Lê/Grava", "Prisma")
+
+SHOW_LEGEND()
+@enduml

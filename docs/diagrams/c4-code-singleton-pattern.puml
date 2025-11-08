@@ -1,0 +1,54 @@
+@startuml
+title Design Pattern - Singleton (Prisma Client)
+
+class PrismaService {
+  - {static} instance: PrismaService
+  - prismaClient: PrismaClient
+  - constructor()
+  + {static} getInstance(): PrismaService
+  + getClient(): PrismaClient
+  + disconnect(): Promise<void>
+}
+
+class EventsRepository {
+  - prisma: PrismaClient
+  + findAll(): Promise<Event[]>
+  + create(data): Promise<Event>
+}
+
+class RegistrationsRepository {
+  - prisma: PrismaClient
+  + findByEvent(eventId): Promise<Registration[]>
+  + create(data): Promise<Registration>
+}
+
+class UsersRepository {
+  - prisma: PrismaClient
+  + findById(id): Promise<User>
+  + create(data): Promise<User>
+}
+
+class NotificationsTemplateRepository {
+  - prisma: PrismaClient
+  + findById(id): Promise<NotificationTemplate>
+  + create(data): Promise<NotificationTemplate>
+}
+
+PrismaService : - instance = null
+EventsRepository ..> PrismaService : uses getInstance()
+RegistrationsRepository ..> PrismaService : uses getInstance()
+UsersRepository ..> PrismaService : uses getInstance()
+NotificationsTemplateRepository ..> PrismaService : uses getInstance()
+
+note top of PrismaService
+  Singleton garante uma única
+  conexão com banco de dados
+  compartilhada por toda aplicação
+end note
+
+note bottom of EventsRepository
+  Todos os repositórios usam
+  a mesma instância do Prisma
+end note
+
+@enduml

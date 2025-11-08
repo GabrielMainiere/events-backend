@@ -1,0 +1,43 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/refs/heads/master/C4_Component.puml
+
+title Diagrama de Componentes - MS Users
+
+Component_Ext(ms_notifications, "MS Notifications", "gRPC Server", "Serviço de Notificações")
+Component_Ext(other_services, "Outros Microsserviços", "gRPC Client", "Ex: MS Registrations, MS Payments")
+ComponentDb(database, "Users DB", "PostgreSQL", "Armazena dados de usuários e roles")
+
+Container_Boundary(ms_users, "MS Users") {
+    
+    Component(graphqlResolver, "GraphQL Resolver", "NestJS Resolver (GraphQL)", "Expõe API GraphQL para CRUD de usuários e roles")
+    Component(grpcController, "gRPC Controller", "gRPC Server", "Expõe API gRPC para consulta de usuários (FindOne, Authenticate)")
+    
+    Component(userService, "User Service", "Service", "Orquestra lógica de usuários, autenticação, hash de senha e ativação")
+    Component(roleService, "Role Service", "Service", "Orquestra lógica de roles (perfis)")
+    
+    Component(userRepo, "User Repository", "Repository", "Persiste e consulta dados de usuários")
+    Component(roleRepo, "Role Repository", "Repository", "Persiste e consulta dados de roles")
+    Component(prismaProvider, "Prisma Provider", "NestJS Provider", "Abstrai o singleton para injeção de dependência")
+    Component(prismaSingleton, "Prisma Singleton", "Singleton Pattern", "Gerencia a instância única do PrismaClient")
+    
+    Component(notificationClient, "Notifications Client", "gRPC Client", "Cliente gRPC para MS Notifications")
+}
+
+Rel(other_services, grpcController, "Chama 'FindOne', 'Authenticate'", "gRPC")
+Rel(graphqlResolver, userService, "Usa")
+Rel(graphqlResolver, roleService, "Usa")
+Rel(grpcController, userService, "Usa")
+
+Rel(userService, userRepo, "Lê/Grava")
+Rel(userService, notificationClient, "Envia notificação (ativação, boas-vindas)")
+Rel(roleService, roleRepo, "Lê/Grava")
+
+Rel(notificationClient, ms_notifications, "sendAccountNotification()", "gRPC")
+
+Rel(userRepo, prismaProvider, "Injeta", "@Inject(PRISMA_CLIENT)")
+Rel(roleRepo, prismaProvider, "Injeta", "@Inject(PRISMA_CLIENT)")
+Rel(prismaProvider, prismaSingleton, "Usa", "getInstance()")
+Rel(prismaSingleton, database, "Lê/Grava", "Prisma")
+
+SHOW_LEGEND()
+@enduml

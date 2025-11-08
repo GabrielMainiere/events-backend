@@ -1,0 +1,63 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/refs/heads/master/C4_Container.puml
+AddRelTag("async", $lineStyle=DashedLine())
+AddRelTag("sync", $lineStyle=SolidLine())
+
+title Diagrama de Containers - Sistema de Gerenciamento de Eventos
+
+' --- Atores Externos ---
+Person(user, "Usuário", "Participante ou organizador")
+System_Ext(mercadoPago, "Mercado Pago API", "Gateway de pagamento")
+System_Ext(stripe, "Stripe API", "Gateway de pagamento")
+System_Ext(smtpServer, "Servidor SMTP", "Envio de emails (Ex: Gmail)")
+
+' --- Limite do Sistema ---
+System_Boundary(eventsSystem, "Sistema de Gerenciamento de Eventos (Docker Compose)") {
+
+    Container(gateway, "Kong API Gateway", "Kong", "Ponto único de entrada, autenticação JWT, roteamento")
+
+    Container(msusers, "MS Users", "NestJS/TypeScript", "Gerencia usuários e autenticação (GraphQL + gRPC Server)")
+    Container(msevents, "MS Events", "NestJS/TypeScript", "Gerencia eventos (GraphQL + gRPC Client)")
+    Container(msregistration, "MS Events Registration", "NestJS/TypeScript", "Gerencia inscrições (GraphQL + gRPC Server + Client)")
+    Container(mspayments, "MS Payments", "Java/Spring Boot", "Processa pagamentos (GraphQL + gRPC Client)")
+    Container(msnotifications, "MS Notifications", "NestJS/TypeScript", "Gerencia notificações (GraphQL + gRPC Server + Worker)")
+    
+    ContainerDb(dbUsers, "Users DB", "PostgreSQL", "Dados de usuários e roles")
+    ContainerDb(dbEvents, "Events DB", "PostgreSQL", "Dados de eventos")
+    ContainerDb(dbRegistration, "Registration DB", "PostgreSQL", "Inscrições, cache de eventos/usuários")
+    ContainerDb(dbPayments, "Payments DB", "PostgreSQL", "Dados de pagamentos")
+    ContainerDb(dbNotifications, "Notifications DB", "PostgreSQL", "Logs, templates e fila de envio")
+}
+
+
+Rel_U(user, gateway, "Requisições", "HTTPS")
+
+Rel_D(gateway, msusers, "/msusers", "HTTP", $tags="sync")
+Rel_D(gateway, msevents, "/msevents", "HTTP", $tags="sync")
+Rel_D(gateway, msregistration, "/mseventsregistration", "HTTP", $tags="sync")
+Rel_D(gateway, mspayments, "/mspayments", "HTTP", $tags="sync")
+Rel_D(gateway, msnotifications, "/msnotifications", "HTTP", $tags="sync")
+
+Rel_D(msusers, dbUsers, "Lê/Grava", "Prisma")
+Rel_D(msevents, dbEvents, "Lê/Grava", "Prisma")
+Rel_D(msregistration, dbRegistration, "Lê/Grava", "Prisma")
+Rel_D(mspayments, dbPayments, "Lê/Grava", "JPA")
+Rel_D(msnotifications, dbNotifications, "Lê/Grava (Polling)", "Prisma")
+
+Rel_R(msregistration, msusers, "Valida Usuário", "gRPC", $tags="sync")
+Rel_R(msevents, msregistration, "Conta Inscrições", "gRPC", $tags="sync")
+Rel_R(mspayments, msregistration, " ", "gRPC", $tags="sync")
+
+Rel(msusers, msnotifications, "Notifica Conta", "gRPC", $tags="async")
+Rel(msregistration, msnotifications, "Notifica Inscrição", "gRPC", $tags="async")
+Rel_L(msevents, msregistration, "Notifica Evento", "gRPC", $tags="async")
+Rel_L(mspayments, msregistration, "Notifica Pagamento", "gRPC", $tags="async")
+
+Rel_R(msnotifications, smtpServer, "Envia Email", "SMTP")
+Rel_R(mspayments, mercadoPago, "Processa Pagamento", "REST API")
+Rel_R(mspayments, stripe, "Processa Pagamento", "REST API")
+Rel_U(mercadoPago, mspayments, "Webhook", "HTTPS")
+Rel_U(stripe, mspayments, "Webhook", "HTTPS")
+
+SHOW_LEGEND()
+@enduml

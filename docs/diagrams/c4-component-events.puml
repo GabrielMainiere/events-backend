@@ -1,0 +1,47 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/refs/heads/master/C4_Component.puml
+
+title Diagrama de Componentes - MS Events
+
+Component_Ext(ms_registrations, "MS Registrations", "gRPC Server", "Microsserviço de Inscrições")
+ComponentDb(database, "Events DB", "PostgreSQL", "Armazena dados de eventos e endereços")
+
+Container_Boundary(ms_events, "MS Events") {
+    
+    Component(graphqlResolver, "Events Resolver", "NestJS Resolver (GraphQL)", "Recebe Queries e Mutations para CRUD de eventos")
+    
+    Component(eventsService, "Events Service", "Service", "Orquestra a lógica de negócio (criação, atualização, etc.)")
+    Component(eventBuilder, "Event Builder/Director", "Builder Pattern", "Constrói objetos de evento complexos. (Usado pelo Events Service)")
+    
+    Component(eventRepository, "Events Repository", "Repository", "Persiste e consulta eventos no banco de dados. (Implementa IEventRepository)")
+    Component(prismaSingleton, "Prisma Singleton", "Singleton Pattern", "Gerencia a instância única do PrismaClient")
+
+    Component(eventsNotifier, "Events Notifier", "Service", "Dispara notificações de eventos (criado, atualizado) via gRPC. (Implementa IEventNotifier)")
+    Component(eventRegCounter, "Event Reg. Counter", "Service", "Busca contagem de inscritos via gRPC. (Implementa IEventRegistrationCount)")
+    Component(grpcClient, "EventReg. gRPC Client", "NestJS Client", "Cliente gRPC que se comunica com o MS Registrations")
+
+}
+
+
+Rel(graphqlResolver, eventsService, "Usa", "GraphQL")
+
+
+Rel(eventsService, eventBuilder, "Usa", "Builder Pattern")
+Rel(eventsService, eventRepository, "Grava/Lê", "Prisma")
+
+
+Rel(eventsService, eventsNotifier, "Chama", "Async")
+Rel(eventsService, eventRegCounter, "Chama", "Async")
+Rel(eventsNotifier, grpcClient, "Usa", "gRPC")
+Rel(eventRegCounter, grpcClient, "Usa", "gRPC")
+
+
+Rel(grpcClient, ms_registrations, "Notifica / Consulta", "gRPC")
+
+
+Rel(eventRepository, prismaSingleton, "Usa", "getInstance()")
+Rel(prismaSingleton, database, "Lê/Grava", "Prisma")
+
+
+SHOW_LEGEND()
+@enduml
