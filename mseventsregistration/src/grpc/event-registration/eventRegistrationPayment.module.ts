@@ -3,11 +3,11 @@ import { EventsRegistrationRepository } from "./eventsRegistration.repository";
 import { EventsRegistrationService } from "./eventsRegistration.service";
 import { RegistrationRepository } from "src/registrations/repositories/registration.repository";
 import { EventNotificationModule } from "../notifications/event-notification.module";
-import { EventRegistrationGrpcController } from "./eventRegistration.controller";
+import { EventRegistrationPaymentsGrpcController } from "./eventRegistrationPayment.controller";
 
 @Module({
   imports: [EventNotificationModule],
-  controllers: [EventRegistrationGrpcController],
+  controllers: [EventRegistrationPaymentsGrpcController],
   providers: [
     EventsRegistrationService,
     EventsRegistrationRepository,
