@@ -16,10 +16,10 @@ public class StripeCreditCardRequest {
     private String receiptEmail;
 
     public StripeCreditCardRequest(Payment payment, String cardToken) {
-        this.amount = BigDecimal.valueOf(payment.getAmount());
-        this.currency = "brl";
+        this.amount = BigDecimal.valueOf(payment.getFinalPrice());
+        this.currency = payment.getCurrencyCode().toLowerCase();
         this.source = cardToken;
-        this.description = "Pagamento do Evento: " + payment.getEvent().getDescription();
+        this.description = "Pagamento do Evento: " + payment.getEvent().getDescription() + " (" + payment.getCurrencyCode() + ")";
         this.receiptEmail = payment.getUser().getEmail();
     }
 }

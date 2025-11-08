@@ -27,14 +27,14 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
     }
 
     @Override
-    public CreditCardResponse processCreditCard(Payment payment, String cardToken, Integer installments, String paymentMethodId) {
+    public CreditCardResponse processCreditCard(Payment payment, String cardToken, String paymentMethodId) {
         try {
             // Regras de negócio do cartão de crédito no Stripe
             var payload = generateCreateCreditCardPayload(payment, cardToken);
             var stripeResponse = stripeClient.createCreditCardPayment(payload);
             return StripeCreditCardMapper.toCreditCardResponse(stripeResponse);
         } catch (Exception e) {
-            log.error("Erro ao processar pagamento com cartão no Stripe: {}", e.getMessage(), e);
+            log.error("Error processing credit card payment on Stripe: {}", e.getMessage(), e);
             // Retorna um pagamento rejeitado em caso de erro
             CreditCardResponse errorResponse = new CreditCardResponse();
             errorResponse.setStatus("rejected");
@@ -50,6 +50,7 @@ public class StripePaymentGateway implements PaymentGatewayStrategy {
         payload.put("source", request.getSource());
         payload.put("description", request.getDescription());
         payload.put("receipt_email", request.getReceiptEmail());
+
         return payload;
     }
 }

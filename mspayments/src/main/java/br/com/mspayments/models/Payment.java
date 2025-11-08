@@ -27,7 +27,18 @@ public class Payment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Integer amount; // cents
+    private Integer amount; // cents - valor original do evento
+
+    // Novos campos para conversão de moeda
+    @Column(name = "base_price", nullable = false)
+    private Integer basePrice; // preço base em centavos BRL (do evento)
+
+    @Column(name = "final_price", nullable = false)
+    private Integer finalPrice; // preço final em centavos na moeda especificada
+
+    @Column(name = "currency_code", length = 3, nullable = false)
+    private String currencyCode; // código da moeda utilizada (USD, EUR, BRL)
+
     @Enumerated(EnumType.STRING)
     private PaymentMethod method;
     @Enumerated(EnumType.STRING)

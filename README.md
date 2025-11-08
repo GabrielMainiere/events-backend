@@ -33,7 +33,7 @@ Este projeto é um sistema completo de gerenciamento de eventos, desenvolvido ut
 ### Requisitos Arquiteturais
 
 -   **API Gateway (Kong)**: Ponto único de entrada que centraliza todas as requisições externas.
--   **Arquitetura de Microsserviços**: 5 microsserviços independentes (NestJS e Spring Boot).
+-   **Arquitetura de Microsserviços**: 6 microsserviços independentes (NestJS e Spring Boot).
 -   **GraphQL**: Comunicação otimizada com frontend.
 -   **gRPC**: Comunicação de alta performance entre microsserviços.
 -   **Isolamento de Dados**: Cada microsserviço possui seu próprio banco de dados PostgreSQL.
@@ -50,19 +50,19 @@ O sistema é composto por 5 microsserviços principais, um API Gateway e bancos 
 3.  **ms-events-registration** (NestJS): Gerencia inscrições e check-ins.
 4.  **ms-payments** (Java/Spring Boot): Processa pagamentos (Stripe, Mercado Pago).
 5.  **ms-notifications** (NestJS): Envia notificações (Email) e gerencia templates.
-6.  **gateway** (Kong): Ponto de entrada único (roteia `http://localhost:8000/<ms-name>`).
+6.  **ms-currency** (Java/Spring Boot): Controla as moedas aceitas pelo sistema, e atualiza periodicamente os seus valores com dados reais.
+7.  **gateway** (Kong): Ponto de entrada único (roteia `http://localhost:8000/<ms-name>`).
 
 ---
 
 ## Design Patterns
-
 O sistema utilizou  5 padrões de projeto distintos, espalhandos pelos microsserviços, entre eles foram:
 
 1.  **Singleton** : Garante uma única instância de uma classe e fornece um ponto global de acesso a ela
 2.  **Strategy**: Define famílias de algoritmos e permite trocar o comportamento em tempo de execução sem alterar o código cliente
 3.  **Factory**: Centraliza a criação de objetos sem expor a lógica de instanciamento, delegando a subclasses ou métodos
 4.  **Decorator**: Adiciona funcionalidades extras dinamicamente a um objeto sem alterar sua estrutura original
-5.  **Builder**: Adiciona funcionalidades extras dinamicamente a um objeto sem alterar sua estrutura original
+5.  **Builder**: Permite construir objetos complexos passo a passo, controlando o processo de criação e possibilitando diferentes configurações do mesmo objeto.
 
 Para saber mais profundado sobre a implementação de cada um acesse: 
 * [Decisões de Arquitetura (SOLID, Patterns)](./docs/ARCHITECTURE.md) - Para justificativas
@@ -111,6 +111,9 @@ cp mseventsregistration/.env.Example mseventsregistration/.env.docker
 
 # MS Payments
 cp mspayments/.env-example mspayments/.env
+
+# MS Currency
+cp mscurrency/.env-example mscurrency/.env
 
 # MS Notifications
 cp msnotifications/.env.example msnotifications/.env.docker
