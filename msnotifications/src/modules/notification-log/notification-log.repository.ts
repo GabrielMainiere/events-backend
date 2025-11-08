@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma-ds/prisma.service';
 import { NotificationLog, NotificationStatus } from '@prisma/client';
 import { INotificationLogRepository } from 'src/common/interfaces/iNotificationLogRepository';
+import { PrismaClientSingleton } from 'src/core/prismaClientSingleton';
 
 
 @Injectable()
 export class NotificationLogRepository implements INotificationLogRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  private prisma = PrismaClientSingleton.getInstance();
 
   async findById(id: string): Promise<NotificationLog | null> {
     return this.prisma.notificationLog.findUnique({

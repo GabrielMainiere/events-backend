@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
-import { PrismaModule } from './prisma-ds/prisma.module';
 import { NotificationLogModule } from './modules/notification-log/notification-log.module';
 import { NotificationTemplateModule } from './modules/notification-template/notification-template.module';
 import { NotificationImplementationModule } from './modules/notification-implementation/notification.module';
 import { WorkerModule } from './worker/worker.module';
 import { EmailModule } from './modules/email/email.module';
 import { StrategyModule } from './modules/strategy/strategy.module';
-import { NotificationStrategyProviderModule } from './modules/strategy/strategy-provider/notification-strategy-provider.module';
+import { StrategyFactory } from './modules/factory/strategy-factory';
 import { DecoratorModule } from './modules/decorator/decorator.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
@@ -19,6 +18,7 @@ import { HealthModule } from './health/health.module';
 import { join } from 'path';
 
 
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,14 +26,13 @@ import { join } from 'path';
       envFilePath: '.env',
     }),
     ScheduleModule.forRoot(),
-    PrismaModule, 
     NotificationLogModule,
     NotificationTemplateModule,
     EmailModule,
     NotificationImplementationModule,
     WorkerModule,
     StrategyModule,
-    NotificationStrategyProviderModule,
+    StrategyFactory,
     DecoratorModule,
     UserPreferenceModule,
     HealthModule,

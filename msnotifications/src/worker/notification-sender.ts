@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationLog } from '@prisma/client';
+import { StrategyFactory } from 'src/modules/factory/strategy-factory';
 import { NotificationTemplateResolver } from 'src/modules/notification-template/notification-resolver-template.service';
-import { NotificationStrategyProvider } from 'src/modules/strategy/strategy-provider/notification-strategy.provider';
-
 
 @Injectable()
 export class NotificationSender {
   constructor(
-    private readonly strategyProvider: NotificationStrategyProvider,
+    private readonly strategyProvider: StrategyFactory,
     private readonly templateResolver: NotificationTemplateResolver,
   ) {}
 

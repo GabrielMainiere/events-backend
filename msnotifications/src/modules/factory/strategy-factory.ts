@@ -1,15 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { NotificationChannel } from '@prisma/client';
-import { EmailStrategy } from '../email.strategy';
-import { SmsStrategy } from '../sms.strategy';
-import { PushStrategy } from '../push.strategy';
+import { EmailStrategy } from '../strategy/email.strategy';
+import { SmsStrategy } from '../strategy/sms.strategy';
+import { PushStrategy } from '../strategy/push.strategy';
 import { INotificationStrategy } from 'src/common/interfaces/iNotificationStategy';
 import { AuditLogDecorator } from 'src/modules/decorator/audit-log.decorator';
 import { PerformanceLogDecorator } from 'src/modules/decorator/performance-log.decorator';
 import { RetryDecorator } from 'src/modules/decorator/retry.decorator';
 
+
 @Injectable()
-export class NotificationStrategyProvider {
+export class StrategyFactory {
   private readonly strategies = new Map<NotificationChannel, INotificationStrategy>();
 
   constructor(
