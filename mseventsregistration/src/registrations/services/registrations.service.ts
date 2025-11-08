@@ -7,12 +7,8 @@ import { Registration } from '../entities/registration.entity';
 import type { IRegistrationRepository } from '../repositories/IRegistration.repository';
 import { EventWithUsers } from '../entities/eventWithUsers.entity';
 import { EventMapper } from 'src/mappers/eventMapper';
-import { NotificationsTemplateNames } from 'src/enum/notificationTemplateEnum';
-import { NotificationsClientService } from 'src/grpc/notifications/client/notifications.client.service';
-import { tb_user, tb_registered_event, RegistrationStatus } from '@prisma/client';
 import { QRCodeGenerator } from 'src/utils/qrCodeGenerator';
 import { QRCode } from '../entities/qrCode.entity';
-import { tb_user, tb_registered_event } from '@prisma/client';
 import { RegistrationStatus } from "@prisma/client";
 import { EventNotificationService } from 'src/grpc/notifications/event-notification.service';
 
@@ -91,7 +87,7 @@ export class RegistrationService {
     const { event, users } = await this.registrationRepo.findAllConfirmedUsersByEvent(eventId);
     return EventMapper.toGraphQL(event, users);
   }
- 
+ /*
   private async sendEventRegistrationNotification(user: tb_user, event: tb_registered_event) {
     try {
       await this.notificationsClientService.sendEventRegistrationNotification({
@@ -110,7 +106,7 @@ export class RegistrationService {
       console.error('Failed to send event registration notification:', error);
     }
   }
-
+*/
 
   async generateCheckInQRCode(userId: string, eventId: string): Promise<QRCode> {
     const registration = await this.registrationRepo.findByUserAndEvent(userId, eventId);
@@ -152,5 +148,5 @@ export class RegistrationService {
     };
   }
 }
-  }  
-}
+   
+
