@@ -24,7 +24,6 @@ export interface CreateUserInput {
     cpf: string;
     phoneNumber: string;
     password: string;
-    roles: string[];
 }
 
 export interface UpdateUserInput {

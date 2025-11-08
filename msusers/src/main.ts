@@ -16,9 +16,12 @@ async function bootstrap() {
       url: `0.0.0.0:${environment.grpcPort}`,
     },
   })
+
   app.enableCors(corsConfig)
+
   await app.listen(environment.graphqlPort)
   await app.startAllMicroservices()
+
   console.log(`Graphql: http://localhost:${environment.graphqlPort}/graphql`)
   console.log(`Grpc: grpc://localhost:${environment.grpcPort}`)
 }
