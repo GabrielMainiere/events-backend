@@ -54,4 +54,19 @@ export class EventNotificationService {
         templateName: NotificationsTemplateNames.EVENT_CANCELLATION_EMAIL,
       });
     }
+
+  async sendEventCheckInNotification(user: tb_user, event: tb_registered_event) {
+      await this.notificationsClientService.sendEventNotification({
+        userId: user.id,
+        recipientAddress: user.email,
+        eventId: event.id,
+        payloadJson: JSON.stringify({
+          name: user.name,
+          eventName: event.title,
+          eventDate: `${event.start_at.toLocaleString('pt-BR')} - ${event.end_at.toLocaleString('pt-BR')}`,
+          eventLocation: `${event.address_country}, ${event.address_state} - ${event.address_city}, Rua ${event.address_street} ${event.address_number || 'S/N'} - ${event.address_zipcode}`,
+        }),
+        templateName: NotificationsTemplateNames.EVENT_CHECKIN_EMAIL,
+      });
+    }
 }
