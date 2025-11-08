@@ -1,0 +1,78 @@
+@startuml
+title Design Pattern - Builder (MS Events)
+
+class EventProps {
+  + title: string
+  + description?: string
+  + startAt: Date
+  + endAt: Date
+  + price?: number
+  + saleStartAt?: Date
+  + saleEndAt?: Date
+  + address: AddressProps
+  + capacity: number
+  + isFree: boolean
+  + eventType: EventType
+  + status: EventStatus
+}
+
+class AddressProps {
+  + street: string
+  + number?: string
+  + city: string
+  + state: string
+  + zipcode: string
+  + country: string
+}
+
+
+interface IEventBuilder {
+  + produceBasicInfo(title, startAt, endAt, isFree): void
+  + produceDescription(description?): void
+  + producePrice(price?): void
+  + produceSaleDates(saleStartAt?, saleEndAt?): void
+  + produceAddress(address: AddressProps): void
+  + produceType(type?): void
+  + produceStatus(status?): void
+  + produceCapacity(capacity: number): void
+  + getResult(): EventProps
+}
+
+
+class EventBuilder {
+  - event: Partial<EventProps>
+  + produceBasicInfo(title, startAt, endAt, isFree): void
+  + produceDescription(description?): void
+  + producePrice(price?): void
+  + produceSaleDates(saleStartAt?, saleEndAt?): void
+  + produceAddress(address): void
+  + produceType(type?): void
+  + produceStatus(status?): void
+  + produceCapacity(capacity): void
+  + getResult(): EventProps
+}
+
+IEventBuilder <|.. EventBuilder : implements
+EventBuilder ..> EventProps : "cria objeto final"
+
+note bottom of EventBuilder
+  Builder responsável por construir o objeto EventProps
+  passo a passo, garantindo consistência e validação.
+end note
+
+class EventDirector {
+  - builder: IEventBuilder
+  + setBuilder(builder: IEventBuilder): void
+  + buildMinimalEvent(title, startAt, endAt, isFree): EventProps
+  + buildFullEvent(title, startAt, endAt, address, capacity, isFree, description?, price?, saleStartAt?, saleEndAt?): EventProps
+}
+
+EventDirector o-- IEventBuilder : "usa"
+EventDirector ..> EventProps : "retorna"
+
+note right of EventDirector
+  O Director encapsula a lógica de construção
+  de eventos completos e mínimos, reutilizando o Builder.
+end note
+
+@enduml

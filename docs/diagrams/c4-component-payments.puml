@@ -1,0 +1,73 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/refs/heads/master/C4_Component.puml
+
+title Diagrama de Componentes - MS Payments
+
+Component_Ext(mpAPI, "MercadoPago API", "Gateway externo")
+Component_Ext(stripeAPI, "Stripe API", "Gateway externo")
+Component_Ext(ms_registrations, "MS Registrations", "gRPC Server", "Microsserviço de Inscrições")
+ComponentDb(database, "Payments DB", "PostgreSQL", "Armazena pagamentos, eventos e usuários")
+
+Container_Boundary(mspayments, "MS Payments") {
+
+    Component(graphqlController, "GraphQL Controller", "Spring GraphQL", "Recebe requisições de pagamento")
+    Component(webhookController, "Webhook Controller", "REST Controller", "Recebe webhooks dos gateways")
+
+    Component(paymentService, "Payment Service", "Service", "Orquestra processamento de pagamentos")
+    Component(eventService, "Event Service", "Service", "Gerencia cache de dados de eventos")
+    Component(userService, "User Service", "Service", "Gerencia cache de dados de usuários")
+
+    Component(gatewayFactory, "Gateway Factory", "Static Factory", "Cria estratégias de gateway")
+    Component(methodFactory, "Method Factory", "Static Factory", "Cria estratégias de método")
+
+    Component(creditCardStrategy, "Credit Card Strategy", "Strategy Pattern", "Processa cartão")
+    Component(pixStrategy, "PIX Strategy", "Strategy Pattern", "Processa PIX")
+
+    Component(mercadoPagoStrategy, "MercadoPago Strategy", "Strategy Pattern", "Implementa integração MP")
+    Component(stripeStrategy, "Stripe Strategy", "Strategy Pattern", "Implementa integração Stripe")
+
+    Component(mercadoPagoClient, "MercadoPago Client", "HTTP Client (Singleton)", "Cliente API MP")
+    Component(stripeClient, "Stripe Client", "HTTP Client (Singleton)", "Cliente API Stripe")
+
+    Component(registrationClient, "Registration Client", "gRPC Client", "Cliente gRPC para MS Registration")
+
+    Component(paymentRepo, "Payment Repository", "JPA Repository", "Persiste pagamentos")
+    Component(eventRepo, "Event Repository", "JPA Repository", "Cache de eventos")
+    Component(userRepo, "User Repository", "JPA Repository", "Cache de usuários")
+}
+
+Rel(graphqlController, paymentService, "Cria pagamento")
+Rel(webhookController, paymentService, "Atualiza status (Webhook)")
+
+Rel(paymentService, eventService, "Usa")
+Rel(paymentService, userService, "Usa")
+Rel(paymentService, registrationClient, "Obtém/Atualiza Inscrição", "gRPC")
+Rel(paymentService, paymentRepo, "Persiste")
+Rel(paymentService, gatewayFactory, "Usa", "static get..")
+Rel(paymentService, methodFactory, "Usa", "static get..")
+Rel(paymentService, pixStrategy, "Chama 'pay(gateway)'")
+Rel(paymentService, creditCardStrategy, "Chama 'pay(gateway)'")
+
+Rel(gatewayFactory, mercadoPagoStrategy, "Cria (new)")
+Rel(gatewayFactory, stripeStrategy, "Cria (new)")
+Rel(methodFactory, creditCardStrategy, "Cria (new)")
+Rel(methodFactory, pixStrategy, "Cria (new)")
+
+Rel(creditCardStrategy, mercadoPagoStrategy, "Usa")
+Rel(creditCardStrategy, stripeStrategy, "Usa")
+Rel(pixStrategy, mercadoPagoStrategy, "Usa")
+Rel(pixStrategy, stripeStrategy, "Usa")
+
+Rel(mercadoPagoStrategy, mercadoPagoClient, "Usa", "getInstance()")
+Rel(stripeStrategy, stripeClient, "Usa", "getInstance()")
+Rel(mercadoPagoClient, mpAPI, "Chama", "HTTP")
+Rel(stripeClient, stripeAPI, "Chama", "HTTP")
+
+Rel(registrationClient, ms_registrations, "Chama", "gRPC")
+
+Rel(paymentRepo, database, "Lê/Grava", "JPA")
+Rel(eventRepo, database, "Lê/Grava", "JPA")
+Rel(userRepo, database, "Lê/Grava", "JPA")
+
+SHOW_LEGEND()
+@enduml

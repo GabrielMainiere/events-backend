@@ -1,0 +1,47 @@
+@startuml
+title Design Pattern - Decorator (MS Notifications)
+
+interface INotificationStrategy {
+  + send(recipient: string, subject: string, body: string): Promise<void>
+}
+
+class EmailStrategy {
+  + send(...): Promise<void>
+}
+
+abstract class BaseNotificationDecorator {
+  # strategy: INotificationStrategy
+  + send(...): Promise<void>
+}
+
+' 4. Os "Decorators Concretos"
+class AuditLogDecorator {
+  + send(...): Promise<void>
+}
+class RetryDecorator {
+  + send(...): Promise<void>
+}
+class PerformanceLogDecorator {
+  + send(...): Promise<void>
+}
+
+INotificationStrategy <|.. EmailStrategy : implements
+INotificationStrategy <|.. BaseNotificationDecorator : implements
+
+BaseNotificationDecorator <|-- AuditLogDecorator : extends
+BaseNotificationDecorator <|-- RetryDecorator : extends
+BaseNotificationDecorator <|-- PerformanceLogDecorator : extends
+
+BaseNotificationDecorator o-- INotificationStrategy : #strategy
+
+
+note right of BaseNotificationDecorator
+  Embrulha strategias de notificação para 
+  adicionar comportamentos adicionais (logs, retries).
+end note
+
+note bottom of EmailStrategy
+  Componente concreto que
+  será embrulhado pelos decorators.
+end note
+@enduml

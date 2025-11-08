@@ -1,0 +1,63 @@
+@startuml
+title Design Pattern - Strategy & Factory (MS Payments)
+
+class PaymentGatewayFactory {
+  + {static} getPaymentGateway(gateway): PaymentGatewayStrategy
+}
+
+class PaymentMethodFactory {
+  + {static} getPaymentMethod(method): PaymentMethodStrategy
+}
+
+interface PaymentGatewayStrategy {
+  + processPix(payment: Payment): PixResponse
+  + processCreditCard(payment: Payment, ...): CreditCardResponse
+}
+
+interface PaymentMethodStrategy {
+  + pay(gatewayStrategy: PaymentGatewayStrategy, 
+        paymentData: PaymentMethodData): PaymentResponse
+}
+
+class MercadoPagoGateway {
+  - mercadoPagoClient: MPClient
+  + processPix(...): PixResponse
+  + processCreditCard(...): CreditCardResponse
+}
+
+class StripeGateway {
+  - stripeClient: StripeClient
+  + processPix(...): PixResponse
+  + processCreditCard(...): CreditCardResponse
+}
+
+class CreditCardMethod {
+  + pay(gatewayStrategy, paymentData): PaymentResponse
+}
+
+class PixMethod {
+  + pay(gatewayStrategy, paymentData): PaymentResponse
+}
+
+PaymentGatewayStrategy <|.. MercadoPagoGateway : implements
+PaymentGatewayStrategy <|.. StripeGateway : implements
+PaymentMethodStrategy <|.. CreditCardMethod : implements
+PaymentMethodStrategy <|.. PixMethod : implements
+
+PaymentGatewayFactory ..> PaymentGatewayStrategy : "creates"
+PaymentMethodFactory ..> PaymentMethodStrategy : "creates"
+
+PaymentMethodStrategy ..> PaymentGatewayStrategy : "usa"
+
+note right of PaymentMethodStrategy
+  A "Strategy de Método" (Pix, Cartão)
+  recebe a "Strategy de Gateway" (Stripe, MP)
+  e a utiliza para processar o pagamento.
+end note
+
+note bottom of PaymentGatewayStrategy
+  Cada gateway (Stripe, MercadoPago)
+  implementa a lógica de processamento
+  para Pix e Cartão.
+end note
+@enduml

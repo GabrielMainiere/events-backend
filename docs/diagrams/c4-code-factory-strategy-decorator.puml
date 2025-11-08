@@ -1,0 +1,85 @@
+@startuml
+title Diagrama Unificado - Factory + Strategy + Decorator (MS Notifications)
+
+interface INotificationStrategy {
+  + send(recipient: string, subject: string, body: string): Promise<void>
+}
+
+interface IChannelStrategy extends INotificationStrategy {
+  + readonly channel: NotificationChannel
+}
+
+interface IStrategyFactory {
+  + getStrategy(channel: NotificationChannel): INotificationStrategy
+}
+
+class EmailStrategy {
+  + readonly channel: NotificationChannel
+  + send(recipient, subject, body): Promise<void>
+}
+
+class SmsStrategy {
+  + readonly channel: NotificationChannel
+  + send(recipient, subject, body): Promise<void>
+}
+
+class PushStrategy {
+  + readonly channel: NotificationChannel
+  + send(recipient, subject, body): Promise<void>
+}
+
+IChannelStrategy <|.. EmailStrategy
+IChannelStrategy <|.. SmsStrategy
+IChannelStrategy <|.. PushStrategy
+
+class StrategyFactory {
+  - strategies: Map<NotificationChannel, INotificationStrategy>
+  + constructor(allStrategies: IChannelStrategy[])
+  + getStrategy(channel): INotificationStrategy
+  - registerStrategies(): void
+  - wrapWithDecorators(strategy: INotificationStrategy): INotificationStrategy
+}
+
+IStrategyFactory <|.. StrategyFactory
+StrategyFactory ..> IChannelStrategy : "registra estratégias"
+StrategyFactory ..> INotificationStrategy : "retorna decorada"
+
+abstract class BaseNotificationDecorator {
+  # component: INotificationStrategy
+  + send(recipient, subject, body): Promise<void>
+}
+
+class RetryDecorator {
+  - maxRetries: number
+  - delayMs: number
+  + send(recipient, subject, body): Promise<void>
+}
+
+class AuditLogDecorator {
+  + send(recipient, subject, body): Promise<void>
+}
+
+class PerformanceLogDecorator {
+  + send(recipient, subject, body): Promise<void>
+}
+
+INotificationStrategy <|-- BaseNotificationDecorator
+BaseNotificationDecorator <|-- RetryDecorator
+BaseNotificationDecorator <|-- AuditLogDecorator
+BaseNotificationDecorator <|-- PerformanceLogDecorator
+
+StrategyFactory ..> RetryDecorator : "aplica primeiro"
+StrategyFactory ..> AuditLogDecorator : "aplica depois"
+StrategyFactory ..> PerformanceLogDecorator : "aplica por último"
+
+note right of StrategyFactory
+  O Factory instancia as estratégias (Email, SMS, Push)
+  e as envolve com os Decorators (Retry → AuditLog → Performance).
+end note
+
+note bottom of BaseNotificationDecorator
+  Padrão Decorator: cada decorator implementa INotificationStrategy
+  e adiciona comportamento antes/depois de chamar o próximo.
+end note
+
+@enduml
