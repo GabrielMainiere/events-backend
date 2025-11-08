@@ -50,12 +50,12 @@ O sistema é composto por 5 microsserviços principais, um API Gateway e bancos 
 3.  **ms-events-registration** (NestJS): Gerencia inscrições e check-ins.
 4.  **ms-payments** (Java/Spring Boot): Processa pagamentos (Stripe, Mercado Pago).
 5.  **ms-notifications** (NestJS): Envia notificações (Email) e gerencia templates.
-6.  **gateway** (Kong): Ponto de entrada único (roteia `http://localhost:8000/<ms-name>`).
+6.  **ms-currency** (Java/Spring Boot): Controla as moedas aceitas pelo sistema, e atualiza periodicamente os seus valores com dados reais.
+7.  **gateway** (Kong): Ponto de entrada único (roteia `http://localhost:8000/<ms-name>`).
 
 ---
 
 ## Design Patterns
-
 O sistema utilizou  5 padrões de projeto distintos, espalhandos pelos microsserviços, entre eles foram:
 
 1.  **Singleton** : Garante uma única instância de uma classe e fornece um ponto global de acesso a ela
@@ -111,6 +111,9 @@ cp mseventsregistration/.env.Example mseventsregistration/.env.docker
 
 # MS Payments
 cp mspayments/.env-example mspayments/.env
+
+# MS Currency
+cp mscurrency/.env-example mscurrency/.env
 
 # MS Notifications
 cp msnotifications/.env.example msnotifications/.env.docker

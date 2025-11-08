@@ -58,6 +58,11 @@ Este documento detalha as principais decisões arquiteturais tomadas durante o d
 - Processamento de pagamentos
 - Webhooks de status
 
+#### MS Currency
+**Responsabilidade**:
+- Controle de moedas aceitas (USD, EUR, BRL)
+- Sincronia com MS Payments
+- Atualização periódica dos valores das moedas
 
 #### MS Notifications
 **Responsabilidade**:
