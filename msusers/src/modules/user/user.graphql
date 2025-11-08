@@ -30,7 +30,6 @@ input CreateUserInput {
   cpf: String!
   phoneNumber: String!
   password: String!
-  roles: [ID!]!
 }
 input UpdateUserInput {
   email: String
