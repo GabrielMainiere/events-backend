@@ -166,6 +166,7 @@ services:
       - /mscurrency/.env
     depends_on:
       - mscurrency-postgres
+      - mspayments
     networks:
       - mscurrency
       - events-backend
