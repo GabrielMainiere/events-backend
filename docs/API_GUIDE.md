@@ -17,7 +17,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 **Base URL**: `http://localhost:8000/msusers/graphql`
 
 # Criar Usuario
-
+```graphql
 mutation CreateUser {
   createUser(createUserInput: {
     email: "novo.usuario@example.com"
@@ -32,9 +32,10 @@ mutation CreateUser {
     message
   }
 }
+```
 
 # Ativar Usuario
-
+```graphql
 mutation ActivateUser {
   activateUser(
     activateUserId: "user-uuid-here"
@@ -48,9 +49,10 @@ mutation ActivateUser {
     }
   }
 }
+```
 
 # Atualizar Usuario
-
+```graphql
 mutation UpdateUser {
   updateUser(
     id: "user-uuid-here"
@@ -64,15 +66,17 @@ mutation UpdateUser {
     phoneNumber
   }
 }
+```
 
 # Desativar Usuario
-
+```graphql
 mutation DeleteUser {
   deleteUser(id: "user-uuid-here")
 }
+```
 
 # Autenticar Usuario
-
+```graphql
 query AuthenticateUser {
   authenticateUser(
     email: "novo.usuario@example.com"
@@ -87,9 +91,10 @@ query AuthenticateUser {
     }
   }
 }
+```
 
 # Buscar pelo id
-
+```graphql
 query FindUser {
   findUser(id: "user-uuid-here") {
     id
@@ -102,9 +107,10 @@ query FindUser {
     }
   }
 }
+```
 
 # Listar todos
-
+```graphql
 query ListUsers {
   listUsers {
     id
@@ -113,9 +119,10 @@ query ListUsers {
     isActive
   }
 }
+```
 
 # Criar Role
-
+```graphql
 mutation CreateRole {
   createRole(createRoleInput: {
     name: "ADMIN"
@@ -124,9 +131,10 @@ mutation CreateRole {
     name
   }
 }
+```
 
 # Atualizar Role
-
+```graphql
 mutation UpdateRole {
   updateRole(
     id: "role-uuid-here"
@@ -138,37 +146,41 @@ mutation UpdateRole {
     name
   }
 }
+```
 
 # Deletar Role
-
+```graphql
 mutation DeleteRole {
   deleteRole(id: "role-uuid-here")
 }
+```
 
 # Listar Role
-
+```graphql
 query ListRoles {
   listRoles {
     id
     name
   }
 }
+```
 
 # Buscar Role por ID
-
+```graphql
 query FindRole {
   findRole(id: "role-uuid-here") {
     id
     name
   }
 }
+```
 
 ## MS Events - Gerenciamento de Eventos
 
 **Base URL**: `http://localhost:8000/msevents/graphql`
 
 # Criar Evento
-
+```graphql
 mutation CreateEvent {
   createEvent(input: {
     title: "Workshop de NestJS e Microsserviços"
@@ -200,9 +212,10 @@ mutation CreateEvent {
     }
   }
 }
+```
 
 # Atualizar Evento
-
+```graphql
 mutation UpdateEvent {
   updateEvent(input: {
     id: "event-uuid-here"
@@ -214,9 +227,10 @@ mutation UpdateEvent {
     capacity
   }
 }
+```
 
 # Cancelar Evento
-
+```graphql
 mutation CancelEvent {
   cancelEvent(input: {
     id: "event-uuid-here"
@@ -226,8 +240,9 @@ mutation CancelEvent {
   }
 }
 
+```
 # Listar todos os eventos
-
+```graphql
 query ListEvents {
   events {
     id
@@ -242,9 +257,9 @@ query ListEvents {
     }
   }
 }
-
+```
 # Buscar Evento pelo id
-
+```graphql
 query GetEvent {
   getEventById(id: "event-uuid-here") {
     id
@@ -265,13 +280,13 @@ query GetEvent {
     }
   }
 }
-
+```
 ## MS Events Registration - Inscrições
 
 **Base URL**: `http://localhost:8000/mseventsregistration/graphql`
 
 # Inscrever em evento
-
+```graphql
 mutation RegisterUser {
   registerUser(data: {
     userId: "user-uuid-here"
@@ -289,9 +304,9 @@ mutation RegisterUser {
     }
   }
 }
-
+```
 # Fazer Check-in
-
+```graphql
 mutation CheckInUser {
   checkInUser(data: {
     userId: "user-uuid-here"
@@ -302,9 +317,9 @@ mutation CheckInUser {
     checkInTime
   }
 }
-
+```
 # Listar Usuarios de um Evento
-
+```graphql
 query ListParticipants {
   getAllUsersByEvent(eventId: "event-uuid-here") {
     event {
@@ -318,13 +333,13 @@ query ListParticipants {
     }
   }
 }
-
+```
 ## MS Payments - Pagamentos
 
 **Base URL**: `http://localhost:8000/mspayments/graphql`
 
 # Criar Pagamento (Cartão de Credito)
-
+```graphql
 mutation CreatePaymentCreditCard {
   createPayment(input: {
     userId: "user-uuid-here"
@@ -347,9 +362,9 @@ mutation CreatePaymentCreditCard {
     }
   }
 }
-
+```
 # Criar Pagamento Pix
-
+```graphql
 mutation CreatePaymentPix {
   createPayment(input: {
     userId: "user-uuid-here"
@@ -369,9 +384,10 @@ mutation CreatePaymentPix {
     }
   }
 }
+```
 
 # Listar Todos os Pagamentos
-
+```graphql
 query ListPayments {
   payments {
     id
@@ -382,9 +398,10 @@ query ListPayments {
     createdAt
   }
 }
+```
 
 # Buscar Pagamento por ID
-
+```graphql
 query GetPayment {
   paymentById(id: "payment-uuid-here") {
     id
@@ -403,9 +420,10 @@ query GetPayment {
     }
   }
 }
+```
 
 # Listar Pagamentos por Evento
-
+```graphql
 query GetPaymentsByEvent {
   paymentsByEvent(eventId: "event-uuid-here") {
     id
@@ -417,13 +435,14 @@ query GetPaymentsByEvent {
     }
   }
 }
+```
 
 ## MS Notifications - Notificações
 
 **Base URL**: `http://localhost:8000/msnotifications/graphql`
 
 # Criar Template
-
+```graphql
 mutation CreateTemplate {
   createNotificationTemplate(input: {
     template_name: "EVENT_REGISTRATION_EMAIL"
@@ -438,9 +457,10 @@ mutation CreateTemplate {
     channel
   }
 }
+```
 
 # Atualizar Template
-
+```graphql
 mutation UpdateTemplate {
   updateNotificationTemplate(
     id: "template-uuid-here"
@@ -452,17 +472,19 @@ mutation UpdateTemplate {
     subject_template
   }
 }
+```
 
 # Deletar Template
-
+```graphql
 mutation DeleteTemplate {
   deleteNotificationTemplate(id: "template-uuid-here") {
     id
   }
 }
+```
 
 # Definir Preferencias de Notificação
-
+```graphql
 mutation SetPreferences {
   upsertUserPreference(input: {
     user_id: "user-uuid-here"
@@ -476,15 +498,17 @@ mutation SetPreferences {
     is_enabled
   }
 }
+```
 
 # Deletar Preferencias
-
+```graphql
 mutation DeletePreferences {
   deleteUserPreferences(user_id: "user-uuid-here")
 }
+```
 
 # Listar Preferencias Usuario
-
+```graphql
 query MyPreferences {
   userOptionalPreferences(user_id: "user-uuid-here") {
     id
@@ -493,15 +517,17 @@ query MyPreferences {
     is_enabled
   }
 }
+```
 
 # Listar Tipos de Notificação Opcionais
-
+```graphql
 query OptionalTypes {
   optionalNotificationTypes
 }
+```
 
 # Listar Templates
-
+```graphql
 query ListTemplates {
   notificationTemplates {
     id
@@ -511,9 +537,10 @@ query ListTemplates {
     subject_template
   }
 }
+```
 
 # Buscar Pelo ID
-
+```graphql
 query GetTemplate {
   notificationTemplate(id: "template-uuid-here") {
     id
@@ -521,17 +548,17 @@ query GetTemplate {
     body_template
   }
 }
+```
 
 # Buscar pelo nome
-
+```graphql
 query GetTemplateByName {
   notificationTemplateByName(template_name: "EVENT_REGISTRATION_EMAIL") {
     id
     template_name
   }
 }
-
-
+```
 
 ## Notas Importantes
 
