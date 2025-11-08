@@ -22,10 +22,9 @@ public class PaymentMethodFactory {
     public static PaymentMethodData createPaymentMethodData(CreatePaymentInput input, Payment payment) {
         if (payment.getMethod() == PaymentMethod.CREDIT_CARD) {
             String cardToken = input.getCardToken();
-            Integer installments = input.getInstallments() != null ? input.getInstallments() : 1;
             String paymentMethodId = input.getPaymentMethodId();
 
-            return new PaymentMethodData(payment, cardToken, installments, paymentMethodId);
+            return new PaymentMethodData(payment, cardToken, paymentMethodId);
         }
         return new PaymentMethodData(payment);
     }

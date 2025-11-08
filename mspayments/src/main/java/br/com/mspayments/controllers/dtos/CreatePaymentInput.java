@@ -16,7 +16,6 @@ public class CreatePaymentInput {
     private PaymentGateway gateway;
     private String currencyCode; // código da moeda (USD, EUR, BRL)
     private String cardToken;
-    private Integer installments;
     // brand do cartão
     private String paymentMethodId;
 

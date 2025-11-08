@@ -82,7 +82,6 @@ input CreatePaymentInput {
   gateway: PaymentGateway!
   currencyCode: String # código da moeda (USD, EUR, BRL) - padrão BRL se não informado
   cardToken: String
-  installments: Int
   paymentMethodId: String
 }
 

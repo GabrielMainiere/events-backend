@@ -6,5 +6,5 @@ import br.com.mspayments.strategies.paymentGateway.dtos.PixResponse;
 
 public interface PaymentGatewayStrategy {
     PixResponse processPix(Payment payment);
-    CreditCardResponse processCreditCard(Payment payment, String cardToken, Integer installments, String paymentMethodId);
+    CreditCardResponse processCreditCard(Payment payment, String cardToken, String paymentMethodId);
 }

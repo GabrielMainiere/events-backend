@@ -29,9 +29,9 @@ public class MercadoPagoPaymentGateway implements  PaymentGatewayStrategy {
     }
 
     @Override
-    public CreditCardResponse processCreditCard(Payment payment, String cardToken, Integer installments, String paymentMethodId) {
+    public CreditCardResponse processCreditCard(Payment payment, String cardToken, String paymentMethodId) {
         //regras de negocio do cartao de credito
-        var payload = generateCreateCreditCardPayload(payment, cardToken, installments, paymentMethodId);
+        var payload = generateCreateCreditCardPayload(payment, cardToken, paymentMethodId);
         var mpCreditCardResponse = mercadoPagoClient.createCreditCardPayment(payload);
         return MercadoPagoCreditCardMapper.toCreditCardResponse(mpCreditCardResponse);
     }
@@ -46,13 +46,12 @@ public class MercadoPagoPaymentGateway implements  PaymentGatewayStrategy {
         );
     }
 
-    private static Map<String, Object> generateCreateCreditCardPayload(Payment payment, String cardToken, Integer installments, String paymentMethodId) {
-        var request = new MercadoPagoCreditCardRequest(payment, cardToken, installments, paymentMethodId);
+    private static Map<String, Object> generateCreateCreditCardPayload(Payment payment, String cardToken, String paymentMethodId) {
+        var request = new MercadoPagoCreditCardRequest(payment, cardToken, paymentMethodId);
         return Map.of(
                 "transaction_amount", request.getTransactionAmount(),
                 "token", request.getToken(),
                 "description", request.getDescription(),
-                "installments", request.getInstallments(),
                 "payment_method_id", request.getPaymentMethodId(),
                 "payer", Map.of("email", request.getPayerEmail())
         );
