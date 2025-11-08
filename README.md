@@ -9,7 +9,7 @@ Sistema de gerenciamento de eventos similar ao Sympla, desenvolvido com arquitet
 * [Sobre o Projeto](#-sobre-o-projeto)
 * [Arquitetura do Sistema](#-arquitetura-do-sistema)
 * [Documentação Completa](#-documentação-completa)
-    * [Diagramas C4 (Contexto, Contêineres, etc.)](./docs/diagrams/README.md)
+    * [Diagramas C4 (Contexto, Contêineres, etc.)](./docs/diagrams/DIAGRAMS.md)
     * [Guia da API (GraphQL)](./docs/API_GUIDE.md)
     * [Decisões de Arquitetura (SOLID, Patterns)](./docs/ARCHITECTURE.md)
 * [Como Executar (Instalação)](#-guia-de-instalação-e-execução)
@@ -54,6 +54,20 @@ O sistema é composto por 5 microsserviços principais, um API Gateway e bancos 
 
 ---
 
+## Design Patterns
+
+O sistema utilizou  5 padrões de projeto distintos, espalhandos pelos microsserviços, entre eles foram:
+
+1.  **Singleton** : Garante uma única instância de uma classe e fornece um ponto global de acesso a ela
+2.  **Strategy**: Define famílias de algoritmos e permite trocar o comportamento em tempo de execução sem alterar o código cliente
+3.  **Factory**: Centraliza a criação de objetos sem expor a lógica de instanciamento, delegando a subclasses ou métodos
+4.  **Decorator**: Adiciona funcionalidades extras dinamicamente a um objeto sem alterar sua estrutura original
+5.  **Builder**: Adiciona funcionalidades extras dinamicamente a um objeto sem alterar sua estrutura original
+
+Para saber mais profundado sobre a implementação de cada um acesse: 
+* [Decisões de Arquitetura (SOLID, Patterns)](./docs/ARCHITECTURE.md) - Para justificativas
+* [Diagramas C4 (Contexto, Contêineres, etc.)](./docs/diagrams/DIAGRAMS.md) - Para visualizar com clareza atraves de diagramas
+
 ## Documentação Completa
 
 Toda a documentação detalhada do projeto, incluindo diagramas, guias de API e decisões arquiteturais, está centralizada na pasta `/docs`.
@@ -78,7 +92,7 @@ Toda a documentação detalhada do projeto, incluindo diagramas, guias de API e 
 ```bash
 git clone [https://github.com/GabrielMainiere/events-backend.git](https://github.com/GabrielMainiere/events-backend.git)
 cd events-backend
-
+```
 ---
 
 ### Passo 2: Configurar Variáveis de Ambiente
@@ -149,7 +163,7 @@ O API Gateway (Kong) é o ponto de entrada principal e está disponível em [htt
 
 > **Nota:** Para testar as mutations e queries, consulte o [Guia da API (GraphQL)](./docs/API_GUIDE.md).
 
-## 👨‍💻 Autores
+##  Autores
 
 - Gabriel Mainiere - [GitHub](https://github.com/GabrielMainiere)
 - Luiz Reis - [GitHub](https://github.com/LuizReis-dev)
