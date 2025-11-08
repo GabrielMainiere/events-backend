@@ -1,23 +1,31 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql'
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql'
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { GraphQLValidationPipe } from 'src/common/pipes/graphql-validation.pipe'
+import { isPublic, RequiredRole } from 'src/common/decorators/auth'
+import { RolesEnum } from 'src/core/enums'
 
 @Resolver('User')
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
   @Mutation('createUser')
+  @isPublic()
   async create(@Args('createUserInput', GraphQLValidationPipe) createUserInput: CreateUserDto) {
     return await this.userService.create(createUserInput)
   }
 
   @Query('listUsers')
-  async findAll() {
+  async findAll(@Context() context: any) {
+    const headers = context.req.headers
+
+    console.log('All headers:', headers)
+    console.log('Authorization:', headers.authorization)
+    console.log('User-Agent:', headers['user-agent'])
+
     return await this.userService.findAll()
   }
-
   @Query('findUser')
   async findOne(@Args('id') id: string) {
     return await this.userService.findOne(id)
@@ -32,16 +40,19 @@ export class UserResolver {
   }
 
   @Mutation('deleteUser')
+  @RequiredRole(RolesEnum.Admin)
   async deactivate(@Args('id') id: string) {
     return await this.userService.deactivate(id)
   }
 
   @Query('authenticateUser')
+  @isPublic()
   async authenticateUser(@Args('email') email: string, @Args('password') password: string) {
     return await this.userService.authenticate(email, password)
   }
 
   @Mutation('activateUser')
+  @isPublic()
   async activateUser(
     @Args('activateUserId') activateUserId: string,
     @Args('activationCode') activationCode: string

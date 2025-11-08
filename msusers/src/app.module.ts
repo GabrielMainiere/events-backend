@@ -8,6 +8,8 @@ import { RoleModule } from './modules/role/role.module'
 import { DatabaseModule } from './modules/database/database.module'
 import { UserModule } from './modules/user/user.module'
 import { GrpcClientsModule } from './modules/clients/grpc-clients.module'
+import { AuthModule } from './modules/auth/auth.module'
+import { authGuardProvider } from './modules/auth/auth.provider'
 
 @Module({
   imports: [
@@ -22,8 +24,9 @@ import { GrpcClientsModule } from './modules/clients/grpc-clients.module'
     RoleModule,
     UserModule,
     GrpcClientsModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, authGuardProvider],
 })
 export class AppModule {}
