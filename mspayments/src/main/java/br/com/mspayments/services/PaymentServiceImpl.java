@@ -89,7 +89,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         } catch (Exception e) {
             log.error("Erro ao processar pagamento", e);
-            throw new RuntimeException("Não há pagamentos pendentes");
+            throw new RuntimeException(e.getMessage());
         }
     }
 
