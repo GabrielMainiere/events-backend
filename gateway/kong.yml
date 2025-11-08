@@ -16,12 +16,7 @@ services:
         paths:
           - /msevents
         strip_path: true
-    plugins:
-      - name: jwt
-        config:
-          key_claim_name: "iss"
-          secret_is_base64: false
-      - name: jwt-claims-injector    
+       
   - name: mseventsregistration
     url: http://mseventsregistration:3000
     routes:
