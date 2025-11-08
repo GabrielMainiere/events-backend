@@ -3,17 +3,25 @@ import { RequestLogger } from './request-logger';
 import { WorkerLogger } from './worker-logger';
 import { UserPreferenceLogger } from './user-preference-logger';
 
-
 @Module({
   providers: [
-    RequestLogger,
-    WorkerLogger,
-    UserPreferenceLogger,
+    {
+      provide: 'IRequestLogger',
+      useClass: RequestLogger,
+    },
+    {
+      provide: 'IWorkerLogger',
+      useClass: WorkerLogger,
+    },
+    {
+      provide: 'IUserPreferenceLogger',
+      useClass: UserPreferenceLogger,
+    },
   ],
   exports: [
-    RequestLogger,
-    WorkerLogger,
-    UserPreferenceLogger,
+    'IRequestLogger',
+    'IWorkerLogger',
+    'IUserPreferenceLogger',
   ],
 })
 export class LoggerModule {}

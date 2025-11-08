@@ -1,14 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { NotificationLog } from '@prisma/client';
-import { NotificationTemplateResolver } from 'src/modules/notification-template/notification-resolver-template.service';
-import { NotificationStrategyProvider } from 'src/modules/strategy/strategy-provider/notification-strategy.provider';
-
+import { INotificationSender } from './interfaces/iNotificationSender';
+import type{ IStrategyFactory } from 'src/modules/factory/interfaces/iStrategyFactory';
+import type { INotificationTemplateResolver } from 'src/modules/notification-template/interfaces/iNotificationTemplateResolver';
 
 @Injectable()
-export class NotificationSender {
+export class NotificationSender implements INotificationSender{
   constructor(
-    private readonly strategyProvider: NotificationStrategyProvider,
-    private readonly templateResolver: NotificationTemplateResolver,
+    @Inject('IStrategyFactory')
+    private readonly strategyProvider: IStrategyFactory,
+    @Inject('INotificationTemplateResolver')
+    private readonly templateResolver: INotificationTemplateResolver,
   ) {}
 
   async send(notification: NotificationLog): Promise<void> {

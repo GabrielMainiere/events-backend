@@ -1,11 +1,12 @@
 import { ConflictException, Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { CreateTemplateInput } from 'src/common/dto/createNotificationTemplate.input';
 import { UpdateTemplateInput } from 'src/common/dto/updateNotificationTemplate.input';
-import type { INotificationTemplateRepository } from 'src/common/interfaces/iNotificationTemplateRepository';
+import type { INotificationTemplateRepository } from 'src/modules/notification-template/interfaces/iNotificationTemplateRepository';
 import { NotificationTemplate } from '@prisma/client';
+import { INotificationTemplateService } from './interfaces/iNotificationTemplateService';
 
 @Injectable()
-export class NotificationTemplateService {
+export class NotificationTemplateService implements INotificationTemplateService{
   constructor(
     @Inject('INotificationTemplateRepository')
     private readonly repository: INotificationTemplateRepository,

@@ -1,19 +1,20 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { UpsertUserPreferenceInput } from 'src/common/dto/upsertUserPreference.input';
 import { NotificationType, NotificationChannel, UserPreference } from '@prisma/client';
-import type{ IUserPreferenceRepository } from 'src/common/interfaces/iUserPreferenceRepository';
-import { UserPreferenceLogger } from '../logger/user-preference-logger';
-import { UserPreferenceValidator } from './user-preference-validator';
+import type{ IUserPreferenceRepository } from 'src/modules/user-preference/interfaces/iUserPreferenceRepository';
+import { UserPreferenceValidator } from './validator/user-preference-validator';
 import { UserPreferencePermissionChecker } from './user-preference-permission-checker';
+import type{ IUserPreferenceLogger } from '../logger/interfaces/iLogger';
 
 @Injectable()
 export class UserPreferenceService {
   constructor(
     @Inject('IUserPreferenceRepository')
     private readonly repository: IUserPreferenceRepository,
+    @Inject('IUserPreferenceLogger')
+    private readonly preferenceLog: IUserPreferenceLogger,
     private readonly validator: UserPreferenceValidator,
     private readonly permissionChecker: UserPreferencePermissionChecker,
-    private readonly preferenceLog: UserPreferenceLogger,
   ) {}
 
   async upsert(data: UpsertUserPreferenceInput): Promise<UserPreference> {

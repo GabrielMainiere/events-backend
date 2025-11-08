@@ -2,7 +2,14 @@ import { Module } from '@nestjs/common';
 import { HandlebarsTemplateProcessor } from './template-processor.service';
 
 @Module({
-  providers: [HandlebarsTemplateProcessor],
-  exports: [HandlebarsTemplateProcessor],
+  providers: [
+    {
+      provide: 'ITemplateProcessor',
+      useClass: HandlebarsTemplateProcessor,
+    },
+  ],
+  exports: [
+    'ITemplateProcessor',
+  ],
 })
 export class TemplateProcessorModule {}

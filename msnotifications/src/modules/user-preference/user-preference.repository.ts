@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma-ds/prisma.service';
 import { UserPreference, NotificationType, NotificationChannel } from '@prisma/client';
-import { IUserPreferenceRepository } from 'src/common/interfaces/iUserPreferenceRepository';
+import { IUserPreferenceRepository } from 'src/modules/user-preference/interfaces/iUserPreferenceRepository';
+import { PrismaClientSingleton } from 'src/core/prismaClientSingleton';
 
 @Injectable()
 export class UserPreferenceRepository implements IUserPreferenceRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  private prisma = PrismaClientSingleton.getInstance();
 
   async create(data: Partial<UserPreference>): Promise<UserPreference> {
     return this.prisma.userPreference.create({

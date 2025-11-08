@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { NotificationTemplateService } from './notification-template.service';
-import { HandlebarsTemplateProcessor } from '../strategy/template-processor/template-processor.service';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import type { ITemplateProcessor } from '../template-processor/iTemplateProcessor';
+import { INotificationTemplateResolver } from './interfaces/iNotificationTemplateResolver';
+import type{ INotificationTemplateService } from './interfaces/iNotificationTemplateService';
 
 export interface ResolvedTemplate {
   subject: string;
@@ -8,10 +9,13 @@ export interface ResolvedTemplate {
 }
 
 @Injectable()
-export class NotificationTemplateResolver {
+export class NotificationTemplateResolver implements INotificationTemplateResolver{
   constructor(
-    private readonly templateService: NotificationTemplateService,
-    private readonly templateProcessor: HandlebarsTemplateProcessor,
+    @Inject('INotificationTemplateService')
+    private readonly templateService: INotificationTemplateService,
+
+    @Inject('ITemplateProcessor')
+    private readonly templateProcessor: ITemplateProcessor,
   ) {}
 
   async resolve(

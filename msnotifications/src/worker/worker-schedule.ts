@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { NotificationLogRepository } from 'src/modules/notification-log/notification-log.repository';
-import { WorkerLogger } from 'src/modules/logger/worker-logger';
 import { NotificationBatchProcessor } from './notification-batch-processor';
+import type{ INotificationLogRepository } from 'src/modules/notification-log/interfaces/iNotificationLogRepository';
+import type{ IWorkerLogger } from 'src/modules/logger/interfaces/iLogger';
 
 @Injectable()
 export class WorkerScheduler {
   constructor(
-    private readonly notificationLogRepository: NotificationLogRepository,
+    @Inject('INotificationLogRepository')
+    private readonly notificationLogRepository: INotificationLogRepository,
+    @Inject('IWorkerLogger')
+    private readonly workerLog: IWorkerLogger,
     private readonly batchProcessor: NotificationBatchProcessor,
-    private readonly workerLog: WorkerLogger,
+
   ) {}
 
   @Cron(CronExpression.EVERY_10_SECONDS)

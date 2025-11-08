@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { NotificationStrategyProviderModule } from 'src/modules/strategy/strategy-provider/notification-strategy-provider.module';
+import { StrategyFactoryModule } from 'src/modules/factory/strategy-factory.module';
 import { NotificationLogModule } from 'src/modules/notification-log/notification-log.module';
 import { NotificationTemplateModule } from 'src/modules/notification-template/notification-template.module';
 import { DecoratorModule } from 'src/modules/decorator/decorator.module';
@@ -12,18 +12,27 @@ import { LoggerModule } from 'src/modules/logger/logger.module';
 
 @Module({
   imports: [
-    NotificationStrategyProviderModule,
+    StrategyFactoryModule,
     NotificationLogModule,
     NotificationTemplateModule,
     DecoratorModule,
     LoggerModule,
   ],
   providers: [
-    WorkerScheduler,               
-    NotificationBatchProcessor,     
-    NotificationProcessor,          
-    NotificationStatusUpdater,     
-    NotificationSender,
+    WorkerScheduler,
+    NotificationBatchProcessor,
+    {
+      provide: 'INotificationProcessor',
+      useClass: NotificationProcessor,
+    },
+    {
+      provide: 'INotificationStatusUpdater',
+      useClass: NotificationStatusUpdater,
+    },
+    {
+      provide: 'INotificationSender',
+      useClass: NotificationSender,
+    },
   ],
 })
 export class WorkerModule {}

@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { NotificationLogModule } from 'src/modules/notification-log/notification-log.module';
 import { NotificationTemplateModule } from 'src/modules/notification-template/notification-template.module';
@@ -12,7 +11,7 @@ import { LoggerModule } from '../logger/logger.module';
 
 @Module({
   imports: [
-    NotificationLogModule, 
+    NotificationLogModule,
     NotificationTemplateModule,
     UserPreferenceModule,
     DecoratorModule,
@@ -21,7 +20,10 @@ import { LoggerModule } from '../logger/logger.module';
   controllers: [NotificationImplementation],
   providers: [
     NotificationProcessorService,
-    NotificationEnqueuer,
+    {
+      provide: 'INotificationEnqueuer',
+      useClass: NotificationEnqueuer,
+    },
     PayloadHelper,
   ],
 })
