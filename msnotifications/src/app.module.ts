@@ -16,6 +16,7 @@ import { UserPreferenceModule } from './modules/user-preference/user-preference.
 import { HealthModule } from './common/health/health.module';
 import { join } from 'path';
 import { StrategyFactoryModule } from './modules/factory/strategy-factory.module';
+import { authGuardProvider } from './modules/auth/auth.provider'
 
 
 
@@ -45,6 +46,6 @@ import { StrategyFactoryModule } from './modules/factory/strategy-factory.module
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [authGuardProvider],
 })
 export class AppModule {}
