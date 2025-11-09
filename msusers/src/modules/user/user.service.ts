@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 
 import { UserRepository } from './user.repository'
-import { Prisma, User, Role } from 'generated/prisma'
 import { sign } from 'jsonwebtoken'
 
 type UserCreateInput = Prisma.UserCreateInput
@@ -13,6 +12,7 @@ import { UpdateUserDto } from './dto/update-user.dto'
 import { NotificationsClientService } from '../clients/notifications/notifications.client.service'
 import { NotificationsTemplateNames } from 'src/core/enums'
 import { randomInt } from 'node:crypto'
+import { Prisma, Role, User } from '@prisma/client'
 
 @Injectable()
 export class UserService {
