@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { PrismaClient, Prisma } from 'generated/prisma'
+import { Prisma, PrismaClient } from '@prisma/client'
 import { PRISMA_CLIENT } from 'src/core/constants'
 
 type RoleCreateInput = Prisma.RoleCreateInput
