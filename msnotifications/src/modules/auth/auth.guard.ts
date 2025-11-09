@@ -7,9 +7,8 @@ import {
 import { Reflector } from '@nestjs/core'
 import { GqlExecutionContext } from '@nestjs/graphql'
 import { Observable } from 'rxjs'
-
+import { RolesEnum } from 'src/common/enum/roles'
 import { REQUIRED_ROLE } from './auth.decorators'
-import { RolesEnum } from 'src/enum/roles'
 
 
 @Injectable()
