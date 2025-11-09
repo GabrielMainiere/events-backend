@@ -6,6 +6,8 @@ import { RegistrationService } from './services/registrations.service';
 import { EventWithUsers } from './entities/eventWithUsers.entity';
 import { QRCode } from './entities/qrCode.entity';
 import { GenerateQRCodeInput } from './dto/generate-qrCode.input';
+import { RequiredRole } from 'src/auth/auth.decorators'
+import { RolesEnum } from 'src/enum/roles'
 
 @Resolver(() => Registration)
 export class RegistrationResolver {
@@ -25,6 +27,7 @@ export class RegistrationResolver {
   }
 
   @Query(() => EventWithUsers)
+  @RequiredRole(RolesEnum.Admin)
   async getAllUsersByEvent(@Args('eventId') eventId: string): Promise<EventWithUsers> {
     return this.registrationService.getAllUsersByEvent(eventId);
   }

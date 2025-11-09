@@ -17,15 +17,10 @@ export class UserResolver {
   }
 
   @Query('listUsers')
-  async findAll(@Context() context: any) {
-    const headers = context.req.headers
-
-    console.log('All headers:', headers)
-    console.log('Authorization:', headers.authorization)
-    console.log('User-Agent:', headers['user-agent'])
-
+  async findAll() {
     return await this.userService.findAll()
   }
+
   @Query('findUser')
   async findOne(@Args('id') id: string) {
     return await this.userService.findOne(id)
