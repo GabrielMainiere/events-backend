@@ -3,7 +3,7 @@ package br.com.mscurrency.scheduler;
 import br.com.mscurrency.models.CurrencyPrice;
 import br.com.mscurrency.services.CurrencyPriceService;
 import br.com.mscurrency.services.CurrencyRateUpdateService;
-import br.com.mscurrency.services.PaymentGrpcService;
+import br.com.mscurrency.services.PaymentNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -19,18 +19,18 @@ import java.util.List;
 public class CurrencyRateScheduler {
 
     private final CurrencyRateUpdateService currencyRateUpdateService;
-    private final PaymentGrpcService paymentGrpcService;
+    private final PaymentNotificationService paymentNotificationService;
     private final CurrencyPriceService currencyPriceService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         log.info("Application ready - performing initial operations");
 
-        // Enviar todas as moedas do banco para o microsserviço de pagamentos
+        // Enviar todas as moedas do banco para o microsserviço de pagamentos via RabbitMQ
         List<CurrencyPrice> allCurrencies = currencyPriceService.findAll();
         if (!allCurrencies.isEmpty()) {
-            log.info("Sending all {} currencies to payment service", allCurrencies.size());
-            paymentGrpcService.sendAllCurrencyPrices(allCurrencies);
+            log.info("Sending all {} currencies to payment service via RabbitMQ", allCurrencies.size());
+            paymentNotificationService.sendAllCurrencyPrices(allCurrencies);
         }
 
         log.info("No currencies found in database to send to payment service");
