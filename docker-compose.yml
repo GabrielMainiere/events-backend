@@ -222,7 +222,18 @@ services:
     ports:
       - "8000:8000"
       - "8001:8001"
-
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:4.1.2-management-alpine
+    restart: always
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # painel web
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    networks:
+      - events-backend
 volumes:
   msnotifications-data:
     driver: local
