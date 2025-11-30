@@ -4,7 +4,7 @@ import br.com.mscurrency.models.CurrencyPrice;
 import br.com.mscurrency.repositories.CurrencyPriceRepository;
 import br.com.mscurrency.services.CurrencyRateUpdateService;
 import br.com.mscurrency.services.ExchangeRateApiService;
-import br.com.mscurrency.services.PaymentGrpcService;
+import br.com.mscurrency.services.PaymentNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class CurrencyRateUpdateServiceImpl implements CurrencyRateUpdateService 
 
     private final ExchangeRateApiService exchangeRateApiService;
     private final CurrencyPriceRepository currencyPriceRepository;
-    private final PaymentGrpcService paymentGrpcService;
+    private final PaymentNotificationService paymentNotificationService;
 
     @Override
     @Transactional
@@ -59,8 +59,8 @@ public class CurrencyRateUpdateServiceImpl implements CurrencyRateUpdateService 
                         CurrencyPrice updatedCurrency = currencyPriceRepository.save(currency);
                         updatedCount++;
 
-                        // Enviar atualização via gRPC para o microsserviço de pagamentos
-                        paymentGrpcService.sendCurrencyPriceUpdate(updatedCurrency.getCurrencyCode(), updatedCurrency.getPriceBRL());
+                        // Enviar atualização via RabbitMQ para o microsserviço de pagamentos
+                        paymentNotificationService.sendCurrencyPriceUpdate(updatedCurrency.getCurrencyCode(), updatedCurrency.getPriceBRL());
 
                         log.info("Updated {} from {} to {}", currencyCode, currentRate, newRate);
                     } else {

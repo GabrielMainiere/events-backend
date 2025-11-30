@@ -12,19 +12,17 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
-
-grpc:
-  client:
-    payment-service:
-      address: ${PAYMENT_SERVICE_GRPC_URL:static://localhost:50053}
-      negotiationType: plaintext
+  rabbitmq:
+    host: ${RABBITMQ_HOST:rabbitmq}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:admin}
+    password: ${RABBITMQ_PASSWORD:admin}
 
 logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql: TRACE
     org.springframework.security: DEBUG
-    net.devh.boot.grpc: DEBUG
 
 server:
   port: 8081

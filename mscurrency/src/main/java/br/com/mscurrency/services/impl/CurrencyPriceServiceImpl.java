@@ -3,7 +3,7 @@ package br.com.mscurrency.services.impl;
 import br.com.mscurrency.models.CurrencyPrice;
 import br.com.mscurrency.repositories.CurrencyPriceRepository;
 import br.com.mscurrency.services.CurrencyPriceService;
-import br.com.mscurrency.services.PaymentGrpcService;
+import br.com.mscurrency.services.PaymentNotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ import java.util.Optional;
 public class CurrencyPriceServiceImpl implements CurrencyPriceService {
 
     private final CurrencyPriceRepository currencyPriceRepository;
-    private final PaymentGrpcService paymentGrpcService;
+    private final PaymentNotificationService paymentNotificationService;
 
     @Override
     @Transactional(readOnly = true)
@@ -45,8 +45,8 @@ public class CurrencyPriceServiceImpl implements CurrencyPriceService {
 
         CurrencyPrice savedCurrency = currencyPriceRepository.save(currencyPrice);
 
-        // Enviar para o microsserviço de pagamentos via gRPC
-        paymentGrpcService.sendCurrencyPriceUpdate(savedCurrency.getCurrencyCode(), savedCurrency.getPriceBRL());
+        // Enviar para o microsserviço de pagamentos via RabbitMQ
+        paymentNotificationService.sendCurrencyPriceUpdate(savedCurrency.getCurrencyCode(), savedCurrency.getPriceBRL());
 
         return savedCurrency;
     }
@@ -61,8 +61,8 @@ public class CurrencyPriceServiceImpl implements CurrencyPriceService {
 
         CurrencyPrice updatedCurrency = currencyPriceRepository.save(currencyPrice);
 
-        // Enviar para o microsserviço de pagamentos via gRPC
-        paymentGrpcService.sendCurrencyPriceUpdate(updatedCurrency.getCurrencyCode(), updatedCurrency.getPriceBRL());
+        // Enviar para o microsserviço de pagamentos via RabbitMQ
+        paymentNotificationService.sendCurrencyPriceUpdate(updatedCurrency.getCurrencyCode(), updatedCurrency.getPriceBRL());
 
         return updatedCurrency;
     }
