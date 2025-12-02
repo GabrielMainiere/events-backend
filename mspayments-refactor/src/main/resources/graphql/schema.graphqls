@@ -1,0 +1,106 @@
+# -----------------------------
+# Types
+# -----------------------------
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  cpf: String!
+}
+
+type Event {
+  id: ID!
+  title: String!
+  description: String
+  startAt: String!
+  endAt: String!
+  price: Int! # valor em centavos
+  saleStartAt: String!
+  saleEndAt: String!
+}
+
+type Payment {
+  id: ID!
+  event: Event!
+  user: User!
+  amount: Int!
+  basePrice: Int! # preço base em centavos BRL
+  finalPrice: Int! # preço final convertido em centavos
+  currencyCode: String! # código da moeda utilizada
+  method: PaymentMethod!
+  gateway: PaymentGateway!
+  gatewayTransactionId: String
+  status: PaymentStatus!
+  createdAt: String!
+}
+
+type PixData {
+  qrCode: String
+  qrCodeBase64: String
+}
+
+type CreditCardData {
+  id: String
+  status: String
+}
+
+type PaymentResponse {
+  payment: Payment!
+  pixData: PixData
+  creditCardData: CreditCardData
+  transactionId: String
+  approved: Boolean!
+}
+
+# -----------------------------
+# Enums
+# -----------------------------
+enum PaymentMethod {
+  PIX
+  CREDIT_CARD
+}
+
+enum PaymentGateway {
+  STRIPE
+  MERCADO_PAGO
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELED
+}
+
+# -----------------------------
+# Input Types
+# -----------------------------
+input CreatePaymentInput {
+  eventId: String!
+  userId: String!
+  method: PaymentMethod!
+  gateway: PaymentGateway!
+  currencyCode: String # código da moeda (USD, EUR, BRL) - padrão BRL se não informado
+  cardToken: String
+  paymentMethodId: String # brand do cartão de crédito (visa, master, etc) apenas para mercado pago
+}
+
+# -----------------------------
+# Queries
+# -----------------------------
+type Query {
+  payments: [Payment!]!
+  paymentById(id: String!): Payment
+  paymentsByEvent(eventId: String!): [Payment!]!
+  users: [User!]!
+  userById(id: String!): User
+  events: [Event!]!
+  eventById(id: String!): Event
+}
+
+# -----------------------------
+# Mutations
+# -----------------------------
+type Mutation {
+  createPayment(input: CreatePaymentInput!): PaymentResponse!
+}
