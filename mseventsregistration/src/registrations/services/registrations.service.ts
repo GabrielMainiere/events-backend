@@ -9,8 +9,11 @@ import { EventWithUsers } from '../entities/eventWithUsers.entity';
 import { EventMapper } from 'src/mappers/eventMapper';
 import { QRCodeGenerator } from 'src/utils/qrCodeGenerator';
 import { QRCode } from '../entities/qrCode.entity';
-import { RegistrationStatus } from "@prisma/client";
+import { RegistrationStatus } from '@prisma/client';
 import { EventNotificationService } from 'src/grpc/notifications/event-notification.service';
+import { IPaymentUpdateRequest } from 'src/grpc/event-registration/interfaces/IPaymentUpdateRequest';
+import { IPaymentUpdateResponse } from 'src/grpc/event-registration/interfaces/IPaymentUpdateResponse';
+import { PaymentStatusMapper } from 'src/mappers/paymentStatusMapper';
 
 @Injectable()
 export class RegistrationService {
@@ -18,9 +21,12 @@ export class RegistrationService {
     @Inject('IUsersClient') private readonly usersClient: IUsersClient,
     private readonly strategyService: RegistrationStrategyService,
     private readonly eventNotificationService: EventNotificationService,
-    @Inject('IRegistrationValidators') private readonly validators: IRegistrationValidator[],
-    @Inject('ICheckInValidators') private readonly checkInValidators: ICheckInValidator[],
-    @Inject('IRegistrationRepository') private readonly registrationRepo: IRegistrationRepository,
+    @Inject('IRegistrationValidators')
+    private readonly validators: IRegistrationValidator[],
+    @Inject('ICheckInValidators')
+    private readonly checkInValidators: ICheckInValidator[],
+    @Inject('IRegistrationRepository')
+    private readonly registrationRepo: IRegistrationRepository
   ) {}
 
   async registerUser(userId: string, eventId: string): Promise<Registration> {
@@ -29,7 +35,9 @@ export class RegistrationService {
     try {
       user = await this.usersClient.findOne(userId);
     } catch (err) {
-      throw new Error(`Error fetching user from msusers: ${(err as Error).message}`);
+      throw new Error(
+        `Error fetching user from msusers: ${(err as Error).message}`
+      );
     }
 
     if (!user) {
@@ -44,7 +52,7 @@ export class RegistrationService {
       birthDate: user.birthDate,
       phone: user.phone,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     });
 
     const event = await this.registrationRepo.findEventById(eventId);
@@ -57,16 +65,25 @@ export class RegistrationService {
     const registration = await this.strategyService.execute(userId, event);
 
     if (registration.status === RegistrationStatus.CONFIRMED) {
-      await this.eventNotificationService.sendEventRegistrationNotification(user, event);
+      await this.eventNotificationService.sendEventRegistrationNotification(
+        user,
+        event
+      );
     } else if (registration.status === RegistrationStatus.WAITING_PAYMENT) {
-      await this.eventNotificationService.sendWaitingPaymentNotification(user, event);
+      await this.eventNotificationService.sendWaitingPaymentNotification(
+        user,
+        event
+      );
     }
 
     return registration;
   }
 
   async checkInUser(userId: string, eventId: string): Promise<Registration> {
-    const registration = await this.registrationRepo.findByUserAndEvent(userId, eventId);
+    const registration = await this.registrationRepo.findByUserAndEvent(
+      userId,
+      eventId
+    );
     if (!registration) {
       throw new Error('Registration not found for this user and event');
     }
@@ -85,19 +102,34 @@ export class RegistrationService {
       throw new Error('User not found');
     }
 
-    await this.eventNotificationService.sendEventCheckInNotification(user, event);
-    return this.registrationRepo.updateRegistrationStatus(registration.id, 'CHECKED_IN');
+    await this.eventNotificationService.sendEventCheckInNotification(
+      user,
+      event
+    );
+    return this.registrationRepo.updateRegistrationStatus(
+      registration.id,
+      'CHECKED_IN'
+    );
   }
-  
+
   async getAllUsersByEvent(eventId: string): Promise<EventWithUsers> {
-    const { event, users } = await this.registrationRepo.findAllConfirmedUsersByEvent(eventId);
+    const { event, users } =
+      await this.registrationRepo.findAllConfirmedUsersByEvent(eventId);
     return EventMapper.toGraphQL(event, users);
   }
 
-  async generateCheckInQRCode(userId: string, eventId: string): Promise<QRCode> {
-    const registration = await this.registrationRepo.findByUserAndEvent(userId, eventId);
+  async generateCheckInQRCode(
+    userId: string,
+    eventId: string
+  ): Promise<QRCode> {
+    const registration = await this.registrationRepo.findByUserAndEvent(
+      userId,
+      eventId
+    );
     if (!registration || registration.status !== RegistrationStatus.CONFIRMED) {
-      throw new Error('This user does not have a confirmed registration for this event.');
+      throw new Error(
+        'This user does not have a confirmed registration for this event.'
+      );
     }
 
     const event = await this.registrationRepo.findEventById(eventId);
@@ -118,11 +150,15 @@ export class RegistrationService {
     const diffHours = diffMs / (1000 * 60 * 60);
 
     if (diffHours > 3) {
-      throw new Error('The QRcode can only be generated 3 hours before the start of the event.');
+      throw new Error(
+        'The QRcode can only be generated 3 hours before the start of the event.'
+      );
     }
 
     if (diffHours < 0) {
-      throw new Error('The event has already started or ended. QRcode can no longer be generated.');
+      throw new Error(
+        'The event has already started or ended. QRcode can no longer be generated.'
+      );
     }
 
     const qrData = JSON.stringify({ userId, eventId });
@@ -130,9 +166,56 @@ export class RegistrationService {
 
     return {
       base64,
-      expiresAt: event.end_at,
+      expiresAt: event.end_at
+    };
+  }
+
+  async receivePaymentUpdate(
+    data: IPaymentUpdateRequest
+  ): Promise<IPaymentUpdateResponse> {
+    const { eventId, userId, status } = data;
+
+    const registration = await this.registrationRepo.findByUserAndEvent(
+      userId,
+      eventId
+    );
+    if (!registration) {
+      return { success: false, message: 'Registration not found' };
+    }
+
+    if (registration.status !== RegistrationStatus.WAITING_PAYMENT) {
+      return {
+        success: false,
+        message: 'Registration not in WAITING_PAYMENT status'
+      };
+    }
+
+    const paymentStatus = PaymentStatusMapper.map(status);
+    const newStatus =
+      paymentStatus === 'ACCEPTED'
+        ? RegistrationStatus.CONFIRMED
+        : RegistrationStatus.CANCELED;
+
+    await this.registrationRepo.updateRegistrationStatus(
+      registration.id,
+      newStatus
+    );
+
+    if (newStatus === RegistrationStatus.CONFIRMED) {
+      const user = await this.registrationRepo.findUserById(userId);
+      const event = await this.registrationRepo.findEventById(eventId);
+
+      if (user && event) {
+        await this.eventNotificationService.sendEventRegistrationNotification(
+          user,
+          event
+        );
+      }
+    }
+
+    return {
+      success: true,
+      message: `Payment ${paymentStatus === 'ACCEPTED' ? 'accepted' : 'rejected'}, registration updated to ${newStatus}`
     };
   }
 }
-   
-

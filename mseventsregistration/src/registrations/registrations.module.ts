@@ -15,17 +15,17 @@ import { UsersClient } from 'src/grpc/users/client/userClient';
 import { RegistrationService } from './services/registrations.service';
 import { ValidateCanceledEvent } from './services/validators/validateCanceledEvent';
 import { EventNotificationModule } from 'src/grpc/notifications/event-notification.module';
+import { RegistrationsController } from './registrations.controller';
 
 @Module({
   imports: [GrpcModule, EventNotificationModule],
   providers: [
-
     RegistrationResolver,
     RegistrationService,
 
     {
       provide: 'IRegistrationRepository',
-      useClass: RegistrationRepository,
+      useClass: RegistrationRepository
     },
     RegistrationRepository,
 
@@ -34,23 +34,27 @@ import { EventNotificationModule } from 'src/grpc/notifications/event-notificati
     ValidateCanceledEvent,
     {
       provide: 'IRegistrationValidators',
-      useFactory: (capacity: EventCapacityValidator, already: UserRegisteredValidator, canceled: ValidateCanceledEvent,): IRegistrationValidator[] => [
-        capacity,
-        already,
-        canceled,
-      ],
-      inject: [EventCapacityValidator, UserRegisteredValidator, ValidateCanceledEvent],
+      useFactory: (
+        capacity: EventCapacityValidator,
+        already: UserRegisteredValidator,
+        canceled: ValidateCanceledEvent
+      ): IRegistrationValidator[] => [capacity, already, canceled],
+      inject: [
+        EventCapacityValidator,
+        UserRegisteredValidator,
+        ValidateCanceledEvent
+      ]
     },
-    
+
     CheckInStatusValidator,
     CheckInDateValidator,
     {
       provide: 'ICheckInValidators',
-      useFactory: (status: CheckInStatusValidator, date: CheckInDateValidator): ICheckInValidator[] => [
-        status,
-        date,
-      ],
-      inject: [CheckInStatusValidator, CheckInDateValidator],
+      useFactory: (
+        status: CheckInStatusValidator,
+        date: CheckInDateValidator
+      ): ICheckInValidator[] => [status, date],
+      inject: [CheckInStatusValidator, CheckInDateValidator]
     },
 
     FreeRegistrationStrategy,
@@ -58,11 +62,10 @@ import { EventNotificationModule } from 'src/grpc/notifications/event-notificati
     RegistrationStrategyService,
     {
       provide: 'IUsersClient',
-      useExisting: UsersClient,
-    },
+      useExisting: UsersClient
+    }
   ],
-  exports: [
-    RegistrationService,
-  ],
+  exports: [RegistrationService],
+  controllers: [RegistrationsController]
 })
 export class RegistrationsModule {}
