@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client"
-import { hash } from "bcrypt"
-
+import { PrismaClient } from '@prisma/client'
+import { hash } from 'bcrypt'
 
 const prisma = new PrismaClient()
 
@@ -8,20 +7,25 @@ async function main() {
   console.log('Iniciando seeds...')
 
   console.log('Limpando dados antigos...')
-  await prisma.role.deleteMany()
-  await prisma.user.delete({ where: { id: '5a0c3307-4966-42c1-a206-096c6221f770' } })
+  const count = await prisma.role.count()
+  const doesUserExist = await prisma.user.findUnique({
+    where: { id: '5a0c3307-4966-42c1-a206-096c6221f770' },
+  })
+  if (doesUserExist)
+    await prisma.user.delete({ where: { id: '5a0c3307-4966-42c1-a206-096c6221f770' } })
+  if (count > 0) await prisma.role.deleteMany()
   console.log('Dados antigos removidos')
 
   await prisma.role.create({
     data: {
       name: 'user',
-      id: '85d31814-20e7-4fec-87b6-f40620135aa8'
+      id: '85d31814-20e7-4fec-87b6-f40620135aa8',
     },
   })
   await prisma.role.create({
     data: {
       name: 'admin',
-      id: 'dfe86557-f2e8-451a-9169-984df65ee65e'
+      id: 'dfe86557-f2e8-451a-9169-984df65ee65e',
     },
   })
 
@@ -38,19 +42,19 @@ async function main() {
       isActive: true,
       roles: {
         connect: {
-          id: 'dfe86557-f2e8-451a-9169-984df65ee65e'
-        }
-      }
-    }
+          id: 'dfe86557-f2e8-451a-9169-984df65ee65e',
+        },
+      },
+    },
   })
 }
 
 main()
-  .catch((e) => {
-    console.error('Erro ao executar seeds:', e);
-    process.exit(1);
+  .catch(e => {
+    console.error('Erro ao executar seeds:', e)
+    process.exit(1)
   })
   .finally(async () => {
-    console.log('Seeds finalizadas.');
-    await prisma.$disconnect();
-  });
+    console.log('Seeds finalizadas.')
+    await prisma.$disconnect()
+  })
