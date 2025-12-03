@@ -1,35 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { EventRegistrationClient } from 'src/grpc/clients/eventRegistrationClient';
-import { lastValueFrom } from 'rxjs';
-import { EventsGrpcMapper } from '../mappers/eventsGrpcMapper';
-import { EventWithAddress } from '../repositories/events.repository';
+import { EventProducer } from 'src/producer/eventProducer';
 import { IEventNotifier } from './IEventNotifier';
+import { EventWithAddress } from '../repositories/events.repository';
+import { EventsNotificationMapper } from '../mappers/eventsNotificationMapper';
 
 @Injectable()
-export class EventsNotifier implements IEventNotifier{
-  constructor(private readonly grpcClient: EventRegistrationClient) {}
+export class EventNotifier implements IEventNotifier {
+  constructor(private readonly producer: EventProducer) {}
 
-    async notifyCreated(eventData: EventWithAddress): Promise<void> {
-        try {
-            await lastValueFrom(this.grpcClient.notifyEventCreated(EventsGrpcMapper.toGrpcEvent(eventData)));
-        } catch (error) {
-            console.log(`Grpc NotifyEventCreated failed: ${error.message}`);
-        }
-    }
+  async notifyCreated(event: EventWithAddress): Promise<void> {
+    await this.producer.publishCreated(
+      EventsNotificationMapper.toNotification(event)
+    );
+  }
 
-    async notifyUpdated(eventData: EventWithAddress): Promise<void> {
-        try {
-            await lastValueFrom(this.grpcClient.notifyEventUpdated(EventsGrpcMapper.toGrpcEvent(eventData)))
-        } catch (error) {
-            console.log(`Grpc NotifyEventUpdated failed: ${error.message}`);
-        }
-    }
+  async notifyUpdated(event: EventWithAddress): Promise<void> {
+    await this.producer.publishUpdated(
+      EventsNotificationMapper.toNotification(event)
+    );
+  }
 
-    async notifyCancelled(eventData: EventWithAddress): Promise<void> {
-        try {
-            await lastValueFrom(this.grpcClient.notifyEventCancelled(EventsGrpcMapper.toGrpcEvent(eventData)));
-        } catch (error) {
-            console.log(`Grpc NotifyEventCancelled failed: ${error.message}`);
-        }
-    }
+  async notifyCancelled(event: EventWithAddress): Promise<void> {
+    await this.producer.publishCanceled(
+      EventsNotificationMapper.toNotification(event)
+    );
+  }
 }

@@ -1,8 +1,9 @@
 import { EventWithAddress } from "../repositories/events.repository";
+import { IEventNotificationRequest } from "../interfaces/IEventRegistrationRequest";
 
-export class EventsGrpcMapper {
-
-    static toGrpcEvent(event: EventWithAddress) {
+export class EventsNotificationMapper {
+    
+    static toNotification(event: EventWithAddress): IEventNotificationRequest {
         return {
             id: event.id,
             title: event.title,
