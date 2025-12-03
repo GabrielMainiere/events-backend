@@ -18,10 +18,13 @@ import { NotificationProcessorService } from './notification-processor.service';
     StrategyFactoryModule,
   ],
   providers: [
-    NotificationProcessorService,
+    {
+      provide: 'INotificationProcessor', 
+      useClass: NotificationProcessorService
+    }
   ],
   exports: [
-    NotificationProcessorService,
+    'INotificationProcessor',
   ],
 })
 export class NotificationProcessorModule {}

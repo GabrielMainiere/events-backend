@@ -3,7 +3,6 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NotificationLogModule } from './modules/notification-log/notification-log.module';
 import { NotificationTemplateModule } from './modules/notification-template/notification-template.module';
-
 import { EmailModule } from './modules/email/email.module';
 import { StrategyModule } from './modules/strategy/strategy.module';
 import { DecoratorModule } from './modules/decorator/decorator.module';
@@ -18,7 +17,7 @@ import { StrategyFactoryModule } from './modules/factory/strategy-factory.module
 import { authGuardProvider } from './modules/auth/auth.provider'
 import { NotificationProcessorModule } from './modules/notification-processor/notification-processor.module';
 import { NotificationSenderModule } from './modules/notification-sender/notification-sender.module';
-import { RabbitMQConfig } from './rabbitMQ/config/rabbitMQ.config';
+import { RabbitMQModule } from './rabbitMQ/rabbitMQ.module';
 
 
 @Module({
@@ -38,6 +37,7 @@ import { RabbitMQConfig } from './rabbitMQ/config/rabbitMQ.config';
     DecoratorModule,
     UserPreferenceModule,
     HealthModule,
+    RabbitMQModule,
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
@@ -47,6 +47,6 @@ import { RabbitMQConfig } from './rabbitMQ/config/rabbitMQ.config';
     }),
   ],
   controllers: [],
-  providers: [authGuardProvider, RabbitMQConfig],
+  providers: [authGuardProvider],
 })
 export class AppModule {}

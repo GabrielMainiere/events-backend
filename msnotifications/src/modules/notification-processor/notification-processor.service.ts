@@ -8,9 +8,10 @@ import type { IRequestLogger } from '../logger/interfaces/iLogger';
 import { NotificationStatus } from '@prisma/client';
 import { ProcessNotificationInput } from './interfaces/iProcessNotificationInput';
 import { ProcessNotificationOutput } from './interfaces/iProcessNotificationOutput';
+import { INotificationProcessor } from './interfaces/iNotificationProcessorService';
 
 @Injectable()
-export class NotificationProcessorService {
+export class NotificationProcessorService implements INotificationProcessor {
   private readonly logger = new Logger(NotificationProcessorService.name);
 
   constructor(
@@ -79,7 +80,7 @@ export class NotificationProcessorService {
             notificationId: notificationLog.id,
             status: NotificationStatus.ENVIADO,
         };
-        
+
       } catch (error) {
         await this. notificationLogRepository.updateStatus(
           notificationLog.id,
