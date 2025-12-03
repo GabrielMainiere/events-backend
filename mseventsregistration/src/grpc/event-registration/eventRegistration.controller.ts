@@ -1,31 +1,15 @@
-import { Controller } from "@nestjs/common";
-import { GrpcMethod } from "@nestjs/microservices";
-import { EventsRegistrationService } from "./eventsRegistration.service";
-import type { IEventNotificationRequest } from "./interfaces/IEventRegistrationRequest";
-import type { IEventNotificationResponse } from "./interfaces/IEventRegistrationResponse";
+import { Controller } from '@nestjs/common';
+import { GrpcMethod } from '@nestjs/microservices';
+import { EventsRegistrationService } from './eventsRegistration.service';
 
 @Controller()
 export class EventRegistrationGrpcController {
   constructor(private readonly service: EventsRegistrationService) {}
 
-  @GrpcMethod("EventRegistrationService", "NotifyEventCreated")
-  async notifyEventCreated(data: IEventNotificationRequest): Promise<IEventNotificationResponse> {
-    return this.service.notifyEventCreated(data);
-  }
-
-  @GrpcMethod("EventRegistrationService", "NotifyEventUpdated")
-  async notifyEventUpdated(data: IEventNotificationRequest): Promise<IEventNotificationResponse> {
-    return this.service.notifyEventUpdated(data);
-  }
-
-  @GrpcMethod("EventRegistrationService", "NotifyEventCancelled")
-  async notifyEventCancelled(data: IEventNotificationRequest): Promise<IEventNotificationResponse> {
-    return this.service.notifyEventCancelled(data);
-  }
-
-  @GrpcMethod("EventRegistrationService", "CountEventRegistrations")
-  async countEventRegistrations(
-    data: { eventId: string } ): Promise<{ count: number }> {
+  @GrpcMethod('EventRegistrationService', 'CountEventRegistrations')
+  async countEventRegistrations(data: {
+    eventId: string;
+  }): Promise<{ count: number }> {
     return this.service.countEventRegistrations(data);
-  } 
+  }
 }

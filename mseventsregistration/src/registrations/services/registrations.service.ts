@@ -9,7 +9,7 @@ import { EventWithUsers } from '../entities/eventWithUsers.entity';
 import { EventMapper } from 'src/mappers/eventMapper';
 import { QRCodeGenerator } from 'src/utils/qrCodeGenerator';
 import { QRCode } from '../entities/qrCode.entity';
-import { RegistrationStatus } from '@prisma/client';
+import { RegistrationStatus, tb_registered_event } from '@prisma/client';
 import { EventNotificationService } from 'src/grpc/notifications/event-notification.service';
 import { IPaymentUpdateRequest } from 'src/grpc/event-registration/interfaces/IPaymentUpdateRequest';
 import { IPaymentUpdateResponse } from 'src/grpc/event-registration/interfaces/IPaymentUpdateResponse';
@@ -217,5 +217,20 @@ export class RegistrationService {
       success: true,
       message: `Payment ${paymentStatus === 'ACCEPTED' ? 'accepted' : 'rejected'}, registration updated to ${newStatus}`
     };
+  }
+
+  async notifyUsersAboutCancellation(
+    event: tb_registered_event
+  ): Promise<void> {
+    const registrations =
+      await this.registrationRepo.findRegistrationsByEventId(event.id);
+
+    for (const registration of registrations) {
+      const user = registration.user;
+      await this.eventNotificationService.sendEventCancellationNotification(
+        user,
+        event
+      );
+    }
   }
 }
