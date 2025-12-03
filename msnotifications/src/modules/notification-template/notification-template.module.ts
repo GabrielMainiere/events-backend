@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { NotificationTemplateService } from './notification-template.service';
 import { NotificationTemplateResolver } from './notification-resolver-template.service';
-import { TemplateProcessorModule } from '../template-processor/template-processor.module';
+import { TemplateProcessorModule } from '../notification-template-processor/template-processor.module';
 import { NotificationTemplateRepository } from './notification-template.repository';
 import { NotificationTemplateResolver as GraphQLResolver } from './notification-template.resolver'; 
 import { NotificationTemplateValidator } from './validator/notification-template-validator';
