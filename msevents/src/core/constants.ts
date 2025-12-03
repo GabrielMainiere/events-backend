@@ -1,10 +1,5 @@
 export const EVENTS_EXCHANGE = 'events';
-
-export const ROUTING_KEYS = {
-  CREATED: 'event.created',
-  UPDATED: 'event.updated',
-  CANCELED: 'event.canceled',
-};
+export const EVENT_CHANGE_PATTERN = 'event.change.pattern';
 
 export const QUEUES = {
   EVENTS_QUEUE: 'events_queue',
