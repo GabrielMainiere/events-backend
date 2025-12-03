@@ -1,51 +1,14 @@
-import { IEventNotificationRequest } from './interfaces/IEventRegistrationRequest';
-import { IEventNotificationResponse } from './interfaces/IEventRegistrationResponse';
 import { IEventRegistrationService } from './interfaces/IEventRegistrationService';
 import { EventsRegistrationRepository } from './eventsRegistration.repository';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IGetRegistrationRequest } from './interfaces/IGetRegistrationRequest';
 import { IGetRegistrationResponse } from './interfaces/IGetRegistrationResponse';
 import { RegistrationStatus } from '@prisma/client';
 import { EventRegistrationMapper } from 'src/mappers/getRegistrationMapper';
-import { EventNotificationService } from '../notifications/event-notification.service';
-import type { IRegistrationRepository } from 'src/registrations/repositories/IRegistration.repository';
 
 @Injectable()
 export class EventsRegistrationService implements IEventRegistrationService {
-  constructor(
-    private readonly repository: EventsRegistrationRepository,
-    private readonly eventNotificationService: EventNotificationService,
-    @Inject('IRegistrationRepository')
-    private readonly registrationRepo: IRegistrationRepository
-  ) {}
-
-  async notifyEventCreated(
-    data: IEventNotificationRequest
-  ): Promise<IEventNotificationResponse> {
-    return this.handleUpsert(data, 'CREATED');
-  }
-
-  async notifyEventUpdated(
-    data: IEventNotificationRequest
-  ): Promise<IEventNotificationResponse> {
-    return this.handleUpsert(data, 'UPDATED');
-  }
-
-  async notifyEventCancelled(
-    data: IEventNotificationRequest
-  ): Promise<IEventNotificationResponse> {
-    try {
-      await this.handleUpsert(data, 'CANCELED');
-      await this.notifyUsersAboutCancellation(data.id);
-
-      return { success: true, message: 'Event CANCELED and users notified' };
-    } catch (error) {
-      return {
-        success: false,
-        message: `Failed to CANCEL event: ${error.message}`
-      };
-    }
-  }
+  constructor(private readonly repository: EventsRegistrationRepository) {}
 
   async countEventRegistrations(data: {
     eventId: string;
@@ -98,51 +61,6 @@ export class EventsRegistrationService implements IEventRegistrationService {
       event,
       user,
       hasVacancy
-    );
-  }
-
-  private async handleUpsert(data: IEventNotificationRequest, action: string) {
-    try {
-      const existing = await this.repository.findById(data.id);
-      if (existing) {
-        await this.repository.updateEvent(data);
-      } else {
-        await this.repository.createEventIfNotExists(data);
-      }
-
-      return { success: true, message: `Event ${action} successfully` };
-    } catch (error) {
-      return {
-        success: false,
-        message: `Failed to ${action} event: ${error.message}`
-      };
-    }
-  }
-
-  private async notifyUsersAboutCancellation(eventId: string): Promise<void> {
-    const [event, registrations] = await Promise.all([
-      this.repository.findById(eventId),
-      this.registrationRepo.findRegistrationsByEventId(eventId)
-    ]);
-
-    if (!event) {
-      throw new Error(
-        `Event ${eventId} not found for cancellation notification`
-      );
-    }
-
-    await Promise.allSettled(
-      registrations.map(async (registration) => {
-        const user = await this.registrationRepo.findUserById(
-          registration.userId
-        );
-        if (user) {
-          await this.eventNotificationService.sendEventCancellationNotification(
-            user,
-            event
-          );
-        }
-      })
     );
   }
 }

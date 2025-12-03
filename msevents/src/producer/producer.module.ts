@@ -11,20 +11,17 @@ import { EVENTS_EXCHANGE, QUEUES } from 'src/core/constants';
         transport: Transport.RMQ,
         options: {
           urls: ['amqp://guest:guest@rabbitmq:5672'],
-          queue: QUEUES.EVENTS_QUEUE,
+          queue: QUEUES.REGISTRATION_QUEUE,
           queueOptions: {
-            durable: true,
-            arguments: {
-              'x-dead-letter-exchange': '', 
-            },
+            durable: true
           },
           exchange: EVENTS_EXCHANGE,
-          exchangeType: 'topic',
-        },
-      },
-    ]),
+          exchangeType: 'topic'
+        }
+      }
+    ])
   ],
   providers: [EventProducer],
-  exports: [EventProducer],
+  exports: [EventProducer]
 })
 export class ProducerModule {}

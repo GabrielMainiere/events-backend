@@ -1,4 +1,4 @@
-export interface IEventNotificationRequest {
+export class EventChangeInput {
   id: string;
   title: string;
   description?: string;

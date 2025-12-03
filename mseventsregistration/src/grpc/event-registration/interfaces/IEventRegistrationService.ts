@@ -1,8 +1,11 @@
-import { IEventNotificationRequest } from "./IEventRegistrationRequest";
-import { IEventNotificationResponse } from "./IEventRegistrationResponse";
+import { IGetRegistrationRequest } from './IGetRegistrationRequest';
+import { IGetRegistrationResponse } from './IGetRegistrationResponse';
 
 export interface IEventRegistrationService {
-  notifyEventCreated(data: IEventNotificationRequest): Promise<IEventNotificationResponse>;
-  notifyEventUpdated(data: IEventNotificationRequest): Promise<IEventNotificationResponse>;
-  notifyEventCancelled(data: IEventNotificationRequest): Promise<IEventNotificationResponse>;
+  countEventRegistrations(data: {
+    eventId: string;
+  }): Promise<{ count: number }>;
+  getRegistration(
+    data: IGetRegistrationRequest
+  ): Promise<IGetRegistrationResponse>;
 }
