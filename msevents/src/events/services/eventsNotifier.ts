@@ -1,28 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { EventProducer } from 'src/producer/eventProducer';
+import { EventChangeAction } from 'src/enum/eventChangeAction';
 import { IEventNotifier } from './IEventNotifier';
 import { EventWithAddress } from '../repositories/events.repository';
 import { EventsNotificationMapper } from '../mappers/eventsNotificationMapper';
 
 @Injectable()
-export class EventNotifier implements IEventNotifier {
+export class EventNotifier implements IEventNotifier{
   constructor(private readonly producer: EventProducer) {}
 
-  async notifyCreated(event: EventWithAddress): Promise<void> {
-    await this.producer.publishCreated(
-      EventsNotificationMapper.toNotification(event)
-    );
+  notifyCreatedOrUpdated(event: EventWithAddress): Promise<void> {
+    const payload = EventsNotificationMapper.toNotification(event);
+    return this.producer.publish(payload, EventChangeAction.UPSERT);
   }
 
-  async notifyUpdated(event: EventWithAddress): Promise<void> {
-    await this.producer.publishUpdated(
-      EventsNotificationMapper.toNotification(event)
-    );
-  }
-
-  async notifyCancelled(event: EventWithAddress): Promise<void> {
-    await this.producer.publishCanceled(
-      EventsNotificationMapper.toNotification(event)
-    );
+  notifyCancelled(event: EventWithAddress): Promise<void> {
+    const payload = EventsNotificationMapper.toNotification(event);
+    return this.producer.publish(payload, EventChangeAction.CANCEL);
   }
 }

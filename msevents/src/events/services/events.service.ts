@@ -50,7 +50,7 @@ export class EventsService {
     );
 
     const event = await this.repository.create(eventData);
-    await this.notifier.notifyCreated(event);
+    await this.notifier.notifyCreatedOrUpdated(event);
     return mapEvent(event);
   }
 
@@ -84,7 +84,7 @@ export class EventsService {
       status: existing.status,
     });
 
-    await this.notifier.notifyUpdated(updated);
+    await this.notifier.notifyCreatedOrUpdated(updated);
     return mapEvent(updated);
   }
 

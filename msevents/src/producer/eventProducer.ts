@@ -1,23 +1,22 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { ROUTING_KEYS } from 'src/core/constants';
+import { lastValueFrom } from 'rxjs';
+import { EVENT_CHANGE_PATTERN } from 'src/core/constants';
+import { EventChangeAction } from 'src/enum/eventChangeAction';
 import { IEventNotificationRequest } from 'src/events/interfaces/IEventRegistrationRequest';
 
 @Injectable()
-export class EventProducer {
-  constructor(
-    @Inject('RABBITMQ_EVENTS') private readonly client: ClientProxy,
-  ) {}
+export class EventProducer implements OnModuleInit {
+  constructor(@Inject('RABBITMQ_EVENTS') private readonly client: ClientProxy) {}
 
-  publishCreated(data: IEventNotificationRequest) {
-    return this.client.emit(ROUTING_KEYS.CREATED, data);
+  async onModuleInit() {
+    await this.client.connect();
   }
 
-  publishUpdated(data: IEventNotificationRequest) {
-    return this.client.emit(ROUTING_KEYS.UPDATED, data);
-  }
-
-  publishCanceled(data: IEventNotificationRequest) {
-    return this.client.emit(ROUTING_KEYS.CANCELED, data);
+  async publish(event: IEventNotificationRequest, action: EventChangeAction) {
+    const routingKey = EVENT_CHANGE_PATTERN
+    await lastValueFrom(
+      this.client.emit(routingKey, { action, event }),
+    );
   }
 }
