@@ -29,7 +29,6 @@ export class NotificationProcessorService {
   ) {}
 
   async process(data: ProcessNotificationInput): Promise<ProcessNotificationOutput> {
-    try {
       const template = await this. templateValidator.findByNameOrFail(data.templateName);
 
       const canSend = await this.userPreferenceService.canSendNotification(
@@ -75,6 +74,12 @@ export class NotificationProcessorService {
         );
 
         this.logger.log(`Notificação enviada: ${notificationLog.id}`);
+        
+        return {
+            notificationId: notificationLog.id,
+            status: NotificationStatus.ENVIADO,
+        };
+        
       } catch (error) {
         await this. notificationLogRepository.updateStatus(
           notificationLog.id,
@@ -82,16 +87,8 @@ export class NotificationProcessorService {
           error.message,
         );
 
-        this.logger.warn(`Falha ao enviar, será retentado: ${error.message}`);
+        this.logger.warn(`Falha ao enviar, enviando para DLQ: ${error.message}`);
+        throw error;
       }
-
-      return {
-        notificationId: notificationLog.id,
-        status: notificationLog.status,
-      };
-    } catch (error) {
-      this.logger.error(`Erro em process: ${error.message}`);
-      throw error;
-    }
   }
 }

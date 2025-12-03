@@ -18,7 +18,7 @@ import { StrategyFactoryModule } from './modules/factory/strategy-factory.module
 import { authGuardProvider } from './modules/auth/auth.provider'
 import { NotificationProcessorModule } from './modules/notification-processor/notification-processor.module';
 import { NotificationSenderModule } from './modules/notification-sender/notification-sender.module';
-
+import { RabbitMQConfig } from './rabbitMQ/config/rabbitMQ.config';
 
 
 @Module({
@@ -47,6 +47,6 @@ import { NotificationSenderModule } from './modules/notification-sender/notifica
     }),
   ],
   controllers: [],
-  providers: [authGuardProvider],
+  providers: [authGuardProvider, RabbitMQConfig],
 })
 export class AppModule {}
