@@ -3,12 +3,14 @@ import { EventsService } from './services/events.service';
 import { EventsResolver } from './events.resolver';
 import { EventRepository } from './repositories/events.repository';
 import '../enum/registerEnums'
-import { GrpcModule } from 'src/grpc/grpc.module';
-import { EventsNotifier } from './services/eventsNotifier';
-import { EventRegistrationCount} from './services/eventsRegistrationCount';
+import { EventNotifier } from './services/eventsNotifier';
+//import { EventRegistrationCount} from './services/eventsRegistrationCount';
+import { ProducerModule } from 'src/producer/producer.module';
 
 @Module({
-  imports: [GrpcModule],
+  imports: [
+    ProducerModule,
+  ],
   providers: [
     EventsResolver,
     EventsService,
@@ -18,12 +20,12 @@ import { EventRegistrationCount} from './services/eventsRegistrationCount';
     },
     {
       provide: 'IEventNotifier',
-      useClass: EventsNotifier,
+      useClass: EventNotifier,
     },
-    {
-      provide: 'IEventRegistrationCount',
-      useClass: EventRegistrationCount
-    },
+    //{
+      //provide: 'IEventRegistrationCount',
+      //useClass: EventRegistrationCount
+    //},
   ],
   exports: [EventsService],
 })

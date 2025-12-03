@@ -1,35 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { EventRegistrationClient } from 'src/grpc/clients/eventRegistrationClient';
-import { lastValueFrom } from 'rxjs';
-import { EventsGrpcMapper } from '../mappers/eventsGrpcMapper';
-import { EventWithAddress } from '../repositories/events.repository';
+import { EventProducer } from 'src/producer/eventProducer';
+import { EventChangeAction } from 'src/enum/eventChangeAction';
 import { IEventNotifier } from './IEventNotifier';
+import { EventWithAddress } from '../repositories/events.repository';
+import { EventsNotificationMapper } from '../mappers/eventsNotificationMapper';
 
 @Injectable()
-export class EventsNotifier implements IEventNotifier{
-  constructor(private readonly grpcClient: EventRegistrationClient) {}
+export class EventNotifier implements IEventNotifier{
+  constructor(private readonly producer: EventProducer) {}
 
-    async notifyCreated(eventData: EventWithAddress): Promise<void> {
-        try {
-            await lastValueFrom(this.grpcClient.notifyEventCreated(EventsGrpcMapper.toGrpcEvent(eventData)));
-        } catch (error) {
-            console.log(`Grpc NotifyEventCreated failed: ${error.message}`);
-        }
-    }
+  notifyCreatedOrUpdated(event: EventWithAddress): Promise<void> {
+    const payload = EventsNotificationMapper.toNotification(event);
+    return this.producer.publish(payload, EventChangeAction.UPSERT);
+  }
 
-    async notifyUpdated(eventData: EventWithAddress): Promise<void> {
-        try {
-            await lastValueFrom(this.grpcClient.notifyEventUpdated(EventsGrpcMapper.toGrpcEvent(eventData)))
-        } catch (error) {
-            console.log(`Grpc NotifyEventUpdated failed: ${error.message}`);
-        }
-    }
-
-    async notifyCancelled(eventData: EventWithAddress): Promise<void> {
-        try {
-            await lastValueFrom(this.grpcClient.notifyEventCancelled(EventsGrpcMapper.toGrpcEvent(eventData)));
-        } catch (error) {
-            console.log(`Grpc NotifyEventCancelled failed: ${error.message}`);
-        }
-    }
+  notifyCancelled(event: EventWithAddress): Promise<void> {
+    const payload = EventsNotificationMapper.toNotification(event);
+    return this.producer.publish(payload, EventChangeAction.CANCEL);
+  }
 }

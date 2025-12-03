@@ -10,14 +10,14 @@ import { EventDirector } from '../builder/eventDirector';
 import { AddressProps } from '../builder/IEventsBuilder';
 import type { IEventNotifier } from './IEventNotifier';
 import type { IEventRepository } from '../repositories/IEventRepository';
-import type { IEventRegistrationCount } from 'src/grpc/interfaces/IEventRegistrationCount';
+//import type { IEventRegistrationCount } from 'src/events/interfaces/IEventRegistrationCount';
 
 @Injectable()
 export class EventsService {
   constructor(
     @Inject('IEventRepository') private readonly repository: IEventRepository,
     @Inject('IEventNotifier') private readonly notifier: IEventNotifier,
-    @Inject('IEventRegistrationCount') private readonly Registrationcount : IEventRegistrationCount
+    //@Inject('IEventRegistrationCount') private readonly Registrationcount : IEventRegistrationCount
   ) {}
 
   async createEvent(input: CreateEventInput): Promise<Event> {
@@ -50,7 +50,7 @@ export class EventsService {
     );
 
     const event = await this.repository.create(eventData);
-    await this.notifier.notifyCreated(event);
+    await this.notifier.notifyCreatedOrUpdated(event);
     return mapEvent(event);
   }
 
@@ -84,7 +84,7 @@ export class EventsService {
       status: existing.status,
     });
 
-    await this.notifier.notifyUpdated(updated);
+    await this.notifier.notifyCreatedOrUpdated(updated);
     return mapEvent(updated);
   }
 

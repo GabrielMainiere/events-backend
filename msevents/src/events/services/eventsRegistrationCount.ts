@@ -1,7 +1,8 @@
+/*
 import { Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { EventRegistrationClient } from 'src/grpc/clients/eventRegistrationClient';
-import { IEventRegistrationCount } from 'src/grpc/interfaces/IEventRegistrationCount';
+import { IEventRegistrationCount } from 'src/events/interfaces/IEventRegistrationCount';
 
 @Injectable()
 export class EventRegistrationCount implements IEventRegistrationCount {
@@ -19,3 +20,4 @@ export class EventRegistrationCount implements IEventRegistrationCount {
     }
   }
 }
+*/
