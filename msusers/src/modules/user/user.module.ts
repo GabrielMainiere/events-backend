@@ -4,11 +4,11 @@ import { UserResolver } from './user.resolver'
 import { DatabaseModule } from '../database/database.module'
 import { UserRepository } from './user.repository'
 import { UserController } from './user.grpc.controller'
-import { NotificationsClientModule } from '../clients/notifications/notifications.client.module'
+import { NotificationProducerModule } from '../producer/notifications/notification.producer.module'
 
 @Module({
   providers: [UserResolver, UserService, UserRepository],
-  imports: [DatabaseModule, NotificationsClientModule],
+  imports: [DatabaseModule, NotificationProducerModule],
   controllers: [UserController],
 })
 export class UserModule {}

@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { NotificationLogModule } from 'src/modules/notification-log/notification-log.module';
 import { NotificationTemplateModule } from 'src/modules/notification-template/notification-template.module';
-import { NotificationImplementation } from './notification.implementation.controller';
 import { UserPreferenceModule } from '../user-preference/user-preference.module';
 import { DecoratorModule } from '../decorator/decorator.module';
-import { NotificationProcessorService } from './notification-processor.service';
-import { NotificationEnqueuer } from './notification-enqueuer';
-import { PayloadHelper } from '../../common/helper/payload.helper';
+
 import { LoggerModule } from '../logger/logger.module';
+import { StrategyFactoryModule } from '../factory/strategy-factory.module';
+import { NotificationProcessorService } from './notification-processor.service';
 
 @Module({
   imports: [
@@ -16,15 +15,16 @@ import { LoggerModule } from '../logger/logger.module';
     UserPreferenceModule,
     DecoratorModule,
     LoggerModule,
+    StrategyFactoryModule,
   ],
-  controllers: [NotificationImplementation],
   providers: [
-    NotificationProcessorService,
     {
-      provide: 'INotificationEnqueuer',
-      useClass: NotificationEnqueuer,
-    },
-    PayloadHelper,
+      provide: 'INotificationProcessor', 
+      useClass: NotificationProcessorService
+    }
+  ],
+  exports: [
+    'INotificationProcessor',
   ],
 })
-export class NotificationImplementationModule {}
+export class NotificationProcessorModule {}

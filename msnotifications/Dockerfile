@@ -29,7 +29,6 @@ COPY package*.json ./
 # Copy built artifacts and node_modules from builder (ensures dist exists)
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/proto ./proto
 COPY --from=builder /usr/src/app/prisma ./prisma
 
 EXPOSE 3000 50051

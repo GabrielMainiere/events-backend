@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import type { ITemplateProcessor } from '../template-processor/iTemplateProcessor';
+import type { ITemplateProcessor } from '../notification-template-processor/iTemplateProcessor';
 import { INotificationTemplateResolver } from './interfaces/iNotificationTemplateResolver';
 import type{ INotificationTemplateService } from './interfaces/iNotificationTemplateService';
 
