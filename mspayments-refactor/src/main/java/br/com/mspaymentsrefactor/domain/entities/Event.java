@@ -1,5 +1,6 @@
 package br.com.mspaymentsrefactor.domain.entities;
 
+import br.com.mspaymentsrefactor.domain.valueobjects.EventPeriod;
 import br.com.mspaymentsrefactor.domain.valueobjects.Money;
 import br.com.mspaymentsrefactor.domain.valueobjects.SalePeriod;
 
@@ -13,13 +14,18 @@ public class Event {
     private UUID id;
     private String title;
     private String description;
+    private EventPeriod eventPeriod;
+    private SalePeriod salePeriod;
     private Money price;
 
-    public Event(UUID id, String title, String description, SalePeriod salePeriod, Money price) {
+    public Event(UUID id, String title, String description,
+                 EventPeriod eventPeriod, SalePeriod salePeriod, Money price) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("Title cannot be null or empty");
         }
-
+        if (eventPeriod == null) {
+            throw new IllegalArgumentException("Event period cannot be null");
+        }
         if (salePeriod == null) {
             throw new IllegalArgumentException("Sale period cannot be null");
         }
@@ -30,6 +36,8 @@ public class Event {
         this.id = id != null ? id : UUID.randomUUID();
         this.title = title;
         this.description = description;
+        this.eventPeriod = eventPeriod;
+        this.salePeriod = salePeriod;
         this.price = price;
     }
 
@@ -43,6 +51,26 @@ public class Event {
 
     public String getDescription() {
         return description;
+    }
+
+    public EventPeriod getEventPeriod() {
+        return eventPeriod;
+    }
+
+    public SalePeriod getSalePeriod() {
+        return salePeriod;
+    }
+
+    public Money getPrice() {
+        return price;
+    }
+
+    public boolean isTicketSaleOpen() {
+        return salePeriod.isOpen();
+    }
+
+    public boolean isEventActive() {
+        return eventPeriod.isActive();
     }
 
     @Override
@@ -63,4 +91,3 @@ public class Event {
         return String.format("Event[id=%s, title=%s, price=%s]", id, title, price);
     }
 }
-

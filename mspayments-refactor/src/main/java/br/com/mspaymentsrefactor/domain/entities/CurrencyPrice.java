@@ -39,10 +39,6 @@ public class CurrencyPrice {
         return priceBRL;
     }
 
-    public boolean isOutdated(int maxHours) {
-        return lastUpdated.plusHours(maxHours).isBefore(LocalDateTime.now());
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
