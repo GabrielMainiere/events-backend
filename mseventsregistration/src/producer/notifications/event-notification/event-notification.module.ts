@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { EventNotificationService } from './event-notification.service';
-import { NotificationsModule } from 'src/grpc/notifications/notifications.module';
+import { NotificationProducerModule } from './notification-producer.module';
+
 
 @Module({
-  imports: [NotificationsModule],
+  imports: [
+    NotificationProducerModule
+  ],
   providers: [EventNotificationService],
   exports: [EventNotificationService], 
 })

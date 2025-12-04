@@ -10,7 +10,7 @@ import { EventMapper } from 'src/mappers/eventMapper';
 import { QRCodeGenerator } from 'src/utils/qrCodeGenerator';
 import { QRCode } from '../entities/qrCode.entity';
 import { RegistrationStatus, tb_registered_event } from '@prisma/client';
-import { EventNotificationService } from 'src/grpc/notifications/event-notification.service';
+import { EventNotificationService } from 'src/producer/notifications/event-notification/event-notification.service';
 import { IPaymentUpdateRequest } from 'src/grpc/event-registration/interfaces/IPaymentUpdateRequest';
 import { IPaymentUpdateResponse } from 'src/grpc/event-registration/interfaces/IPaymentUpdateResponse';
 import { PaymentStatusMapper } from 'src/mappers/paymentStatusMapper';
