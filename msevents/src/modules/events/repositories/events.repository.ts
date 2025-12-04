@@ -1,7 +1,7 @@
 import { PrismaSingleton } from 'src/core/prisma/prismaSingleton';
 import { EventStatus, tb_event } from 'generated/prisma';
-import { EventProps } from '../builder/IEventsBuilder';
-import { IEventRepository } from './IEventRepository';
+import { EventProps } from '../domain/factories/builder/IEventsBuilder';
+import { IEventRepository } from '../domain/repositories/IEventRepository';
 
 export type EventWithAddress = tb_event & {
   address: {

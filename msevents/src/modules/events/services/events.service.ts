@@ -1,15 +1,15 @@
 import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
 import { CreateEventInput } from '../dto/create-event.input';
 import { UpdateEventInput } from '../dto/update-event-input';
-import { Event } from '../entities/event.entity';
+import { Event } from '../domain/entities/event.entity';
 import { mapEvent } from 'src/utils/mapEvent';
 import { validateEventPricing } from 'src/utils/priceValidation';
 import { EventStatus } from 'generated/prisma';
-import { EventBuilder } from '../builder/eventsBuilder';
-import { EventDirector } from '../builder/eventDirector';
-import { AddressProps } from '../builder/IEventsBuilder';
-import type { IEventNotifier } from './IEventNotifier';
-import type { IEventRepository } from '../repositories/IEventRepository';
+import { EventBuilder } from '../domain/factories/builder/eventsBuilder';
+import { EventDirector } from '../domain/factories/builder/eventDirector';
+import { AddressProps } from '../domain/factories/builder/IEventsBuilder';
+import type { IEventNotifier } from '../domain/repositories/IEventNotifier';
+import type { IEventRepository } from '../domain/repositories/IEventRepository';
 //import type { IEventRegistrationCount } from 'src/events/interfaces/IEventRegistrationCount';
 
 @Injectable()

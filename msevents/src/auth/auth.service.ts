@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { verify } from 'jsonwebtoken';
 
 import { environment } from 'src/core/environment';
-import { RolesEnum } from 'src/enum/roles';
+import { RolesEnum } from 'src/core/enum/roles';
 
 type JwtTokenObject = {
   iss: 'events-api';

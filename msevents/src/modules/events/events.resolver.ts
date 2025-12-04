@@ -1,10 +1,10 @@
 import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
 import { EventsService } from './services/events.service';
-import { Event } from './entities/event.entity';
+import { Event } from './domain/entities/event.entity';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event-input';
 import { CancelEventInput } from './dto/cancel-event.input';
-import { RolesEnum } from 'src/enum/roles';
+import { RolesEnum } from 'src/core/enum/roles';
 import { isPublic, RequiredRole } from 'src/auth/auth.decorators';
 
 @Resolver(() => Event)
