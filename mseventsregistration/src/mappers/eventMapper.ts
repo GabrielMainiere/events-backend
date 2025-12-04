@@ -1,9 +1,12 @@
-import { EventWithUsers } from 'src/registrations/entities/eventWithUsers.entity';
+import { EventWithUsers } from 'src/modules/registrations/entities/eventWithUsers.entity';
 import { tb_registered_event, tb_user } from '@prisma/client';
 import { GqlEventStatus, GqlEventType } from 'src/enum/registerEnum';
 
 export class EventMapper {
-  static toGraphQL(event: tb_registered_event, users: tb_user[]): EventWithUsers {
+  static toGraphQL(
+    event: tb_registered_event,
+    users: tb_user[]
+  ): EventWithUsers {
     return {
       event: {
         id: event.id,
@@ -25,9 +28,9 @@ export class EventMapper {
         status: event.status as GqlEventStatus,
         eventType: event.event_type as GqlEventType,
         createdAt: event.created_at,
-        updatedAt: event.updated_at,
+        updatedAt: event.updated_at
       },
-      confirmedUsers: users.map(u => ({
+      confirmedUsers: users.map((u) => ({
         id: u.id,
         name: u.name,
         email: u.email,
@@ -35,8 +38,8 @@ export class EventMapper {
         phone: u.phone ?? undefined,
         birthDate: u.birthDate ?? undefined,
         createdAt: u.createdAt,
-        updatedAt: u.updatedAt,
-      })),
+        updatedAt: u.updatedAt
+      }))
     };
   }
 }

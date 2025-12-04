@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { RegistrationsModule } from './registrations/registrations.module';
+import { RegistrationsModule } from './modules/registrations/registrations.module';
 import { authGuardProvider } from './auth/auth.provider';
-import { EventsModule } from './events/events.module';
-import { DatabaseModule } from './database/prisma.module';
+import { EventsModule } from './modules/events/events.module';
+import { DatabaseModule } from './modules/database/prisma.module';
 
 @Module({
   imports: [

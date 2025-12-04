@@ -11,11 +11,11 @@ import { RegistrationStrategyService } from './strategies/registrationStrategySe
 import { FreeRegistrationStrategy } from './strategies/freeRegistrationStrategy';
 import { PaidRegistrationStrategy } from './strategies/paidRegistrationStrategy';
 import { GrpcModule } from 'src/grpc/grpc.module';
-import { UsersClient } from 'src/grpc/users/client/userClient';
+import { UsersClient } from 'src/modules/users/client/userClient';
 import { RegistrationService } from './services/registrations.service';
 import { ValidateCanceledEvent } from './services/validators/validateCanceledEvent';
 import { RegistrationsController } from './registrations.controller';
-import { EventNotificationModule } from 'src/producer/notifications/event-notification/event-notification.module';
+import { EventNotificationModule } from 'src/modules/notifications/event-notification/event-notification.module';
 
 @Module({
   imports: [GrpcModule, EventNotificationModule],
