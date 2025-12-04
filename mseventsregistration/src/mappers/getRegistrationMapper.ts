@@ -1,5 +1,5 @@
-import { IGetRegistrationResponse } from "src/grpc/event-registration/interfaces/IGetRegistrationResponse";
-import { tb_registered_event, tb_user } from "@prisma/client";
+import { IGetRegistrationResponse } from 'src/modules/registrations/interfaces/IGetRegistrationResponse';
+import { tb_registered_event, tb_user } from '@prisma/client';
 
 export class EventRegistrationMapper {
   static toGetRegistrationResponse(
@@ -31,7 +31,7 @@ export class EventRegistrationMapper {
       hasVacancy,
       name: user.name,
       email: user.email,
-      cpf: user.cpf,
+      cpf: user.cpf
     };
   }
 }

@@ -11,9 +11,15 @@ import { QRCodeGenerator } from 'src/utils/qrCodeGenerator';
 import { QRCode } from '../entities/qrCode.entity';
 import { RegistrationStatus, tb_registered_event } from '@prisma/client';
 import { EventNotificationService } from 'src/modules/notifications/event-notification/event-notification.service';
-import { IPaymentUpdateRequest } from 'src/grpc/event-registration/interfaces/IPaymentUpdateRequest';
-import { IPaymentUpdateResponse } from 'src/grpc/event-registration/interfaces/IPaymentUpdateResponse';
+import { IPaymentUpdateRequest } from 'src/modules/registrations/interfaces/IPaymentUpdateRequest';
+import { IPaymentUpdateResponse } from 'src/modules/registrations/interfaces/IPaymentUpdateResponse';
 import { PaymentStatusMapper } from 'src/mappers/paymentStatusMapper';
+import { EventRegistrationMapper } from 'src/mappers/getRegistrationMapper';
+import { IGetRegistrationRequest } from '../interfaces/IGetRegistrationRequest';
+import { IGetRegistrationResponse } from '../interfaces/IGetRegistrationResponse';
+import type { IEventsService } from 'src/modules/events/interfaces/IEventService';
+import { EVENTS_SERVICE } from 'src/modules/events/providers/service.provider';
+import { UsersService } from 'src/modules/users/users.service';
 
 @Injectable()
 export class RegistrationService {
@@ -26,7 +32,10 @@ export class RegistrationService {
     @Inject('ICheckInValidators')
     private readonly checkInValidators: ICheckInValidator[],
     @Inject('IRegistrationRepository')
-    private readonly registrationRepo: IRegistrationRepository
+    private readonly registrationRepo: IRegistrationRepository,
+    @Inject(EVENTS_SERVICE)
+    private readonly eventsService: IEventsService,
+    private readonly usersService: UsersService
   ) {}
 
   async registerUser(userId: string, eventId: string): Promise<Registration> {
@@ -44,7 +53,7 @@ export class RegistrationService {
       throw new Error('User not found');
     }
 
-    await this.registrationRepo.createUser({
+    await this.usersService.upsertUser({
       id: user.id,
       name: user.name,
       email: user.email,
@@ -88,7 +97,7 @@ export class RegistrationService {
       throw new Error('Registration not found for this user and event');
     }
 
-    const event = await this.registrationRepo.findEventById(eventId);
+    const event = await this.eventsService.getEventById(eventId);
     if (!event) {
       throw new Error('Event not found');
     }
@@ -97,7 +106,7 @@ export class RegistrationService {
       await validator.validate(registration, event);
     }
 
-    const user = await this.registrationRepo.findUserById(userId);
+    const user = await this.usersService.findById(userId);
     if (!user) {
       throw new Error('User not found');
     }
@@ -202,7 +211,7 @@ export class RegistrationService {
     );
 
     if (newStatus === RegistrationStatus.CONFIRMED) {
-      const user = await this.registrationRepo.findUserById(userId);
+      const user = await this.usersService.findById(userId);
       const event = await this.registrationRepo.findEventById(eventId);
 
       if (user && event) {
@@ -232,5 +241,62 @@ export class RegistrationService {
         event
       );
     }
+  }
+
+  async countEventRegistrations(data: {
+    eventId: string;
+  }): Promise<{ count: number }> {
+    const { eventId } = data;
+
+    if (!eventId) throw new Error('eventId must be provided');
+
+    const count = await this.registrationRepo.countByEvent(eventId, [
+      RegistrationStatus.CONFIRMED
+    ]);
+    return { count };
+  }
+
+  async getRegistration(
+    data: IGetRegistrationRequest
+  ): Promise<IGetRegistrationResponse> {
+    const { userId, eventId } = data;
+
+    if (!userId || !eventId) {
+      throw new Error('userId and eventId must be provided');
+    }
+
+    const registration = await this.registrationRepo.findByUserAndEvent(
+      eventId,
+      userId
+    );
+    if (!registration) {
+      throw new Error('Registration not found');
+    }
+
+    if (registration.status !== RegistrationStatus.WAITING_PAYMENT) {
+      throw new Error('Registration is not in WAITING_PAYMENT status');
+    }
+
+    const event = await this.eventsService.getEventById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const totalRegistrations = await this.registrationRepo.countByEvent(
+      event.id,
+      [RegistrationStatus.CONFIRMED]
+    );
+    const hasVacancy = totalRegistrations < event.capacity;
+
+    return EventRegistrationMapper.toGetRegistrationResponse(
+      event,
+      user,
+      hasVacancy
+    );
   }
 }

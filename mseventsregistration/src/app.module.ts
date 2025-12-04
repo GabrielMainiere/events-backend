@@ -6,10 +6,12 @@ import { RegistrationsModule } from './modules/registrations/registrations.modul
 import { authGuardProvider } from './auth/auth.provider';
 import { EventsModule } from './modules/events/events.module';
 import { DatabaseModule } from './modules/database/prisma.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
     EventsModule,
+    UsersModule,
     DatabaseModule,
     RegistrationsModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({

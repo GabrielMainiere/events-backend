@@ -1,4 +1,8 @@
-import { tb_registered_event, tb_user } from '@prisma/client';
+import {
+  RegistrationStatus,
+  tb_registered_event,
+  tb_user
+} from '@prisma/client';
 import { Registration } from '../entities/registration.entity';
 import { EventRegistrationCompleteResponse } from '../dto/event-registration-complete.response';
 
@@ -9,14 +13,15 @@ export interface IRegistrationRepository {
     status: string;
   }): Promise<Registration>;
 
-  createUser(user: tb_user): Promise<tb_user>;
-
   findByUserAndEvent(
     userId: string,
     eventId: string
   ): Promise<Registration | null>;
 
-  countByEvent(eventId: string): Promise<number>;
+  countByEvent(
+    eventId: string,
+    statuses: RegistrationStatus[]
+  ): Promise<number>;
 
   findEventById(eventId: string): Promise<tb_registered_event | null>;
 
@@ -26,8 +31,6 @@ export interface IRegistrationRepository {
     registrationId: string,
     status: string
   ): Promise<Registration>;
-
-  findUserById(userId: string): Promise<tb_user | null>;
 
   findRegistrationsByEventId(
     eventId: string
