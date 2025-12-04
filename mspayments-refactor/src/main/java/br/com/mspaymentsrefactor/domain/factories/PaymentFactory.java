@@ -3,13 +3,10 @@ package br.com.mspaymentsrefactor.domain.factories;
 import br.com.mspaymentsrefactor.domain.aggregates.Payment;
 import br.com.mspaymentsrefactor.domain.entities.CurrencyPrice;
 import br.com.mspaymentsrefactor.domain.entities.Event;
+import br.com.mspaymentsrefactor.domain.entities.User;
 import br.com.mspaymentsrefactor.domain.valueobjects.Money;
 import br.com.mspaymentsrefactor.domain.valueobjects.PaymentGateway;
 import br.com.mspaymentsrefactor.domain.valueobjects.PaymentMethod;
-import br.com.mspaymentsrefactor.domain.valueobjects.PaymentStatus;
-
-import java.time.Instant;
-import java.util.UUID;
 
 /**
  * Factory para criação de agregados Payment
@@ -20,9 +17,8 @@ public class PaymentFactory {
     /**
      * Cria um novo pagamento com conversão de moeda
      *
-     * @param eventId ID do evento
-     * @param userId ID do usuário
-     * @param event Evento para obter o preço base
+     * @param event Evento completo
+     * @param user Usuário completo
      * @param targetCurrencyCode Código da moeda desejada (USD, EUR, BRL, etc.)
      * @param currencyPrice Cotação da moeda para conversão
      * @param method Método de pagamento
@@ -30,9 +26,8 @@ public class PaymentFactory {
      * @return Novo pagamento criado
      */
     public static Payment createPayment(
-            UUID eventId,
-            UUID userId,
             Event event,
+            User user,
             String targetCurrencyCode,
             CurrencyPrice currencyPrice,
             PaymentMethod method,
@@ -40,6 +35,9 @@ public class PaymentFactory {
 
         if (event == null) {
             throw new IllegalArgumentException("Event cannot be null");
+        }
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
         }
         if (targetCurrencyCode == null || targetCurrencyCode.isBlank()) {
             throw new IllegalArgumentException("Target currency code cannot be null or empty");
@@ -61,33 +59,34 @@ public class PaymentFactory {
             finalPrice = basePrice.convertTo(targetCurrencyCode, currencyPrice.getConversionRate());
         }
 
-        return new Payment(eventId, userId, basePrice, finalPrice, method, gateway);
+        return new Payment(event, user, basePrice, finalPrice, method, gateway);
     }
 
     /**
      * Cria um novo pagamento em BRL (sem conversão)
      *
-     * @param eventId ID do evento
-     * @param userId ID do usuário
-     * @param event Evento para obter o preço
+     * @param event Evento completo
+     * @param user Usuário completo
      * @param method Método de pagamento
      * @param gateway Gateway de pagamento
      * @return Novo pagamento criado em BRL
      */
     public static Payment createPaymentInBRL(
-            UUID eventId,
-            UUID userId,
             Event event,
+            User user,
             PaymentMethod method,
             PaymentGateway gateway) {
 
         if (event == null) {
             throw new IllegalArgumentException("Event cannot be null");
         }
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
 
         Money basePrice = event.getPrice();
 
-        return new Payment(eventId, userId, basePrice, basePrice, method, gateway);
+        return new Payment(event, user, basePrice, basePrice, method, gateway);
     }
 
     /**
@@ -107,4 +106,3 @@ public class PaymentFactory {
         }
     }
 }
-

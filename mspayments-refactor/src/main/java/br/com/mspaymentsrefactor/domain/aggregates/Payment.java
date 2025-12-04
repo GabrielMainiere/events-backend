@@ -1,5 +1,7 @@
 package br.com.mspaymentsrefactor.domain.aggregates;
 
+import br.com.mspaymentsrefactor.domain.entities.Event;
+import br.com.mspaymentsrefactor.domain.entities.User;
 import br.com.mspaymentsrefactor.domain.valueobjects.Money;
 import br.com.mspaymentsrefactor.domain.valueobjects.PaymentGateway;
 import br.com.mspaymentsrefactor.domain.valueobjects.PaymentMethod;
@@ -14,8 +16,8 @@ import java.util.UUID;
  */
 public class Payment {
     private UUID id;
-    private UUID eventId;
-    private UUID userId;
+    private Event event;
+    private User user;
 
     // Informações de preço
     private Money basePrice;       // preço base em BRL
@@ -30,13 +32,13 @@ public class Payment {
     private Instant createdAt;
 
     // Construtor para criar novo pagamento
-    public Payment(UUID eventId, UUID userId, Money basePrice, Money finalPrice,
+    public Payment(Event event, User user, Money basePrice, Money finalPrice,
                    PaymentMethod method, PaymentGateway gateway) {
-        if (eventId == null) {
-            throw new IllegalArgumentException("Event ID cannot be null");
+        if (event == null) {
+            throw new IllegalArgumentException("Event cannot be null");
         }
-        if (userId == null) {
-            throw new IllegalArgumentException("User ID cannot be null");
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
         }
         if (basePrice == null) {
             throw new IllegalArgumentException("Base price cannot be null");
@@ -52,8 +54,8 @@ public class Payment {
         }
 
         this.id = UUID.randomUUID();
-        this.eventId = eventId;
-        this.userId = userId;
+        this.event = event;
+        this.user = user;
         this.basePrice = basePrice;
         this.finalPrice = finalPrice;
         this.method = method;
@@ -63,12 +65,12 @@ public class Payment {
     }
 
     // Construtor para reconstruir do banco
-    public Payment(UUID id, UUID eventId, UUID userId, Money basePrice, Money finalPrice,
+    public Payment(UUID id, Event event, User user, Money basePrice, Money finalPrice,
                    PaymentMethod method, PaymentGateway gateway, String gatewayTransactionId,
                    PaymentStatus status, Instant createdAt) {
         this.id = id;
-        this.eventId = eventId;
-        this.userId = userId;
+        this.event = event;
+        this.user = user;
         this.basePrice = basePrice;
         this.finalPrice = finalPrice;
         this.method = method;
@@ -95,12 +97,12 @@ public class Payment {
         return id;
     }
 
-    public UUID getEventId() {
-        return eventId;
+    public Event getEvent() {
+        return event;
     }
 
-    public UUID getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     public Money getBasePrice() {
@@ -149,5 +151,3 @@ public class Payment {
         return String.format("Payment[id=%s, status=%s, finalPrice=%s]", id, status, finalPrice);
     }
 }
-
-
