@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { RegistrationResolver } from './registrations.resolver';
 import { RegistrationRepository } from './repositories/registration.repository';
 import { EventCapacityValidator } from './services/validators/validateCapacity';
@@ -10,15 +10,20 @@ import { ICheckInValidator } from './services/validators/ICheckInValidator';
 import { RegistrationStrategyService } from './strategies/registrationStrategyService';
 import { FreeRegistrationStrategy } from './strategies/freeRegistrationStrategy';
 import { PaidRegistrationStrategy } from './strategies/paidRegistrationStrategy';
-import { GrpcModule } from 'src/grpc/grpc.module';
 import { UsersClient } from 'src/modules/users/client/userClient';
 import { RegistrationService } from './services/registrations.service';
 import { ValidateCanceledEvent } from './services/validators/validateCanceledEvent';
 import { RegistrationsController } from './registrations.controller';
 import { EventNotificationModule } from 'src/modules/notifications/event-notification/event-notification.module';
+import { EventsModule } from '../events/events.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [GrpcModule, EventNotificationModule],
+  imports: [
+    EventNotificationModule,
+    forwardRef(() => EventsModule),
+    UsersModule
+  ],
   providers: [
     RegistrationResolver,
     RegistrationService,

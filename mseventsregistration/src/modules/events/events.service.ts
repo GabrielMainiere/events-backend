@@ -1,6 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EventChangeAction } from 'src/enum/event-change-action';
-import type { IEventsRepository } from './interfaces/IEventsRepository';
+import { IEventsRepository } from './interfaces/IEventsRepository';
 import { IEventsService } from './interfaces/IEventService';
 import { RegistrationService } from 'src/modules/registrations/services/registrations.service';
 import { EventChangeInput } from './dto/event-change.input';
@@ -10,10 +10,15 @@ import { EVENTS_REPOSITORY } from './providers/repository.provider';
 @Injectable()
 export class EventsService implements IEventsService {
   constructor(
+    @Inject(forwardRef(() => RegistrationService))
     private readonly eventsRegistrationService: RegistrationService,
     @Inject(EVENTS_REPOSITORY)
     private readonly eventsRepository: IEventsRepository
   ) {}
+
+  async getEventById(eventId: string): Promise<tb_registered_event | null> {
+    return await this.eventsRepository.findById(eventId);
+  }
 
   async handleEventChange(
     data: EventChangeInput,

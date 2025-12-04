@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { EventsController } from './events.controller';
 import { DatabaseModule } from 'src/modules/database/prisma.module';
@@ -8,7 +8,7 @@ import { serviceProvider } from './providers/service.provider';
 import { EventsRepository } from './events.repository';
 
 @Module({
-  imports: [DatabaseModule, RegistrationsModule],
+  imports: [DatabaseModule, forwardRef(() => RegistrationsModule)],
   providers: [
     EventsService,
     repositoryProvider,

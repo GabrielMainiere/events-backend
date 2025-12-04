@@ -3,7 +3,6 @@ import { PrismaSingleton } from 'src/core/prismaSingleton';
 import { IRegistrationRepository } from './IRegistration.repository';
 import { Registration } from '../entities/registration.entity';
 import {
-  EventStatus,
   RegistrationStatus,
   tb_registered_event,
   tb_user
@@ -31,14 +30,6 @@ export class RegistrationRepository implements IRegistrationRepository {
     return RegistrationMapper.toEntity(result);
   }
 
-  async createUser(user: tb_user): Promise<tb_user> {
-    return this.prisma.tb_user.upsert({
-      where: { id: user.id },
-      update: { ...user },
-      create: { ...user }
-    });
-  }
-
   async findByUserAndEvent(
     userId: string,
     eventId: string
@@ -50,12 +41,15 @@ export class RegistrationRepository implements IRegistrationRepository {
     return result ? RegistrationMapper.toEntity(result) : null;
   }
 
-  async countByEvent(eventId: string): Promise<number> {
+  async countByEvent(
+    eventId: string,
+    statuses: RegistrationStatus[]
+  ): Promise<number> {
     return this.prisma.tb_events_registration.count({
       where: {
         registered_event_id: eventId,
         status: {
-          in: [EventStatus.CONFIRMED, EventStatus.WAITING_PAYMENT]
+          in: statuses
         }
       }
     });
@@ -91,10 +85,6 @@ export class RegistrationRepository implements IRegistrationRepository {
     });
 
     return RegistrationMapper.toEntity(result);
-  }
-
-  async findUserById(userId: string): Promise<tb_user | null> {
-    return this.prisma.tb_user.findUnique({ where: { id: userId } });
   }
 
   async findRegistrationsByEventId(
