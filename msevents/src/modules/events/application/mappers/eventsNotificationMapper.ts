@@ -1,5 +1,5 @@
-import { EventWithAddress } from "../repositories/events.repository";
-import { IEventNotificationRequest } from "../interfaces/IEventRegistrationRequest";
+import { EventWithAddress } from "../../repositories/events.repository";
+import { IEventNotificationRequest } from "../../interfaces/IEventRegistrationRequest";
 
 export class EventsNotificationMapper {
     

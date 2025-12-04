@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException, Inject } from '@nestjs/common';
-import { CreateEventInput } from '../dto/create-event.input';
-import { UpdateEventInput } from '../dto/update-event-input';
+import { CreateEventInput } from '../application/dto/create-event.input';
+import { UpdateEventInput } from '../application/dto/update-event-input';
 import { Event } from '../domain/entities/event.entity';
 import { mapEvent } from 'src/utils/mapEvent';
 import { validateEventPricing } from 'src/modules/events/domain/services/priceValidation';
