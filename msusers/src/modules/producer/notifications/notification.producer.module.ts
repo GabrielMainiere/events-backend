@@ -12,6 +12,8 @@ import { RABBITMQ } from './rabbitMQ.constants';
         options: {
           urls: [process.env.RABBITMQ_URL || 'amqp://guest:guest@localhost:5672'], 
           queue: RABBITMQ.QUEUE,
+          exchange: RABBITMQ.EXCHANGE,
+          exchangeType: 'topic',
           queueOptions: {
             durable: true,
             arguments: {
