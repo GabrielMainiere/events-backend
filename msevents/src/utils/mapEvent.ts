@@ -1,6 +1,6 @@
 import { tb_event, tb_address } from 'generated/prisma';
-import { Event } from 'src/events/entities/event.entity';
-import { Address } from 'src/events/entities/address.entity';
+import { Event } from 'src/modules/events/domain/entities/event.entity';
+import { Address } from 'src/modules/events/domain/entities/address.entity';
 
 export function mapEvent(event: tb_event & { address: tb_address }): Event {
   const address: Address = {

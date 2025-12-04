@@ -3,7 +3,7 @@ import { CreateEventInput } from '../dto/create-event.input';
 import { UpdateEventInput } from '../dto/update-event-input';
 import { Event } from '../domain/entities/event.entity';
 import { mapEvent } from 'src/utils/mapEvent';
-import { validateEventPricing } from 'src/utils/priceValidation';
+import { validateEventPricing } from 'src/modules/events/domain/services/priceValidation';
 import { EventStatus } from 'generated/prisma';
 import { EventBuilder } from '../domain/factories/builder/eventsBuilder';
 import { EventDirector } from '../domain/factories/builder/eventDirector';
