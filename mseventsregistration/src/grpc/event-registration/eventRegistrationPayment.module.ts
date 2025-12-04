@@ -2,8 +2,8 @@ import { Module } from "@nestjs/common";
 import { EventsRegistrationRepository } from "./eventsRegistration.repository";
 import { EventsRegistrationService } from "./eventsRegistration.service";
 import { RegistrationRepository } from "src/registrations/repositories/registration.repository";
-import { EventNotificationModule } from "../notifications/event-notification.module";
 import { EventRegistrationPaymentsGrpcController } from "./eventRegistrationPayment.controller";
+import { EventNotificationModule } from "src/producer/notifications/event-notification/event-notification.module";
 
 @Module({
   imports: [EventNotificationModule],

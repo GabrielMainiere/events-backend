@@ -14,8 +14,8 @@ import { GrpcModule } from 'src/grpc/grpc.module';
 import { UsersClient } from 'src/grpc/users/client/userClient';
 import { RegistrationService } from './services/registrations.service';
 import { ValidateCanceledEvent } from './services/validators/validateCanceledEvent';
-import { EventNotificationModule } from 'src/grpc/notifications/event-notification.module';
 import { RegistrationsController } from './registrations.controller';
+import { EventNotificationModule } from 'src/producer/notifications/event-notification/event-notification.module';
 
 @Module({
   imports: [GrpcModule, EventNotificationModule],
