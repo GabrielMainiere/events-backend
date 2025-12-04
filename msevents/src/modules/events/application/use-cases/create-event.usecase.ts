@@ -16,7 +16,7 @@ export class CreateEventUseCase {
     @Inject('IEventNotifier') private readonly notifier: IEventNotifier,
   ) {}
 
-  async execute(input: CreateEventInput): Promise<Event> {
+  async createEvent(input: CreateEventInput): Promise<Event> {
     validateEventPricing(input.isFree, input.price);
 
     const builder = new EventBuilder();

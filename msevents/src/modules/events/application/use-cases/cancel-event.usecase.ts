@@ -12,7 +12,7 @@ export class CancelEventUseCase {
         @Inject('IEventNotifier') private readonly notifier: IEventNotifier,
     ) {}
 
-    async execute (id: string): Promise<Event> {
+    async cancelEvent(id: string): Promise<Event> {
         const event = await this.repository.getById(id);
         if (!event) throw new NotFoundException(`Event with id ${id} not found`);
         if (event.status === EventStatus.CANCELED) throw new BadRequestException(`Event already canceled`);
