@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { RABBITMQ } from './rabbitMQ/config/rabbitMQ.constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +16,10 @@ app.connectMicroservice<MicroserviceOptions>({
       noAck: false, 
       queueOptions: {
         durable: true,
+        arguments: {
+          'x-dead-letter-exchange': '',
+          'x-dead-letter-routing-key': RABBITMQ.DLQ
+        },
       },
     },
   });

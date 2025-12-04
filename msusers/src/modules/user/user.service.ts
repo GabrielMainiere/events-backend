@@ -2,23 +2,23 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 
 import { UserRepository } from './user.repository'
 import { sign } from 'jsonwebtoken'
-
 type UserCreateInput = Prisma.UserCreateInput
 type UserUpdateInput = Prisma.UserUpdateInput
 import { environment } from 'src/core/environment'
 import { hash, compare } from 'bcrypt'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { NotificationsClientService } from '../clients/notifications/notifications.client.service'
 import { NotificationsTemplateNames } from 'src/core/enums'
 import { randomInt } from 'node:crypto'
 import { Prisma, Role, User } from '@prisma/client'
+import { NotificationProducer } from '../producer/notifications/notification.producer'
+
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly notificationsClientService: NotificationsClientService
+    private readonly notificationProducer: NotificationProducer
   ) {}
 
   async create(createUserInput: CreateUserDto) {
@@ -103,20 +103,20 @@ export class UserService {
   }
 
   private async sendActivationEmail(user: User) {
-    await this.notificationsClientService.sendAccountNotification({
-      userId: user.id,
-      recipientAddress: user.email,
-      payloadJson: JSON.stringify({ name: user.name, userActivationCode: user.activationCode }),
-      templateName: NotificationsTemplateNames.ACCOUNT_VERIFICATION_EMAIL,
+    await this.notificationProducer.publish({
+      user_id: user.id,
+      recipient_address: user.email,
+      payload:  { name: user.name, userActivationCode: user.activationCode },
+      template_name: NotificationsTemplateNames.ACCOUNT_VERIFICATION_EMAIL,
     })
   }
 
   private async sendWelcomeEmail(user: User) {
-    await this.notificationsClientService.sendAccountNotification({
-      userId: user.id,
-      recipientAddress: user.email,
-      payloadJson: JSON.stringify({ name: user.name }),
-      templateName: NotificationsTemplateNames.ACCOUNT_WELCOME_EMAIL,
+    await this.notificationProducer.publish({
+      user_id: user.id,
+      recipient_address: user.email,
+      payload:  { name: user.name },
+      template_name: NotificationsTemplateNames.ACCOUNT_WELCOME_EMAIL,
     })
   }
 }
