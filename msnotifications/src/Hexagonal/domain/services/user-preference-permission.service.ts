@@ -37,20 +37,4 @@ export class UserPreferencePermissionService {
       );
     }
   }
-
-  getBlockingReason(
-    notificationType: NotificationType,
-    channel: NotificationChannel,
-    userPreference: UserPreferenceData | null
-  ): string | null {
-    if (this.canSendNotification(notificationType, channel, userPreference)) {
-      return null;
-    }
-
-    if (! userPreference) {
-      return 'Preference not found (should not happen - lazy creation expected)';
-    }
-
-    return `User disabled ${notificationType.toString()} notifications on ${channel.toString()} channel`;
-  }
 }
