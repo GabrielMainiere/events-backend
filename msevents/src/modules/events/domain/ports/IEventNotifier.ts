@@ -1,4 +1,4 @@
-import { EventWithAddress } from "../../repositories/events.repository";
+import { EventWithAddress } from "../../infrastructure/adapters/database/events.repository.adapter";
 
 export interface IEventNotifier {
   notifyCreatedOrUpdated(event: EventWithAddress): Promise<void>;

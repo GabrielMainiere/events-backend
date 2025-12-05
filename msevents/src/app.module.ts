@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { EventsModule } from './modules/events/events.module';
+import { EventsModule } from './modules/events/infrastructure/modules/events.module';
 import { join } from 'path';
 import { authGuardProvider } from './auth/auth.provider';
 import { AuthModule } from './auth/auth.module';
