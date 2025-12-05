@@ -1,54 +1,25 @@
-import * as handlebars from 'handlebars';
+import { ITemplateRenderer } from "./template-renderer.interface";
 
 export class TemplateRenderingService {
-  
+  constructor(private readonly renderer: ITemplateRenderer) {}  
+
   render(
     subjectTemplate: string,
     bodyTemplate: string,
     payload: Record<string, any>
   ): { subject: string; body: string } {
-    const subject = this.compileTemplate(subjectTemplate, payload);
-    const body = this.compileTemplate(bodyTemplate, payload);
+    const subject = this.renderer.render(subjectTemplate, payload);
+    const body = this.renderer.render(bodyTemplate, payload);
 
     return { subject, body };
   }
 
-  private compileTemplate(
-    templateString: string,
-    payload: Record<string, any>
-  ): string {
-    try {
-      const compiledTemplate = handlebars.compile(templateString);
-      return compiledTemplate(payload);
-    } catch (error) {
-      throw new Error(
-        `Failed to compile template: ${error.message}. Template: "${templateString}"`
-      );
-    }
-  }
-
   validateTemplate(templateString: string): boolean {
-    try {
-      handlebars.compile(templateString);
-      return true;
-    } catch (error) {
-      return false;
-    }
+    return this.renderer.validate(templateString);
   }
 
   extractVariables(templateString: string): string[] {
-    const variableRegex = /\{\{([^}]+)\}\}/g;
-    const variables: string[] = [];
-    let match;
-
-    while ((match = variableRegex.exec(templateString)) !== null) {
-      const variableName = match[1]. trim();
-      if (! variables.includes(variableName)) {
-        variables.push(variableName);
-      }
-    }
-
-    return variables;
+    return this.renderer.extractVariables(templateString);
   }
 
   validatePayloadForTemplate(
