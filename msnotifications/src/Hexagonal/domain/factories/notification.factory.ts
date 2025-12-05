@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { Notification } from '../aggregates';
+import { Notification } from '../aggregates/notification.aggregate';
 import { NotificationStatus } from '../value-objects/notification-status.vo';
 import { CreateNotificationProps, NotificationProps } from '../aggregates/types/notification.types';
 
