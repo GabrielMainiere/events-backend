@@ -21,19 +21,19 @@ export class NotificationMapper {
   }
 
   static domainToResponse(notification: Notification): NotificationResponse {
-    return new NotificationResponse(
-      notification.id,
-      notification. userId. getValue(),
-      notification.notificationType.toString(),
-      notification.channel.toString(),
-      notification.recipientAddress.getValue(),
-      notification.templateName,
-      notification.status. toString(),
-      notification.sentAt,
-      notification.errorMessage,
-      notification.retryCount,
-      notification.createdAt
-    );
+    return new NotificationResponse({
+      id: notification.id,
+      userId: notification.userId. getValue(),
+      notificationType: notification.notificationType.toString(),
+      channel: notification.channel.toString(),
+      recipientAddress: notification.recipientAddress.getValue(),
+      templateName: notification. templateName,
+      status: notification.status. toString(),
+      sentAt: notification.sentAt,
+      errorMessage: notification.errorMessage,
+      retryCount: notification.retryCount,
+      createdAt: notification.createdAt,
+  });
   }
 
   static domainListToResponseList(notifications: Notification[]): NotificationResponse[] {

@@ -1,35 +1,22 @@
+import { IsUUID, IsEnum, IsBoolean, IsNotEmpty } from 'class-validator';
+import { NotificationType } from '../../../domain/value-objects/notification-type.vo';
+import { NotificationChannel } from '../../../domain/value-objects/notification-channel.vo';
+
 export class UpsertUserPreferenceCommand {
-  constructor(
-    public readonly userId: string,
-    public readonly notificationType: string,
-    public readonly channel: string,
-    public readonly isEnabled: boolean
-  ) {}
+  
+  @IsUUID(4, { message: 'User ID must be a valid UUID v4' })
+  @IsNotEmpty({ message: 'User ID is required' })
+  userId: string;
 
-  static fromGraphQLInput(input: any): UpsertUserPreferenceCommand {
-    return new UpsertUserPreferenceCommand(
-      input.userId,
-      input.notificationType,
-      input.channel,
-      input.isEnabled
-    );
-  }
+  @IsEnum(NotificationType, { message: 'Invalid notification type' })
+  @IsNotEmpty({ message: 'Notification type is required' })
+  notificationType: string;
 
-  validate(): void {
-    if (!this. userId || this.userId.trim(). length === 0) {
-      throw new Error('userId is required');
-    }
+  @IsEnum(NotificationChannel, { message: 'Invalid notification channel' })
+  @IsNotEmpty({ message: 'Notification channel is required' })
+  channel: string;
 
-    if (!this.notificationType || this.notificationType.trim().length === 0) {
-      throw new Error('notificationType is required');
-    }
-
-    if (!this. channel || this.channel.trim(). length === 0) {
-      throw new Error('channel is required');
-    }
-
-    if (typeof this.isEnabled !== 'boolean') {
-      throw new Error('isEnabled must be a boolean');
-    }
-  }
+  @IsBoolean({ message: 'isEnabled must be a boolean value' })
+  @IsNotEmpty({ message: 'isEnabled is required' })
+  isEnabled: boolean;
 }

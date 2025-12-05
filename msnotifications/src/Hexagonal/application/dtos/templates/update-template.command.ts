@@ -1,48 +1,36 @@
+import { IsString, IsEnum, IsOptional, MinLength, MaxLength, IsUUID, IsNotEmpty } from 'class-validator';
+import { NotificationType } from '../../../domain/value-objects/notification-type.vo';
+import { NotificationChannel } from '../../../domain/value-objects/notification-channel.vo';
+
 export class UpdateTemplateCommand {
-  constructor(
-    public readonly templateId: string,
-    public readonly templateName?: string,
-    public readonly subjectTemplate?: string,
-    public readonly bodyTemplate?: string
-  ) {}
+  
+  @IsUUID(4, { message: 'Template ID must be a valid UUID v4' })
+  @IsNotEmpty({ message: 'Template ID is required' })
+  templateId: string;
 
-  static fromGraphQLInput(id: string, input: any): UpdateTemplateCommand {
-    return new UpdateTemplateCommand(
-      id,
-      input.templateName,
-      input.subjectTemplate,
-      input.bodyTemplate
-    );
-  }
+  @IsString()
+  @IsOptional()
+  @MinLength(3, { message: 'Template name must be at least 3 characters long' })
+  @MaxLength(50, { message: 'Template name cannot exceed 50 characters' })
+  templateName?: string;
 
-  validate(): void {
-    if (!this.templateId || this.templateId.trim().length === 0) {
-      throw new Error('templateId is required');
-    }
+  @IsEnum(NotificationType)
+  @IsOptional()
+  notificationType?: string;
 
-    if (! this.templateName && !this. subjectTemplate && !this.bodyTemplate) {
-      throw new Error('At least one field must be provided for update');
-    }
+  @IsEnum(NotificationChannel)
+  @IsOptional()
+  channel?: string;
 
-    if (this.templateName !== undefined) {
-      if (this.templateName.trim().length === 0) {
-        throw new Error('templateName cannot be empty');
-      }
-      if (this.templateName.length < 3) {
-        throw new Error('templateName must have at least 3 characters');
-      }
-    }
+  @IsString()
+  @IsOptional()
+  @MinLength(1, { message: 'Subject template cannot be empty' })
+  @MaxLength(200, { message: 'Subject template cannot exceed 200 characters' })
+  subjectTemplate?: string;
 
-    if (this.subjectTemplate !== undefined && this.subjectTemplate.trim(). length === 0) {
-      throw new Error('subjectTemplate cannot be empty');
-    }
-
-    if (this. bodyTemplate !== undefined && this.bodyTemplate.trim().length === 0) {
-      throw new Error('bodyTemplate cannot be empty');
-    }
-  }
-
-  hasFieldToUpdate(field: 'templateName' | 'subjectTemplate' | 'bodyTemplate'): boolean {
-    return this[field] !== undefined;
-  }
+  @IsString()
+  @IsOptional()
+  @MinLength(1, { message: 'Body template cannot be empty' })
+  @MaxLength(5000, { message: 'Body template cannot exceed 5000 characters' })
+  bodyTemplate?: string;
 }

@@ -28,14 +28,14 @@ export class UserPreferenceMapper {
   }
 
   static modelToResponse(preference: UserPreference): UserPreferenceResponse {
-    return new UserPreferenceResponse(
-      preference.id,
-      preference.userId,
-      preference.notificationType,
-      preference.channel,
-      preference.isEnabled,
-      preference.updatedAt
-    );
+    return new UserPreferenceResponse({
+      id: preference.id,
+      userId: preference.userId,
+      notificationType: preference. notificationType,
+      channel: preference.channel,
+      isEnabled: preference.isEnabled,
+      updatedAt: preference.updatedAt,
+  });
   }
 
   static modelListToResponseList(preferences: UserPreference[]): UserPreferenceResponse[] {

@@ -31,16 +31,16 @@ export class TemplateMapper {
   }
 
   static modelToResponse(template: Template): TemplateResponse {
-    return new TemplateResponse(
-      template.id,
-      template.templateName,
-      template.notificationType,
-      template.channel,
-      template.subjectTemplate,
-      template.bodyTemplate,
-      template.createdAt,
-      template.updatedAt
-    );
+    return new TemplateResponse({
+      id: template.id,
+      templateName: template.templateName,
+      notificationType: template.notificationType,
+      channel: template.channel,
+      subjectTemplate: template. subjectTemplate,
+      bodyTemplate: template.bodyTemplate,
+      createdAt: template.createdAt,
+      updatedAt: template.updatedAt,
+  });
   }
 
   static modelListToResponseList(templates: Template[]): TemplateResponse[] {

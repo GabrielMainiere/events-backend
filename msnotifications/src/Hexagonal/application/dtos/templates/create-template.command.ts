@@ -1,45 +1,32 @@
+import { IsString, IsEnum, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
+import { NotificationType } from '../../../domain/value-objects/notification-type.vo';
+import { NotificationChannel } from '../../../domain/value-objects/notification-channel.vo';
+
 export class CreateTemplateCommand {
-  constructor(
-    public readonly templateName: string,
-    public readonly notificationType: string,
-    public readonly channel: string,
-    public readonly subjectTemplate: string,
-    public readonly bodyTemplate: string
-  ) {}
+  
+  @IsString()
+  @IsNotEmpty({ message: 'Template name is required' })
+  @MinLength(3, { message: 'Template name must be at least 3 characters long' })
+  @MaxLength(50, { message: 'Template name cannot exceed 50 characters' })
+  templateName: string;
 
-  static fromGraphQLInput(input: any): CreateTemplateCommand {
-    return new CreateTemplateCommand(
-      input.templateName,
-      input.notificationType,
-      input.channel,
-      input. subjectTemplate,
-      input. bodyTemplate
-    );
-  }
+  @IsEnum(NotificationType)
+  @IsNotEmpty({ message: 'Notification type is required' })
+  notificationType: string;
 
-  validate(): void {
-    if (!this.templateName || this.templateName.trim().length === 0) {
-      throw new Error('templateName is required');
-    }
+  @IsEnum(NotificationChannel)
+  @IsNotEmpty({ message: 'Notification channel is required' })
+  channel: string;
 
-    if (this.templateName.length < 3) {
-      throw new Error('templateName must have at least 3 characters');
-    }
+  @IsString()
+  @IsNotEmpty({ message: 'Subject template is required' })
+  @MinLength(1, { message: 'Subject template cannot be empty' })
+  @MaxLength(200, { message: 'Subject template cannot exceed 200 characters' })
+  subjectTemplate: string;
 
-    if (!this. notificationType || this.notificationType.trim().length === 0) {
-      throw new Error('notificationType is required');
-    }
-
-    if (!this.channel || this.channel.trim().length === 0) {
-      throw new Error('channel is required');
-    }
-
-    if (!this. subjectTemplate || this.subjectTemplate.trim().length === 0) {
-      throw new Error('subjectTemplate is required');
-    }
-
-    if (!this.bodyTemplate || this.bodyTemplate.trim().length === 0) {
-      throw new Error('bodyTemplate is required');
-    }
-  }
+  @IsString()
+  @MinLength(1, { message: 'Body template cannot be empty' })
+  @MaxLength(5000, { message: 'Body template cannot exceed 5000 characters' })
+  @IsNotEmpty({ message: 'Body template is required' })
+  bodyTemplate: string;
 }

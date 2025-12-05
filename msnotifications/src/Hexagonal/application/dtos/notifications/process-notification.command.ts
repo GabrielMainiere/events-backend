@@ -1,47 +1,30 @@
+import { IsString, IsUUID, IsEnum, IsObject, IsNotEmpty } from 'class-validator';
+import { NotificationType } from '../../../domain/value-objects/notification-type.vo';
+import { NotificationChannel } from '../../../domain/value-objects/notification-channel.vo';
+
 export class ProcessNotificationCommand {
-  constructor(
-    public readonly userId: string,
-    public readonly notificationType: string,
-    public readonly channel: string,
-    public readonly recipientAddress: string,
-    public readonly templateName: string,
-    public readonly payload: Record<string, any>
-  ) {}
+  
+  @IsUUID(4, { message: 'User ID must be a valid UUID v4' })
+  @IsNotEmpty({ message: 'User ID is required' })
+  userId: string;
 
-  static fromRabbitMQMessage(message: any): ProcessNotificationCommand {
-    return new ProcessNotificationCommand(
-      message.userId,
-      message. notificationType,
-      message. channel,
-      message.recipientAddress,
-      message.templateName,
-      message.payload
-    );
-  }
+  @IsEnum(NotificationType, { message: 'Invalid notification type' })
+  @IsNotEmpty({ message: 'Notification type is required' })
+  notificationType: string;
 
-  validate(): void {
-    if (!this.userId || this.userId.trim(). length === 0) {
-      throw new Error('userId is required');
-    }
+  @IsEnum(NotificationChannel, { message: 'Invalid notification channel' })
+  @IsNotEmpty({ message: 'Notification channel is required' })
+  channel: string; 
 
-    if (!this.notificationType || this.notificationType.trim().length === 0) {
-      throw new Error('notificationType is required');
-    }
+  @IsString({ message: 'Recipient address must be a string' })
+  @IsNotEmpty({ message: 'Recipient address is required' })
+  recipientAddress: string;
 
-    if (!this.channel || this. channel.trim().length === 0) {
-      throw new Error('channel is required');
-    }
+  @IsString({ message: 'Template name must be a string' })
+  @IsNotEmpty({ message: 'Template name is required' })
+  templateName: string;
 
-    if (!this.recipientAddress || this.recipientAddress.trim().length === 0) {
-      throw new Error('recipientAddress is required');
-    }
-
-    if (!this.templateName || this.templateName.trim().length === 0) {
-      throw new Error('templateName is required');
-    }
-
-    if (!this. payload || typeof this.payload !== 'object') {
-      throw new Error('payload must be an object');
-    }
-  }
+  @IsObject({ message: 'Payload must be an object' })
+  @IsNotEmpty({ message: 'Payload is required' })
+  payload: Record<string, any>;
 }
