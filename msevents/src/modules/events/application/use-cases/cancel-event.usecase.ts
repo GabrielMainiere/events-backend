@@ -1,7 +1,7 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { mapEvent } from '../mappers/event.mapper';
-import type { IEventRepository } from '../../domain/repositories/IEventRepository';
-import type { IEventNotifier } from '../../domain/repositories/IEventNotifier';
+import type { IEventRepository } from '../../domain/ports/IEventRepository';
+import type { IEventNotifier } from '../../domain/ports/IEventNotifier';
 import { EventStatus } from 'generated/prisma';
 import { Event } from '../../domain/entities/event.entity';
 
