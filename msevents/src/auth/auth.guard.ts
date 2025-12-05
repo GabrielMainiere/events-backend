@@ -9,7 +9,7 @@ import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 
 import { AuthService } from './auth.service';
-import { RolesEnum } from 'src/enum/roles';
+import { RolesEnum } from 'src/core/enum/roles';
 import { REQUIRED_ROLE, IS_PUBLIC } from './auth.decorators';
 
 @Injectable()

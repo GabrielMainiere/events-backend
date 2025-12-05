@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { EventProducer } from './eventProducer';
+import { EventProducer } from './eventProducer.adapter';
 import { EVENTS_EXCHANGE, QUEUES } from 'src/core/constants';
 
 @Module({
