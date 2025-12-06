@@ -14,9 +14,5 @@ public interface CurrencyPriceNotificationPort {
      */
     void notifyPriceUpdate(CurrencyPrice currencyPrice);
 
-    /**
-     * Notifica sobre múltiplas atualizações de preços (usado na sincronização)
-     */
-    void notifyBulkPriceUpdate(List<CurrencyPrice> currencyPrices);
 }
 
