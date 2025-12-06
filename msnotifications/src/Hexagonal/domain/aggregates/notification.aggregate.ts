@@ -2,12 +2,8 @@ import { Email } from '../value-objects/email.vo';
 import { NotificationType } from '../enums/notification-type.enum';
 import { NotificationChannel } from '../enums/notification-channel.enum';
 import { NotificationStatus } from '../enums/notification-status.enum';
-import { DomainEvent } from '../events/interface/domain-event.interface';
-import { NotificationSentEvent } from '../events/notification-sent.event';
-import { NotificationFailedEvent } from '../events/notification-failed.event';
 
 export class Notification {
-  private domainEvents: DomainEvent[] = [];
 
   public readonly id: string;
   public readonly userId: string;
@@ -80,17 +76,6 @@ export class Notification {
 
     this._status = NotificationStatus. SENT;
     this._sentAt = new Date();
-
-    this.addDomainEvent(
-      NotificationSentEvent.create({
-        notificationId: this. id,
-        userId: this. userId,
-        notificationType: this.notificationType,
-        channel: this.channel,
-        recipientAddress: this.recipientAddress. getValue(),
-        templateName: this. templateName,
-      })
-    );
   }
 
   markAsFailed(error: Error): void {
@@ -102,34 +87,9 @@ export class Notification {
 
     this._status = NotificationStatus.FAILED;
     this._errorMessage = error.message;
-
-    this.addDomainEvent(
-      NotificationFailedEvent.create({
-        notificationId: this.id,
-        userId: this.userId,
-        notificationType: this. notificationType,
-        channel: this.channel,
-        recipientAddress: this.recipientAddress. getValue(),
-        templateName: this.templateName,
-        errorMessage: error.message,
-        retryCount: this._retryCount,
-      })
-    );
   }
 
   incrementRetryCount(): void {
     this._retryCount++;
-  }
-
-  private addDomainEvent(event: DomainEvent): void {
-    this.domainEvents.push(event);
-  }
-
-  getDomainEvents(): DomainEvent[] {
-    return [...this. domainEvents];
-  }
-
-  clearDomainEvents(): void {
-    this.domainEvents = [];
   }
 }
