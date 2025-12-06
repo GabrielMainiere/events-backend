@@ -8,8 +8,10 @@ import { PrismaNotificationRepository } from '../adapters/output/persistence/pri
 import { PrismaTemplateRepository } from '../adapters/output/persistence/prisma/repositories/prisma-template.repository';
 import { PrismaUserPreferenceRepository } from '../adapters/output/persistence/prisma/repositories/prisma-user-preference.repository';
 import { NodemailerEmailGateway } from '../adapters/input/email/nodemailer-email.gateway';
-import { RabbitMQNotificationConsumer } from '../adapters/input/messaging/notification.consumer';
-
+import { EmailStrategy } from '../adapters/output/notification-channels/strategies/email.strategy';
+import { SMSStrategy } from '../adapters/output/notification-channels/strategies/sms.strategy';
+import { PushStrategy } from '../adapters/output/notification-channels/strategies/push.strategy';
+import { NOTIFICATION_STRATEGIES, StrategyFactory } from '../adapters/output/notification-channels/strategy.factory';
 
 @Module({
   imports: [
@@ -46,10 +48,29 @@ import { RabbitMQNotificationConsumer } from '../adapters/input/messaging/notifi
       useClass: NodemailerEmailGateway,
     },
 
-    RabbitMQNotificationConsumer,
+    EmailStrategy,
+    SMSStrategy,
+    PushStrategy,
+
+    {
+      provide: NOTIFICATION_STRATEGIES,
+      useFactory: (
+        emailStrategy: EmailStrategy,
+        smsStrategy: SMSStrategy,
+        pushStrategy: PushStrategy,
+      ) => {
+        return [emailStrategy, smsStrategy, pushStrategy];
+      },
+      inject: [EmailStrategy, SMSStrategy, PushStrategy],
+    },
+    {
+      provide: 'IStrategyFactory',
+      useClass: StrategyFactory,
+    },
   ],
   exports: [
     ProcessNotificationUseCase,
+    'IStrategyFactory',
   ],
 })
 export class NotificationModule {}
