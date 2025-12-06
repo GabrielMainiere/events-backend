@@ -9,8 +9,8 @@ import { ListTemplatesUseCase } from 'src/Hexagonal/application/use-cases/templa
 import { DeleteTemplateUseCase } from 'src/Hexagonal/application/use-cases/templates/delete-template.use-case';
 import { CreateTemplateCommand } from 'src/Hexagonal/application/dtos/templates/create-template.command';
 import { UpdateTemplateCommand } from 'src/Hexagonal/application/dtos/templates/update-template.command';
-import { RolesEnum } from 'src/Hexagonal/common/roles.enum';
-import { RequiredRole } from 'src/Hexagonal/common/auth.decorators';
+import { RolesEnum } from 'src/common/roles.enum';
+import { RequiredRole } from 'src/common/auth.decorators';
 
 @Resolver(() => TemplateType)
 export class TemplateResolver {

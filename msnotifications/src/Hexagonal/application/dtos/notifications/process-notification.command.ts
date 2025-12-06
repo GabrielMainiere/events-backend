@@ -8,14 +8,6 @@ export class ProcessNotificationCommand {
   @IsNotEmpty({ message: 'User ID is required' })
   userId: string;
 
-  @IsEnum(NotificationType, { message: 'Invalid notification type' })
-  @IsNotEmpty({ message: 'Notification type is required' })
-  notificationType: NotificationType;
-
-  @IsEnum(NotificationChannel, { message: 'Invalid notification channel' })
-  @IsNotEmpty({ message: 'Notification channel is required' })
-  channel: NotificationChannel; 
-
   @IsString({ message: 'Recipient address must be a string' })
   @IsNotEmpty({ message: 'Recipient address is required' })
   recipientAddress: string;

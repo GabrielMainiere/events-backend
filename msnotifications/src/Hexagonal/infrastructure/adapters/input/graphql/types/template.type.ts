@@ -1,4 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
+import '../enums/register-enums';
 import { NotificationType } from '../../../../../domain/enums/notification-type.enum';
 import { NotificationChannel } from '../../../../../domain/enums/notification-channel.enum';
 
@@ -10,10 +11,10 @@ export class TemplateType {
   @Field()
   templateName: string;
 
-  @Field()
+  @Field(() => NotificationType)
   notificationType: NotificationType;
 
-  @Field()
+  @Field(() => NotificationChannel)
   channel: NotificationChannel;
 
   @Field()

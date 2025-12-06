@@ -12,6 +12,7 @@ import { EmailStrategy } from '../adapters/output/notification-channels/strategi
 import { SMSStrategy } from '../adapters/output/notification-channels/strategies/sms.strategy';
 import { PushStrategy } from '../adapters/output/notification-channels/strategies/push.strategy';
 import { NOTIFICATION_STRATEGIES, StrategyFactory } from '../adapters/output/notification-channels/strategy.factory';
+import { HandlebarsTemplateRenderer } from '../adapters/output/template-engine/handlebars-template-renderer';
 
 @Module({
   imports: [
@@ -21,14 +22,26 @@ import { NOTIFICATION_STRATEGIES, StrategyFactory } from '../adapters/output/not
     ProcessNotificationUseCase,
 
     {
+      provide: 'ITemplateRenderer',
+      useClass: HandlebarsTemplateRenderer,
+    },
+    {
+      provide: TemplateRenderingService,
+      useFactory: (renderer) => {
+        return new TemplateRenderingService(renderer);
+      },
+      inject: ['ITemplateRenderer'],
+    },
+
+    {
       provide: NotificationProcessorService,
       useFactory: (templateRenderingService: TemplateRenderingService) => {
         return new NotificationProcessorService(templateRenderingService);
       },
       inject: [TemplateRenderingService],
     },
+    
     UserPreferencePermissionService,
-    TemplateRenderingService,
 
     {
       provide: 'INotificationRepository',

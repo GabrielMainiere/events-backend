@@ -6,6 +6,7 @@ import type { IEmailGateway } from '../../../../application/ports/output/email-g
 
 @Injectable()
 export class NodemailerEmailGateway implements IEmailGateway {
+  private readonly logger = new Logger(NodemailerEmailGateway.name);
   private transport: nodemailer.Transporter;
 
   constructor(private readonly configService: ConfigService) {
@@ -13,7 +14,7 @@ export class NodemailerEmailGateway implements IEmailGateway {
       service: 'gmail',
       auth: {
         user: this.configService.get<string>('GMAIL_USER'),
-        pass: this.configService. get<string>('GMAIL_PASSWORD'),
+        pass: this.configService.get<string>('GMAIL_PASSWORD'),
       },
       tls: {
         rejectUnauthorized: false,
@@ -24,14 +25,15 @@ export class NodemailerEmailGateway implements IEmailGateway {
   async send(recipientAddress: string, subject: string, body: string): Promise<void> {
     try {
       const info = await this.transport.sendMail({
-        from: `"Notification Service" <${this.configService. get<string>('GMAIL_USER')}>`,
+        from: `"Events Project" <${this.configService. get<string>('GMAIL_USER')}>`,
         to: recipientAddress,
         subject: subject,
         html: body,
       });
       
     } catch (error) {
-      throw new Error(`Email sending failed: ${error.message}`);
+      this.logger.error(`Erro do Nodemailer | ${error.message}`);
+      throw new Error(`Falha ao enviar email: ${error.message}`);
     }
   }
 }

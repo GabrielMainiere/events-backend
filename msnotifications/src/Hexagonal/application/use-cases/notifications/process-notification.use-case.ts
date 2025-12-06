@@ -1,9 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { IProcessNotification } from '../../ports/input/notifications/process-notification.port';
 import type{ INotificationRepository } from 'src/Hexagonal/domain/repositories/notification-repository.interface';
 import type{ ITemplateRepository } from 'src/Hexagonal/domain/repositories/template-repository.interface';
 import type{ IUserPreferenceRepository } from 'src/Hexagonal/domain/repositories/user-preference-repository.interface';
-import type{ IEmailGateway } from '../../ports/output/email-gateway.port';
+import type{ IStrategyFactory } from '../../ports/output/strategy-factory.port';
 import { NotificationProcessorService } from 'src/Hexagonal/domain/services/notification-processor.service';
 import { NotificationResponse } from '../../dtos/notifications/notification.response';
 import { ProcessNotificationCommand } from '../../dtos/notifications/process-notification.command';
@@ -13,7 +13,7 @@ import { UserPreferencePermissionService } from 'src/Hexagonal/domain/services/u
 
 @Injectable()
 export class ProcessNotificationUseCase implements IProcessNotification {
-  
+  private readonly logger = new Logger(ProcessNotificationUseCase.name);
   constructor(
     @Inject('INotificationRepository')
     private readonly notificationRepo: INotificationRepository,
@@ -21,15 +21,15 @@ export class ProcessNotificationUseCase implements IProcessNotification {
     private readonly templateRepo: ITemplateRepository,
     @Inject('IUserPreferenceRepository')
     private readonly userPrefRepo: IUserPreferenceRepository,
-    @Inject('IEmailGateway')
-    private readonly emailGateway: IEmailGateway,
+    @Inject('IStrategyFactory')
+    private readonly strategyFactory: IStrategyFactory,
     private readonly notificationProcessor: NotificationProcessorService,
     private readonly userPreferencePermissionService: UserPreferencePermissionService,
   ) {}
 
   async execute(command: ProcessNotificationCommand): Promise<NotificationResponse> {
 
-    const template = await this. templateRepo.findByName(command.templateName);
+    const template = await this.templateRepo.findByName(command.templateName);
     if (!template) {
       throw new NotFoundException(`Template not found: ${command.templateName}`);
     }
@@ -52,11 +52,12 @@ export class ProcessNotificationUseCase implements IProcessNotification {
     );
 
     if (!canSend) {
+      this.logger.warn(`Notificação Bloqueada | User: ${command.userId}`);
       return this.createBlockedResponse(command, template);
     }
 
-    const props = NotificationMapper.commandToDomainProps(command);
-    const notification = NotificationFactory. create(props);
+    const props = NotificationMapper.commandWithTemplateToDomainProps(command, template);
+    const notification = NotificationFactory.create(props);
 
 
     this.notificationProcessor.startProcessing(notification);
@@ -65,14 +66,18 @@ export class ProcessNotificationUseCase implements IProcessNotification {
 
     try {
       const content = this.notificationProcessor.renderContent(notification, template);
+      const strategy = this.strategyFactory.getStrategy(notification.channel);
       
-      await this.emailGateway.send(
-        notification.recipientAddress. getValue(),
+      await strategy.send(
+        notification.recipientAddress.getValue(),
         content.subject,
         content.body,
       );
+      
       this.notificationProcessor.markAsSent(notification);
+      this.logger.log(`Notificação enviada com sucesso | ${notification.channel} | To: ${notification.recipientAddress.getValue()}`);
     } catch (error) {
+      this.logger.error(`Falha ao enviar notificação | Erro: ${error.message}`);
       this.notificationProcessor.markAsFailed(notification, error);
       throw error;
       

@@ -1,33 +1,44 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
-import { RABBITMQ } from './rabbitMQ/config/rabbitMQ.constants';
+import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from './Hexagonal/infrastructure/modules/app.module';
+import { RABBITMQ } from './Hexagonal/infrastructure/adapters/input/messaging/config/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-app.connectMicroservice<MicroserviceOptions>({
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
+  app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
       urls: [configService.getOrThrow<string>('RABBITMQ_URL')],
       queue: configService.getOrThrow<string>('RABBITMQ_QUEUE'),
-      noAck: false, 
+      noAck: false,
       queueOptions: {
         durable: true,
         arguments: {
           'x-dead-letter-exchange': '',
-          'x-dead-letter-routing-key': RABBITMQ.DLQ
+          'x-dead-letter-routing-key': RABBITMQ.DLQ,
         },
       },
     },
   });
-  
+
   await app.startAllMicroservices();
-  await app.listen(3000);
-  
-  console.log('ms-notifications (RabbitMQ) is listening on the configured queue');
-  console.log('ms-notifications (HTTP) is listening on port 3000');
+  console.log(`RabbitMQ Microservice listening on queue: ${RABBITMQ. QUEUE}`);
+
+  const port = configService.get<number>('PORT') || 3000;
+  await app.listen(port);
+  console.log(`GraphQL Playground: http://localhost:${port}/graphql`);
 }
+
 bootstrap();

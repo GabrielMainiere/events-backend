@@ -1,20 +1,22 @@
 import { Notification } from '../../domain/aggregates/notification.aggregate';
 import { Email } from '../../domain/value-objects/email.vo';
-import { NotificationType } from '../../domain/enums/notification-type.enum';
-import { NotificationChannel } from '../../domain/enums/notification-channel.enum';
 import { ProcessNotificationCommand } from '../dtos/notifications/process-notification.command';
 import { NotificationResponse } from '../dtos/notifications/notification.response';
 import { CreateNotificationProps } from 'src/Hexagonal/domain/factories/types/notification.types';
+import { Template } from 'src/Hexagonal/domain/entities/template.entity';
 
 export class NotificationMapper {
   
-  static commandToDomainProps(command: ProcessNotificationCommand): CreateNotificationProps {
+  static commandWithTemplateToDomainProps(
+    command: ProcessNotificationCommand,
+    template: Template,
+  ): CreateNotificationProps {
     return {
       userId: command.userId,
-      notificationType: command.notificationType as NotificationType,
-      channel: command.channel as NotificationChannel,
+      notificationType: template.notificationType,
+      channel: template.channel,
       recipientAddress: Email.create(command.recipientAddress),
-      templateName: command. templateName,
+      templateName: command.templateName,
       payload: command.payload,
     };
   }

@@ -20,17 +20,13 @@ export class RabbitMQNotificationConsumer {
     @Payload() data: any,
     @Ctx() context: RmqContext,
   ): Promise<void> {
-    const channel = context. getChannelRef();
+    const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
-
-    this.logger.log(
-      `Nova notificação recebida: ${data.template_name} para ${data.recipient_address}`
-    );
 
     try {
       const command = plainToInstance(ProcessNotificationCommand, {
         userId: data.user_id,
-        recipientAddress: data. recipient_address,
+        recipientAddress: data.recipient_address,
         templateName: data.template_name,
         payload: data.payload,
       });
@@ -44,7 +40,9 @@ export class RabbitMQNotificationConsumer {
       this.logger.log(`Notificação processada com sucesso!`);
 
     } catch (error) {
-      this.logger.error(`Erro ao processar notificação: ${error.message}`);
+      const errorMessage = error?.message || error?.toString() || 'Unknown error';
+      this.logger.error(`Erro ao processar notificação: ${errorMessage}`);      
+      
       channel.nack(originalMsg, false, false);
       this.logger.warn(`Mensagem rejeitada | enviada para DLQ`);
     }

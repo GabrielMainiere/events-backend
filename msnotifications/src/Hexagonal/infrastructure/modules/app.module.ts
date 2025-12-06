@@ -8,7 +8,7 @@ import { TemplateModule } from './template.module';
 import { UserPreferenceModule } from './user-preference.module';
 import { RabbitMQModule } from './rabbitmq.module';
 import { GraphQLResolversModule } from './graphql.module';
-import { authGuardProvider } from 'src/Hexagonal/common/auth.provider';
+import { authGuardProvider } from 'src/common/auth.provider';
 
 @Module({
   imports: [
