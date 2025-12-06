@@ -1,6 +1,7 @@
 import { IsString, IsEnum, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
-import { NotificationType } from '../../../domain/value-objects/notification-type.vo';
-import { NotificationChannel } from '../../../domain/value-objects/notification-channel.vo';
+import { NotificationChannel } from 'src/Hexagonal/domain/enums/notification-channel.enum';
+import { NotificationType } from 'src/Hexagonal/domain/enums/notification-type.enum';
+
 
 export class CreateTemplateCommand {
   
@@ -12,11 +13,11 @@ export class CreateTemplateCommand {
 
   @IsEnum(NotificationType)
   @IsNotEmpty({ message: 'Notification type is required' })
-  notificationType: string;
+  notificationType: NotificationType;
 
   @IsEnum(NotificationChannel)
   @IsNotEmpty({ message: 'Notification channel is required' })
-  channel: string;
+  channel: NotificationChannel;
 
   @IsString()
   @IsNotEmpty({ message: 'Subject template is required' })

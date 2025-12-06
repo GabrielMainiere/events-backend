@@ -1,6 +1,6 @@
 import { IsString, IsUUID, IsEnum, IsObject, IsNotEmpty } from 'class-validator';
-import { NotificationType } from '../../../domain/value-objects/notification-type.vo';
-import { NotificationChannel } from '../../../domain/value-objects/notification-channel.vo';
+import { NotificationChannel } from 'src/Hexagonal/domain/enums/notification-channel.enum';
+import { NotificationType } from 'src/Hexagonal/domain/enums/notification-type.enum';
 
 export class ProcessNotificationCommand {
   
@@ -10,11 +10,11 @@ export class ProcessNotificationCommand {
 
   @IsEnum(NotificationType, { message: 'Invalid notification type' })
   @IsNotEmpty({ message: 'Notification type is required' })
-  notificationType: string;
+  notificationType: NotificationType;
 
   @IsEnum(NotificationChannel, { message: 'Invalid notification channel' })
   @IsNotEmpty({ message: 'Notification channel is required' })
-  channel: string; 
+  channel: NotificationChannel; 
 
   @IsString({ message: 'Recipient address must be a string' })
   @IsNotEmpty({ message: 'Recipient address is required' })

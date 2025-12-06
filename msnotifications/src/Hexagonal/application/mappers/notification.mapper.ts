@@ -1,21 +1,20 @@
 import { Notification } from '../../domain/aggregates/notification.aggregate';
-import { CreateNotificationProps } from '../../domain/factories/types/notification.types';
-import { UserId } from '../../domain/value-objects/user-id.vo';
 import { Email } from '../../domain/value-objects/email.vo';
-import { NotificationType } from '../../domain/value-objects/notification-type.vo';
-import { NotificationChannel } from '../../domain/value-objects/notification-channel.vo';
+import { NotificationType } from '../../domain/enums/notification-type.enum';
+import { NotificationChannel } from '../../domain/enums/notification-channel.enum';
 import { ProcessNotificationCommand } from '../dtos/notifications/process-notification.command';
 import { NotificationResponse } from '../dtos/notifications/notification.response';
+import { CreateNotificationProps } from 'src/Hexagonal/domain/factories/types/notification.types';
 
 export class NotificationMapper {
   
   static commandToDomainProps(command: ProcessNotificationCommand): CreateNotificationProps {
     return {
-      userId: UserId.create(command.userId),
-      notificationType: NotificationType.fromString(command.notificationType),
-      channel: NotificationChannel. fromString(command.channel),
+      userId: command.userId,
+      notificationType: command.notificationType as NotificationType,
+      channel: command.channel as NotificationChannel,
       recipientAddress: Email.create(command.recipientAddress),
-      templateName: command.templateName,
+      templateName: command. templateName,
       payload: command.payload,
     };
   }
@@ -23,17 +22,17 @@ export class NotificationMapper {
   static domainToResponse(notification: Notification): NotificationResponse {
     return new NotificationResponse({
       id: notification.id,
-      userId: notification.userId. getValue(),
-      notificationType: notification.notificationType.toString(),
-      channel: notification.channel.toString(),
-      recipientAddress: notification.recipientAddress.getValue(),
+      userId: notification.userId,
+      notificationType: notification. notificationType,
+      channel: notification.channel,
+      recipientAddress: notification.recipientAddress. getValue(),
       templateName: notification. templateName,
-      status: notification.status. toString(),
+      status: notification.status,
       sentAt: notification.sentAt,
       errorMessage: notification.errorMessage,
       retryCount: notification.retryCount,
       createdAt: notification.createdAt,
-  });
+    });
   }
 
   static domainListToResponseList(notifications: Notification[]): NotificationResponse[] {

@@ -1,49 +1,53 @@
-import { Template } from '../../domain/models/template.model';
+import { Template } from '../../domain/entities/template.entity';
 import { CreateTemplateCommand } from '../dtos/templates/create-template.command';
 import { UpdateTemplateCommand } from '../dtos/templates/update-template.command';
 import { TemplateResponse } from '../dtos/templates/template.response';
-import { randomUUID } from 'crypto';
+import { NotificationType } from '../../domain/enums/notification-type.enum';
+import { NotificationChannel } from '../../domain/enums/notification-channel.enum';
+import { CreateTemplateProps } from 'src/Hexagonal/domain/factories/types/template.types';
 
 export class TemplateMapper {
-  static createCommandToModel(command: CreateTemplateCommand): Template {
-    const now = new Date();
-    
+
+  static createCommandToDomainProps(command: CreateTemplateCommand): CreateTemplateProps {
     return {
-      id: randomUUID(),
       templateName: command.templateName,
-      notificationType: command.notificationType,
-      channel: command.channel,
+      notificationType: command.notificationType as NotificationType,
+      channel: command.channel as NotificationChannel,
       subjectTemplate: command.subjectTemplate,
       bodyTemplate: command.bodyTemplate,
-      createdAt: now,
-      updatedAt: now,
     };
   }
 
-  static applyUpdateCommand(existing: Template, command: UpdateTemplateCommand): Template {
-    return {
-      ...existing,
-      templateName: command.templateName ?? existing.templateName,
-      subjectTemplate: command.subjectTemplate ??  existing.subjectTemplate,
-      bodyTemplate: command.bodyTemplate ??  existing.bodyTemplate,
-      updatedAt: new Date(),
-    };
+  static applyUpdateCommand(template: Template, command: UpdateTemplateCommand): void {
+    if (command.templateName) {
+      template.updateName(command.templateName); 
+    }
+
+    if (command.subjectTemplate && command.bodyTemplate) {
+      template.updateContent(command.subjectTemplate, command. bodyTemplate);  
+    } else if (command.subjectTemplate || command.bodyTemplate) {
+      template.updateContent(
+        command.subjectTemplate ??  template.subjectTemplate,
+        command.bodyTemplate ?? template.bodyTemplate
+      );
+    }
+
   }
 
-  static modelToResponse(template: Template): TemplateResponse {
+  static entityToResponse(template: Template): TemplateResponse {
     return new TemplateResponse({
       id: template.id,
       templateName: template.templateName,
-      notificationType: template.notificationType,
-      channel: template.channel,
-      subjectTemplate: template. subjectTemplate,
+      notificationType: template.notificationType,  
+      channel: template.channel,  
+      subjectTemplate: template.subjectTemplate,
       bodyTemplate: template.bodyTemplate,
       createdAt: template.createdAt,
-      updatedAt: template.updatedAt,
-  });
+      updatedAt: template. updatedAt,
+    });
   }
 
-  static modelListToResponseList(templates: Template[]): TemplateResponse[] {
-    return templates.map(t => this.modelToResponse(t));
+  static entityListToResponseList(templates: Template[]): TemplateResponse[] {
+    return templates.map(t => this. entityToResponse(t));
   }
 }

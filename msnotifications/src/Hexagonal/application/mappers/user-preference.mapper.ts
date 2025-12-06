@@ -1,44 +1,37 @@
-import { UserPreference } from '../../domain/models/user-preference.model';
+import { UserPreference } from '../../domain/entities/user-preference.entity';
+import { NotificationType } from '../../domain/enums/notification-type.enum';
+import { NotificationChannel } from '../../domain/enums/notification-channel.enum';
 import { UpsertUserPreferenceCommand } from '../dtos/user-preferences/upsert-user-preference.command';
 import { UserPreferenceResponse } from '../dtos/user-preferences/user-preference.response';
-import { randomUUID } from 'crypto';
+import { CreateUserPreferenceProps } from 'src/Hexagonal/domain/factories/types/user-preference.type';
 
 export class UserPreferenceMapper {
-  
-  static commandToModel(command: UpsertUserPreferenceCommand): UserPreference {
+
+  static commandToDomainProps(command: UpsertUserPreferenceCommand): CreateUserPreferenceProps {
     return {
-      id: randomUUID(),
       userId: command.userId,
-      notificationType: command.notificationType,
-      channel: command.channel,
+      notificationType: command.notificationType as NotificationType,  
+      channel: command.channel as NotificationChannel,  
       isEnabled: command.isEnabled,
-      updatedAt: new Date(),
     };
   }
 
-  static applyCommandToExisting(
-    existing: UserPreference,
-    command: UpsertUserPreferenceCommand
-  ): UserPreference {
-    return {
-      ...existing,
-      isEnabled: command.isEnabled,
-      updatedAt: new Date(),
-    };
+  static applyUpsertCommand(preference: UserPreference, command: UpsertUserPreferenceCommand): void {
+    preference.updateEnabledState(command.isEnabled);
   }
 
-  static modelToResponse(preference: UserPreference): UserPreferenceResponse {
+  static entityToResponse(preference: UserPreference): UserPreferenceResponse {
     return new UserPreferenceResponse({
-      id: preference.id,
-      userId: preference.userId,
-      notificationType: preference. notificationType,
+      id: preference. id,
+      userId: preference. userId,
+      notificationType: preference.notificationType,
       channel: preference.channel,
       isEnabled: preference.isEnabled,
       updatedAt: preference.updatedAt,
-  });
+    });
   }
 
-  static modelListToResponseList(preferences: UserPreference[]): UserPreferenceResponse[] {
-    return preferences. map(p => this.modelToResponse(p));
+  static entityListToResponseList(preferences: UserPreference[]): UserPreferenceResponse[] {
+    return preferences.map(p => this. entityToResponse(p));
   }
 }

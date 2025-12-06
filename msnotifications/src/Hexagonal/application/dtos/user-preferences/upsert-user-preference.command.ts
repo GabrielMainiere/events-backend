@@ -1,6 +1,7 @@
 import { IsUUID, IsEnum, IsBoolean, IsNotEmpty } from 'class-validator';
-import { NotificationType } from '../../../domain/value-objects/notification-type.vo';
-import { NotificationChannel } from '../../../domain/value-objects/notification-channel.vo';
+import { NotificationChannel } from 'src/Hexagonal/domain/enums/notification-channel.enum';
+import { NotificationType } from 'src/Hexagonal/domain/enums/notification-type.enum';
+
 
 export class UpsertUserPreferenceCommand {
   
@@ -10,11 +11,11 @@ export class UpsertUserPreferenceCommand {
 
   @IsEnum(NotificationType, { message: 'Invalid notification type' })
   @IsNotEmpty({ message: 'Notification type is required' })
-  notificationType: string;
-
+  notificationType: NotificationType;
+  
   @IsEnum(NotificationChannel, { message: 'Invalid notification channel' })
   @IsNotEmpty({ message: 'Notification channel is required' })
-  channel: string;
+  channel: NotificationChannel;
 
   @IsBoolean({ message: 'isEnabled must be a boolean value' })
   @IsNotEmpty({ message: 'isEnabled is required' })

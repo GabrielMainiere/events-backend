@@ -1,6 +1,7 @@
 import { IsString, IsEnum, IsOptional, MinLength, MaxLength, IsUUID, IsNotEmpty } from 'class-validator';
-import { NotificationType } from '../../../domain/value-objects/notification-type.vo';
-import { NotificationChannel } from '../../../domain/value-objects/notification-channel.vo';
+import { NotificationChannel } from 'src/Hexagonal/domain/enums/notification-channel.enum';
+import { NotificationType } from 'src/Hexagonal/domain/enums/notification-type.enum';
+
 
 export class UpdateTemplateCommand {
   
@@ -16,11 +17,11 @@ export class UpdateTemplateCommand {
 
   @IsEnum(NotificationType)
   @IsOptional()
-  notificationType?: string;
+  notificationType?: NotificationType;
 
   @IsEnum(NotificationChannel)
   @IsOptional()
-  channel?: string;
+  channel?: NotificationChannel;
 
   @IsString()
   @IsOptional()
