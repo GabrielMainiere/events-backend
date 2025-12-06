@@ -2,5 +2,4 @@ import { TemplateResponse } from "src/Hexagonal/application/dtos/templates/templ
 
 export interface IGetTemplate {
   executeById(templateId: string): Promise<TemplateResponse>;
-  executeByName(templateName: string): Promise<TemplateResponse>;
 }
