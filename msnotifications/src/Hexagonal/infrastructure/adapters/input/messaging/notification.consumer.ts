@@ -4,7 +4,7 @@ import { ProcessNotificationUseCase } from '../../../../application/use-cases/no
 import { ProcessNotificationCommand } from '../../../../application/dtos/notifications/process-notification.command';
 import { validateOrReject } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
-import { RABBITMQ } from './constants';
+import { RABBITMQ } from './config/constants';
 
 
 @Controller()
