@@ -1,13 +1,13 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { IProcessNotification } from '../ports/input/notifications/process-notification.port';
+import { IProcessNotification } from '../../ports/input/notifications/process-notification.port';
 import type{ INotificationRepository } from 'src/Hexagonal/domain/repositories/notification-repository.interface';
 import type{ ITemplateRepository } from 'src/Hexagonal/domain/repositories/template-repository.interface';
 import type{ IUserPreferenceRepository } from 'src/Hexagonal/domain/repositories/user-preference-repository.interface';
-import type{ IEmailGateway } from '../ports/output/email-gateway.port';
+import type{ IEmailGateway } from '../../ports/output/email-gateway.port';
 import { NotificationProcessorService } from 'src/Hexagonal/domain/services/notification-processor.service';
-import { NotificationResponse } from '../dtos/notifications/notification.response';
-import { ProcessNotificationCommand } from '../dtos/notifications/process-notification.command';
-import { NotificationMapper } from '../mappers/notification.mapper';
+import { NotificationResponse } from '../../dtos/notifications/notification.response';
+import { ProcessNotificationCommand } from '../../dtos/notifications/process-notification.command';
+import { NotificationMapper } from '../../mappers/notification.mapper';
 import { NotificationFactory } from 'src/Hexagonal/domain/factories/notification.factory';
 import { UserPreferencePermissionService } from 'src/Hexagonal/domain/services/user-preference-permission.service';
 
