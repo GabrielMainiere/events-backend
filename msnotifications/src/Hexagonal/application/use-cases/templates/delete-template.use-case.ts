@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { IDeleteTemplate } from './delete-template.port';
+import { IDeleteTemplate } from '../../ports/input/templates/delete-template.port';
 import type{ ITemplateRepository } from 'src/Hexagonal/domain/repositories/template-repository.interface';
 
 @Injectable()
