@@ -14,10 +14,10 @@ enum NotificationChannel {
 }
 
 enum NotificationStatus {
-  PENDENTE
-  PROCESSANDO
-  ENVIADO
-  FALHA
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
 }
 
 enum NotificationType {

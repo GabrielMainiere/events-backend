@@ -1,4 +1,4 @@
-import { DomainEvent } from './domain-event.interface';
+import { DomainEvent } from './interface/domain-event.interface';
 
 export class NotificationFailedEvent implements DomainEvent {
   readonly eventName = 'NotificationFailed';

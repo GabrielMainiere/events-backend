@@ -1,12 +1,7 @@
-import { NotificationType } from '../value-objects/notification-type.vo';
-import { NotificationChannel } from '../value-objects/notification-channel.vo';
-
-export interface UserPreferenceData {
-  userId: string;
-  notificationType: string;
-  channel: string;
-  isEnabled: boolean;
-}
+import { NotificationType } from '../enums/notification-type.enum';
+import { NotificationChannel } from '../enums/notification-channel.enum';
+import { NotificationTypeHelper } from '../helper/notification-type.helper';
+import { UserPreferenceData } from './interface/user-preference-permission.interface';
 
 export class UserPreferencePermissionService {
 
@@ -15,7 +10,7 @@ export class UserPreferencePermissionService {
     channel: NotificationChannel,
     userPreference: UserPreferenceData | null
   ): boolean {
-    if (notificationType.isMandatory()) {
+    if (NotificationTypeHelper.isMandatory(notificationType)) {
       return true;
     }
 
@@ -30,10 +25,10 @@ export class UserPreferencePermissionService {
     notificationType: NotificationType,
     isEnabled: boolean
   ): void {
-    if (! isEnabled && notificationType.isMandatory()) {
+    if (! isEnabled && NotificationTypeHelper.isMandatory(notificationType)) {
       throw new Error(
-        `Cannot disable mandatory notification type: "${notificationType.toString()}". ` +
-        `Mandatory types (ACCOUNT, PAYMENTS) cannot be disabled by users.`
+        `Cannot disable mandatory notification type: "${notificationType}".  ` +
+          `Mandatory types (ACCOUNT, PAYMENTS) cannot be disabled by users.`
       );
     }
   }

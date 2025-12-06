@@ -1,9 +1,8 @@
-import { UserId } from '../value-objects/user-id.vo';
 import { Email } from '../value-objects/email.vo';
-import { NotificationType } from '../value-objects/notification-type.vo';
-import { NotificationChannel } from '../value-objects/notification-channel.vo';
-import { NotificationStatus } from '../value-objects/notification-status.vo';
-import { DomainEvent } from '../events/domain-event.interface';
+import { NotificationType } from '../enums/notification-type.enum';
+import { NotificationChannel } from '../enums/notification-channel.enum';
+import { NotificationStatus } from '../enums/notification-status.enum';
+import { DomainEvent } from '../events/interface/domain-event.interface';
 import { NotificationSentEvent } from '../events/notification-sent.event';
 import { NotificationFailedEvent } from '../events/notification-failed.event';
 
@@ -11,7 +10,7 @@ export class Notification {
   private domainEvents: DomainEvent[] = [];
 
   public readonly id: string;
-  public readonly userId: UserId;
+  public readonly userId: string;
   public readonly notificationType: NotificationType;
   public readonly channel: NotificationChannel;
   public readonly recipientAddress: Email;
@@ -20,7 +19,7 @@ export class Notification {
 
   constructor(
     id: string,
-    userId: UserId,
+    userId: string,
     notificationType: NotificationType,
     channel: NotificationChannel,
     recipientAddress: Email,
@@ -32,11 +31,12 @@ export class Notification {
     private _sentAt?: Date,
     createdAt: Date = new Date()
   ) {
+
     this.id = id;
     this.userId = userId;
     this.notificationType = notificationType;
-    this. channel = channel;
-    this. recipientAddress = recipientAddress;
+    this.channel = channel;
+    this.recipientAddress = recipientAddress;
     this.templateName = templateName;
     this.createdAt = createdAt;
   }
@@ -62,54 +62,54 @@ export class Notification {
   }
 
   startProcessing(): void {
-    if (! this._status.isPending()) {
+    if (this._status !== NotificationStatus.PENDING) {
       throw new Error(
-        `Cannot start processing notification with status ${this._status.toString()}`
+        `Cannot start processing notification with status ${this._status}. Expected: PENDING`
       );
     }
 
-    this._status = NotificationStatus.createProcessing();
+    this._status = NotificationStatus.PROCESSING;
   }
 
   markAsSent(): void {
-    if (!this._status.isProcessing()) {
+    if (this._status !== NotificationStatus.PROCESSING) {
       throw new Error(
-        `Cannot mark as sent notification with status ${this._status.toString()}`
+        `Cannot mark as sent notification with status ${this._status}. Expected: PROCESSING`
       );
     }
 
-    this._status = NotificationStatus.createSent();
+    this._status = NotificationStatus. SENT;
     this._sentAt = new Date();
 
     this.addDomainEvent(
       NotificationSentEvent.create({
-        notificationId: this.id,
-        userId: this.userId.getValue(),
-        notificationType: this.notificationType.toString(),
-        channel: this.channel.toString(),
-        recipientAddress: this.recipientAddress.getValue(),
+        notificationId: this. id,
+        userId: this. userId,
+        notificationType: this.notificationType,
+        channel: this.channel,
+        recipientAddress: this.recipientAddress. getValue(),
         templateName: this. templateName,
       })
     );
   }
 
   markAsFailed(error: Error): void {
-    if (!this._status.isProcessing()) {
+    if (this._status !== NotificationStatus.PROCESSING) {
       throw new Error(
-        `Cannot mark as failed notification with status ${this._status.toString()}`
+        `Cannot mark as failed notification with status ${this._status}. Expected: PROCESSING`
       );
     }
 
-    this._status = NotificationStatus. createFailed();
+    this._status = NotificationStatus.FAILED;
     this._errorMessage = error.message;
 
     this.addDomainEvent(
       NotificationFailedEvent.create({
         notificationId: this.id,
-        userId: this.userId.getValue(),
-        notificationType: this.notificationType.toString(),
-        channel: this.channel.toString(),
-        recipientAddress: this.recipientAddress.getValue(),
+        userId: this.userId,
+        notificationType: this. notificationType,
+        channel: this.channel,
+        recipientAddress: this.recipientAddress. getValue(),
         templateName: this.templateName,
         errorMessage: error.message,
         retryCount: this._retryCount,
@@ -126,7 +126,7 @@ export class Notification {
   }
 
   getDomainEvents(): DomainEvent[] {
-    return [... this.domainEvents];
+    return [...this. domainEvents];
   }
 
   clearDomainEvents(): void {

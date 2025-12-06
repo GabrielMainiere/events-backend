@@ -1,4 +1,4 @@
-import { DomainEvent } from "src/Hexagonal/domain/events/domain-event.interface";
+import { DomainEvent } from "src/Hexagonal/domain/events/interface/domain-event.interface";
 
 export interface IEventPublisher {
   publish(event: DomainEvent): Promise<void>;

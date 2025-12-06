@@ -1,8 +1,10 @@
 import { randomUUID } from 'crypto';
 import { Notification } from '../aggregates/notification.aggregate';
-import { NotificationStatus } from '../value-objects/notification-status.vo';
-import { CreateNotificationProps, NotificationProps } from '../aggregates/types/notification.types';
-
+import { NotificationStatus } from '../enums/notification-status.enum';
+import {
+  CreateNotificationProps,
+  NotificationProps,
+} from '../aggregates/types/notification.types';
 
 export class NotificationFactory {
 
@@ -15,9 +17,9 @@ export class NotificationFactory {
       props.recipientAddress,
       props.templateName,
       props.payload,
-      NotificationStatus.createPending(),
-      undefined,
-      0,
+      NotificationStatus.PENDING,  
+      undefined,  
+      0, 
       undefined,
       new Date()
     );
@@ -25,13 +27,13 @@ export class NotificationFactory {
 
   static reconstitute(props: NotificationProps): Notification {
     return new Notification(
-      props.id,
+      props. id,
       props.userId,
       props.notificationType,
       props.channel,
       props.recipientAddress,
       props.templateName,
-      props. payload,
+      props.payload,
       props.status,
       props.errorMessage,
       props.retryCount,
