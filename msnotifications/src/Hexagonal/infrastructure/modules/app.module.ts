@@ -7,6 +7,7 @@ import { NotificationModule } from './notification.module';
 import { TemplateModule } from './template.module';
 import { UserPreferenceModule } from './user-preference.module';
 import { RabbitMQModule } from './rabbitmq.module';
+import { GraphQLResolversModule } from './graphql.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RabbitMQModule } from './rabbitmq.module';
     TemplateModule,
     UserPreferenceModule,
     RabbitMQModule,
+    GraphQLResolversModule,
     GraphQLModule. forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),

@@ -20,4 +20,16 @@ export class UpsertUserPreferenceCommand {
   @IsBoolean({ message: 'isEnabled must be a boolean value' })
   @IsNotEmpty({ message: 'isEnabled is required' })
   isEnabled: boolean;
+
+  constructor(
+    userId: string,
+    notificationType: NotificationType,
+    channel: NotificationChannel,
+    isEnabled: boolean,
+  ) {
+    this.userId = userId;
+    this.notificationType = notificationType;
+    this.channel = channel;
+    this.isEnabled = isEnabled;
+  }
 }
