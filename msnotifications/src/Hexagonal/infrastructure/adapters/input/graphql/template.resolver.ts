@@ -9,6 +9,8 @@ import { ListTemplatesUseCase } from 'src/Hexagonal/application/use-cases/templa
 import { DeleteTemplateUseCase } from 'src/Hexagonal/application/use-cases/templates/delete-template.use-case';
 import { CreateTemplateCommand } from 'src/Hexagonal/application/dtos/templates/create-template.command';
 import { UpdateTemplateCommand } from 'src/Hexagonal/application/dtos/templates/update-template.command';
+import { RolesEnum } from 'src/Hexagonal/common/roles.enum';
+import { RequiredRole } from 'src/Hexagonal/common/auth.decorators';
 
 @Resolver(() => TemplateType)
 export class TemplateResolver {
@@ -22,6 +24,7 @@ export class TemplateResolver {
 
 
   @Query(() => TemplateType, { nullable: true, description: 'Get template by ID' })
+  @RequiredRole(RolesEnum.Admin)
   async template(
     @Args('id', { type: () => ID }) id: string,
   ): Promise<TemplateType | null> {
@@ -31,12 +34,14 @@ export class TemplateResolver {
 
 
   @Query(() => [TemplateType], { description: 'List all templates' })
+  @RequiredRole(RolesEnum.Admin)
   async templates(): Promise<TemplateType[]> {
     const responses = await this.listTemplatesUseCase.execute();
     return responses.map(r => this.mapToGraphQLType(r));
   }
 
   @Mutation(() => TemplateType, { description: 'Create new template' })
+  @RequiredRole(RolesEnum.Admin)
   async createTemplate(
     @Args('input') input: CreateTemplateInput,
   ): Promise<TemplateType> {
@@ -53,6 +58,7 @@ export class TemplateResolver {
   }
 
   @Mutation(() => TemplateType, { description: 'Update existing template' })
+  @RequiredRole(RolesEnum.Admin)
   async updateTemplate(
     @Args('input') input: UpdateTemplateInput,
   ): Promise<TemplateType> {
@@ -71,6 +77,7 @@ export class TemplateResolver {
 
 
   @Mutation(() => Boolean, { description: 'Delete template by ID' })
+  @RequiredRole(RolesEnum.Admin)
   async deleteTemplate(
     @Args('id', { type: () => ID }) id: string,
   ): Promise<boolean> {
