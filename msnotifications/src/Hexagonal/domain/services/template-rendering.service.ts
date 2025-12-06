@@ -1,4 +1,4 @@
-import { ITemplateRenderer } from "./interface/template-renderer.interface";
+import { ITemplateRenderer } from "./template-renderer.interface";
 
 export class TemplateRenderingService {
   constructor(private readonly renderer: ITemplateRenderer) {}  

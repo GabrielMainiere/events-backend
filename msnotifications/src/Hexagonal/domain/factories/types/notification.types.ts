@@ -1,11 +1,10 @@
-import { UserId } from '../../value-objects/user-id.vo';
-import { Email } from '../../value-objects/email.vo';
-import { NotificationType } from '../../value-objects/notification-type.vo';
-import { NotificationChannel } from '../../value-objects/notification-channel.vo';
-import { NotificationStatus } from '../../value-objects/notification-status.vo';
+import { NotificationChannel } from "../../enums/notification-channel.enum";
+import { NotificationStatus } from "../../enums/notification-status.enum";
+import { NotificationType } from "../../enums/notification-type.enum";
+import { Email } from "../../value-objects/email.vo";
 
 export interface CreateNotificationProps {
-  userId: UserId;
+  userId: string;
   notificationType: NotificationType;
   channel: NotificationChannel;
   recipientAddress: Email;
@@ -15,7 +14,7 @@ export interface CreateNotificationProps {
 
 export interface NotificationProps {
   id: string;
-  userId: UserId;
+  userId: string;
   notificationType: NotificationType;
   channel: NotificationChannel;
   recipientAddress: Email;

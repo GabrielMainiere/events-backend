@@ -1,5 +1,5 @@
 import { Notification } from '../../domain/aggregates/notification.aggregate';
-import { CreateNotificationProps } from '../../domain/aggregates/types/notification.types';
+import { CreateNotificationProps } from '../../domain/factories/types/notification.types';
 import { UserId } from '../../domain/value-objects/user-id.vo';
 import { Email } from '../../domain/value-objects/email.vo';
 import { NotificationType } from '../../domain/value-objects/notification-type.vo';

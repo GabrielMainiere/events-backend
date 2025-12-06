@@ -1,4 +1,4 @@
-import { Template } from "../models/template.model";
+import { Template } from "../entities/template.entity";
 
 export interface ITemplateRepository {
   save(template: Template): Promise<void>;

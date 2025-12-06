@@ -1,4 +1,6 @@
-import { UserPreference } from "../models/user-preference.model";
+import { UserPreference } from "../entities/user-preference.entity";
+import { NotificationChannel } from "../enums/notification-channel.enum";
+import { NotificationType } from "../enums/notification-type.enum";
 
 export interface IUserPreferenceRepository {
 
@@ -6,8 +8,8 @@ export interface IUserPreferenceRepository {
   findById(id: string): Promise<UserPreference | null>;
   findByUserAndTypeAndChannel(
     userId: string,
-    notificationType: string,
-    channel: string,
+    notificationType: NotificationType,
+    channel: NotificationChannel,
   ): Promise<UserPreference | null>;
   findByUserId(userId: string): Promise<UserPreference[]>;
   findAll(): Promise<UserPreference[]>;

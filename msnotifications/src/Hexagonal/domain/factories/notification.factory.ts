@@ -4,7 +4,7 @@ import { NotificationStatus } from '../enums/notification-status.enum';
 import {
   CreateNotificationProps,
   NotificationProps,
-} from '../aggregates/types/notification.types';
+} from './types/notification.types';
 
 export class NotificationFactory {
 
