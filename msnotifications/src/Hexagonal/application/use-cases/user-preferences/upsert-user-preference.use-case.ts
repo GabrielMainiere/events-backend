@@ -36,14 +36,12 @@ export class UpsertUserPreferenceUseCase implements IUpsertUserPreference {
       preference = UserPreferenceFactory.create(props);
     }
 
-    // 4.  Salvar
     await this.userPrefRepo.save(preference);
 
     this.logger.log(
       `Preference saved | userId: ${preference.userId}, type: ${preference. notificationType}, enabled: ${preference.isEnabled}`
     );
 
-    // 5. Retornar Response
     return UserPreferenceMapper.entityToResponse(preference);
   }
 }

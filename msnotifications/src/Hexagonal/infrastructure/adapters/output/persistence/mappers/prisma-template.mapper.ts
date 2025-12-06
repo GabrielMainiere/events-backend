@@ -4,12 +4,12 @@ import { NotificationType as DomainType } from '../../../../../domain/enums/noti
 import { NotificationChannel as DomainChannel } from '../../../../../domain/enums/notification-channel.enum';
 import { NotificationType as PrismaType } from '@prisma/client';
 import { NotificationChannel as PrismaChannel } from '@prisma/client';
-import type { NotificationTemplate as PrismaTemplate } from '@prisma/client';
+import type { Prisma, NotificationTemplate as PrismaTemplate } from '@prisma/client';
 import { TemplateProps } from '../../../../../domain/factories/types/template.types';
 
 export class PrismaTemplateMapper {
 
-  static toPrisma(template: Template): Omit<PrismaTemplate, 'created_at' | 'updated_at'> {
+  static toPrisma(template: Template): Prisma.NotificationTemplateUncheckedCreateInput {  // ← MUDOU tipo
     return {
       id: template.id,
       template_name: template.templateName,

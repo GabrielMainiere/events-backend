@@ -4,17 +4,17 @@ import { NotificationType as DomainType } from '../../../../../domain/enums/noti
 import { NotificationChannel as DomainChannel } from '../../../../../domain/enums/notification-channel.enum';
 import { NotificationType as PrismaType } from '@prisma/client';
 import { NotificationChannel as PrismaChannel } from '@prisma/client';
-import type { UserPreference as PrismaUserPreference } from '@prisma/client';
+import type { Prisma, UserPreference as PrismaUserPreference } from '@prisma/client';
 import { UserPreferenceProps } from '../../../../../domain/factories/types/user-preference.type';
 
 export class PrismaUserPreferenceMapper {
   
-  static toPrisma(preference: UserPreference): Omit<PrismaUserPreference, 'updated_at'> {
+  static toPrisma(preference: UserPreference): Prisma.UserPreferenceUncheckedCreateInput {  // ← MUDOU tipo
     return {
       id: preference.id,
       user_id: preference.userId,
       notification_type: preference.notificationType as unknown as PrismaType,
-      channel: preference.channel as unknown as PrismaChannel,
+      channel: preference. channel as unknown as PrismaChannel,
       is_enabled: preference.isEnabled,
     };
   }
