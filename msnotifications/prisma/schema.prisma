@@ -14,10 +14,10 @@ enum NotificationChannel {
 }
 
 enum NotificationStatus {
-  PENDENTE
-  PROCESSANDO
-  ENVIADO
-  FALHA
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
 }
 
 enum NotificationType {
@@ -44,7 +44,7 @@ model NotificationLog {
   id                String              @id @default(uuid())
   user_id           String              @db.Uuid
   notification_type NotificationType
-  status            NotificationStatus  @default(PENDENTE) @map("status")
+  status            NotificationStatus  @default(PENDING) @map("status")
   channel           NotificationChannel
   recipient_address String
   template_name     String
