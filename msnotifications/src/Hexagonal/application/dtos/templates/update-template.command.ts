@@ -34,4 +34,20 @@ export class UpdateTemplateCommand {
   @MinLength(1, { message: 'Body template cannot be empty' })
   @MaxLength(5000, { message: 'Body template cannot exceed 5000 characters' })
   bodyTemplate?: string;
+
+  constructor(
+    templateId: string,
+    templateName?: string,
+    notificationType?: NotificationType,
+    channel?: NotificationChannel,
+    subjectTemplate?: string,
+    bodyTemplate?: string,
+  ) {
+    this.templateId = templateId;
+    this. templateName = templateName;
+    this.notificationType = notificationType;
+    this.channel = channel;
+    this.subjectTemplate = subjectTemplate;
+    this.bodyTemplate = bodyTemplate;
+  }  
 }

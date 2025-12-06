@@ -30,4 +30,18 @@ export class CreateTemplateCommand {
   @MaxLength(5000, { message: 'Body template cannot exceed 5000 characters' })
   @IsNotEmpty({ message: 'Body template is required' })
   bodyTemplate: string;
+
+  constructor(
+    templateName: string,
+    notificationType: NotificationType,
+    channel: NotificationChannel,
+    subjectTemplate: string,
+    bodyTemplate: string,
+  ) {
+    this.templateName = templateName;
+    this.notificationType = notificationType;
+    this.channel = channel;
+    this.subjectTemplate = subjectTemplate;
+    this.bodyTemplate = bodyTemplate;
+  }
 }
