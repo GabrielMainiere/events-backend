@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeleteCurrencyPriceUseCase implements DeleteCurrencyPricePort {
 
     private final CurrencyPriceRepositoryPort repositoryPort;
-    private final CurrencyPriceNotificationPort notificationPort;
 
     @Override
     @Transactional
