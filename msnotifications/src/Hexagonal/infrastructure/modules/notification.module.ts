@@ -7,7 +7,7 @@ import { UserPreferencePermissionService } from 'src/Hexagonal/domain/services/u
 import { PrismaNotificationRepository } from '../adapters/output/persistence/prisma/repositories/prisma-notification.repository';
 import { PrismaTemplateRepository } from '../adapters/output/persistence/prisma/repositories/prisma-template.repository';
 import { PrismaUserPreferenceRepository } from '../adapters/output/persistence/prisma/repositories/prisma-user-preference.repository';
-import { NodemailerEmailGateway } from '../adapters/input/email/nodemailer-email.gateway';
+import { NodemailerEmailGateway } from '../adapters/output/email/nodemailer-email.gateway';
 import { EmailStrategy } from '../adapters/output/notification-channels/strategies/email.strategy';
 import { SMSStrategy } from '../adapters/output/notification-channels/strategies/sms.strategy';
 import { PushStrategy } from '../adapters/output/notification-channels/strategies/push.strategy';

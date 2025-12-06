@@ -15,6 +15,7 @@ import { EventsRepository } from './events.repository';
     serviceProvider,
     EventsRepository
   ],
-  controllers: [EventsController]
+  controllers: [EventsController],
+  exports: [serviceProvider, EventsService]
 })
 export class EventsModule {}
