@@ -1,22 +1,24 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, registerEnumType } from '@nestjs/graphql'
+import { RegistrationStatusValueObject } from 'src/modules/registrations/domain/value-objects/registration-status.vo'
 
+registerEnumType(RegistrationStatusValueObject, { name: 'RegistrationStatus' })
 @ObjectType()
 export class Registration {
   @Field()
-  id: string;
+  id: string
 
   @Field()
-  userId: string;
+  userId: string
 
   @Field()
-  eventId: string;
+  eventId: string
+
+  @Field(() => RegistrationStatusValueObject)
+  status: RegistrationStatusValueObject
 
   @Field()
-  status: string;
+  createdAt: Date
 
   @Field()
-  createdAt: Date;
-
-  @Field()
-  updatedAt: Date;
+  updatedAt: Date
 }

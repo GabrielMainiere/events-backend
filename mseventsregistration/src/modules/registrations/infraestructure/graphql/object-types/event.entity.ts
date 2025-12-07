@@ -1,6 +1,9 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql'
-import { EventStatus, EventType } from '@prisma/client'
+import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql'
+import { EventStatusValueObject } from 'src/modules/events/domain/value-objects/event-status.vo'
+import { EventTypeValueObject } from 'src/modules/events/domain/value-objects/event-type.vo'
 
+registerEnumType(EventStatusValueObject, { name: 'EventStatus' })
+registerEnumType(EventTypeValueObject, { name: 'EventType' })
 @ObjectType()
 export class Event {
   @Field()
@@ -51,11 +54,11 @@ export class Event {
   @Field()
   isFree: boolean
 
-  @Field(() => EventStatus)
-  status: EventStatus
+  @Field(() => EventStatusValueObject)
+  status: EventStatusValueObject
 
-  @Field(() => EventType)
-  eventType: EventType
+  @Field(() => EventTypeValueObject)
+  eventType: EventTypeValueObject
 
   @Field()
   createdAt: Date
