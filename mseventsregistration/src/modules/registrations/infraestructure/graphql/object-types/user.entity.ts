@@ -15,10 +15,10 @@ export class User {
   cpf: string
 
   @Field()
-  phone?: string
+  phoneNumber?: string
 
   @Field()
-  birthDate?: Date
+  birthDatetime?: Date
 
   @Field()
   createdAt: Date
