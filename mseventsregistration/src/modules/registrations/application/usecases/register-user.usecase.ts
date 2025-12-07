@@ -4,19 +4,26 @@ import { IRegistrationRepository } from '../../domain/IRegistrationRepository'
 import { RegistrationStatusValueObject } from '../../domain/value-objects/registration-status.vo'
 import { EventRegistrationDomain } from '../../domain/registrations.entity'
 import { EventNotificationService } from 'src/modules/notifications/event-notification/event-notification.service'
+import { IUserRepository } from 'src/modules/users/domain/IUserRepository'
+import { UserDomain } from 'src/modules/users/domain/user.entity'
+import { IUsersClient } from 'src/modules/users/domain/IUsersClient'
 
 export class RegisterUseCase {
   constructor(
     private readonly registrationRepo: IRegistrationRepository,
     private readonly registrationService: EventRegistrationService,
     private readonly eventRepo: IEventsRepository,
-    private readonly eventNotificationService: EventNotificationService
+    private readonly eventNotificationService: EventNotificationService,
+    private readonly usersClient: IUsersClient,
+    private readonly usersRepo: IUserRepository
   ) {}
 
   async execute(
     userId: string,
     eventId: string
   ): Promise<EventRegistrationDomain> {
+    await this.upsertUser(userId)
+
     const [event, currentRegistrationsCount, isUserAlreadyRegistered] =
       await Promise.all([
         this.eventRepo.findById(eventId),
@@ -56,5 +63,32 @@ export class RegisterUseCase {
       event
     )
     return registration
+  }
+
+  private async upsertUser(userId: string): Promise<void> {
+    let user: UserDomain | null = null
+
+    try {
+      user = await this.usersClient.findOne(userId)
+    } catch (err) {
+      throw new Error(
+        `Error fetching user from msusers: ${(err as Error).message}`
+      )
+    }
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    await this.usersRepo.upsertUser({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      cpf: user.cpf,
+      birthDate: user.birthDate,
+      phone: user.phone,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    })
   }
 }

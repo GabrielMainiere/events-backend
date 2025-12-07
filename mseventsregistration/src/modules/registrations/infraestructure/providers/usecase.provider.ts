@@ -10,25 +10,33 @@ import { UsersRepository } from 'src/modules/users/infraestructure/users.reposit
 import { EventNotificationService } from 'src/modules/notifications/event-notification/event-notification.service'
 import { GetRegistrationByUserAndEventUseCase } from '../../application/usecases/get-registration-by-user-and-event.usecase'
 import { CountRegistrationsUseCase } from '../../application/usecases/count-registrations.usecase'
+import { UsersClient } from 'src/modules/users/infraestructure/grpc/userClient'
+
 export const registerUseCaseProvider: Provider<RegisterUseCase> = {
   provide: RegisterUseCase,
   useFactory: (
     registrationRepo: RegistrationRepository,
     service: EventRegistrationService,
     eventRepo: EventsRepository,
-    notificationService: EventNotificationService
+    notificationService: EventNotificationService,
+    userClient: UsersClient,
+    usersRepo: UsersRepository
   ) =>
     new RegisterUseCase(
       registrationRepo,
       service,
       eventRepo,
-      notificationService
+      notificationService,
+      userClient,
+      usersRepo
     ),
   inject: [
     RegistrationRepository,
     EventRegistrationService,
     EventsRepository,
-    EventNotificationService
+    EventNotificationService,
+    UsersClient,
+    UsersRepository
   ]
 }
 

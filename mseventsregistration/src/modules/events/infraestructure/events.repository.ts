@@ -19,4 +19,9 @@ export class EventsRepository implements IEventsRepository {
     })
     return EventMapper.toDomain(createdEvent)
   }
+  async findById(id: string): Promise<EventDomain | null> {
+    const event = await this.prisma.event.findUnique({ where: { id } })
+
+    return event ? EventMapper.toDomain(event) : null
+  }
 }
