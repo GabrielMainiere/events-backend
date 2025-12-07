@@ -44,14 +44,14 @@ model EventsRegistration {
 }
 
 model User {
-  id        String    @id
-  name      String
-  email     String
-  cpf       String
-  birthDate DateTime?
-  phone     String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id            String    @id
+  name          String
+  email         String
+  cpf           String
+  birthDatetime DateTime?
+  phoneNumber   String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   registrations EventsRegistration[]
 }

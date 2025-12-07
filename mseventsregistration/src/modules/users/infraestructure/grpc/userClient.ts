@@ -6,6 +6,7 @@ import { IUsersGrpcService } from './types/IUserGrpcService'
 import { UserDomain } from '../../domain/user.entity'
 import { IUsersClient } from '../../domain/IUsersClient'
 import { FindOneUserRequest } from '../../application/dto/find-one-user.request'
+import { FindOneUserResponse } from '../../application/dto/find-one-user.response'
 
 @Injectable()
 export class UsersClient implements IUsersClient, OnModuleInit {
@@ -22,6 +23,6 @@ export class UsersClient implements IUsersClient, OnModuleInit {
     const req: FindOneUserRequest = { id: userId }
     const user = await firstValueFrom(this.usersService.FindOne(req))
 
-    return UserDomain.create(user)
+    return FindOneUserResponse.toDomain(user)
   }
 }

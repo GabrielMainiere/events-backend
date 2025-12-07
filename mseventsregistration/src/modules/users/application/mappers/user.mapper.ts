@@ -8,8 +8,8 @@ export class UserMapper {
       name: raw.name,
       email: raw.email,
       cpf: raw.cpf,
-      birthDate: raw.birthDate ?? undefined,
-      phone: raw.phone ?? undefined,
+      birthDatetime: raw.birthDatetime ?? undefined,
+      phoneNumber: raw.phoneNumber ?? undefined,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt
     })
