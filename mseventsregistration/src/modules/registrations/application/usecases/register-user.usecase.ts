@@ -5,8 +5,8 @@ import { RegistrationStatusValueObject } from '../../domain/value-objects/regist
 import { EventRegistrationDomain } from '../../domain/registrations.entity'
 import { EventNotificationService } from 'src/modules/notifications/event-notification/event-notification.service'
 import { IUserRepository } from 'src/modules/users/domain/IUserRepository'
-import { UserDomain } from 'src/modules/users/domain/user.entity'
 import { IUsersClient } from 'src/modules/users/domain/IUsersClient'
+import { UserDomain } from 'src/modules/users/domain/user.entity'
 
 export class RegisterUseCase {
   constructor(
@@ -79,16 +79,6 @@ export class RegisterUseCase {
     if (!user) {
       throw new Error('User not found')
     }
-
-    await this.usersRepo.upsertUser({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      cpf: user.cpf,
-      birthDate: user.birthDate,
-      phone: user.phone,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    })
+    await this.usersRepo.upsertUser(user)
   }
 }

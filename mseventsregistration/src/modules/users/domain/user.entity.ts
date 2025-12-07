@@ -3,8 +3,8 @@ export class UserDomain {
   name: string
   email: string
   cpf: string
-  birthDate?: Date
-  phone?: string
+  birthDatetime?: Date
+  phoneNumber?: string
   createdAt: Date
   updatedAt: Date
 
@@ -13,8 +13,8 @@ export class UserDomain {
     this.name = props.name
     this.email = props.email
     this.cpf = props.cpf
-    this.birthDate = props.birthDate
-    this.phone = props.phone
+    this.birthDatetime = props.birthDatetime ?? undefined
+    this.phoneNumber = props.phoneNumber
     this.createdAt = props.createdAt
     this.updatedAt = props.updatedAt
   }
