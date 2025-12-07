@@ -1,0 +1,6 @@
+export enum RegistrationStatusValueObject {
+  CONFIRMED = 'CONFIRMED',
+  CANCELLED = 'CANCELLED',
+  WAITING_PAYMENT = 'WAITING_PAYMENT',
+  CHECKED_IN = 'CHECKED_IN'
+}

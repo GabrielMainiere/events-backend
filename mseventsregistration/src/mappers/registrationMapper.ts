@@ -1,5 +1,5 @@
-import { tb_events_registration } from '@prisma/client';
-import { Registration } from 'src/modules/registrations/entities/registration.entity';
+import { tb_events_registration } from '@prisma/client'
+import { Registration } from 'src/modules/registrations/infraestructure/graphql/object-types/registration.entity'
 
 export class RegistrationMapper {
   static toEntity(data: tb_events_registration): Registration {
@@ -10,6 +10,6 @@ export class RegistrationMapper {
       eventId: data.registered_event_id,
       createdAt: data.created_at,
       updatedAt: data.updated_at
-    };
+    }
   }
 }

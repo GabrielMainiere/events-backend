@@ -1,20 +1,6 @@
-import { registerEnumType } from '@nestjs/graphql';
+import { registerEnumType } from '@nestjs/graphql'
+import { EventStatus, EventType } from '@prisma/client'
 
-export enum GqlEventStatus {
-  DRAFT = 'DRAFT',
-  ARCHIVED = 'ARCHIVED',
-  CONFIRMED = 'CONFIRMED',
-  WAITING_PAYMENT = 'WAITING_PAYMENT',
-  CANCELED = 'CANCELED',
-}
+registerEnumType(EventStatus, { name: 'EventStatus' })
 
-registerEnumType(GqlEventStatus, { name: 'EventStatus' });
-
-export enum GqlEventType {
-  MEETING = 'MEETING',
-  CONFERENCE = 'CONFERENCE',
-  WORKSHOP = 'WORKSHOP',
-  PARTY = 'PARTY',
-}
-
-registerEnumType(GqlEventType, { name: 'EventType' });
+registerEnumType(EventType, { name: 'EventType' })

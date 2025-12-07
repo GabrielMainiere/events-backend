@@ -1,23 +1,23 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaSingleton } from 'src/core/prismaSingleton';
-import { IRegistrationRepository } from './IRegistration.repository';
-import { Registration } from '../entities/registration.entity';
+import { Injectable } from '@nestjs/common'
+import { PrismaSingleton } from 'src/core/prismaSingleton'
+import { IRegistrationRepository } from './IRegistration.repository'
+import { Registration } from '../infraestructure/graphql/object-types/registration.entity'
 import {
   RegistrationStatus,
   tb_registered_event,
   tb_user
-} from '@prisma/client';
-import { RegistrationMapper } from 'src/mappers/registrationMapper';
-import { EventRegistrationCompleteResponse } from '../dto/event-registration-complete.response';
+} from '@prisma/client'
+import { RegistrationMapper } from 'src/mappers/registrationMapper'
+import { EventRegistrationCompleteResponse } from '../dto/event-registration-complete.response'
 
 @Injectable()
 export class RegistrationRepository implements IRegistrationRepository {
-  private prisma = PrismaSingleton.getInstance();
+  private prisma = PrismaSingleton.getInstance()
 
   async createRegistration(data: {
-    userId: string;
-    eventId: string;
-    status: string;
+    userId: string
+    eventId: string
+    status: string
   }): Promise<Registration> {
     const result = await this.prisma.tb_events_registration.create({
       data: {
@@ -25,9 +25,9 @@ export class RegistrationRepository implements IRegistrationRepository {
         registered_event_id: data.eventId,
         status: data.status as RegistrationStatus
       }
-    });
+    })
 
-    return RegistrationMapper.toEntity(result);
+    return RegistrationMapper.toEntity(result)
   }
 
   async findByUserAndEvent(
@@ -36,9 +36,9 @@ export class RegistrationRepository implements IRegistrationRepository {
   ): Promise<Registration | null> {
     const result = await this.prisma.tb_events_registration.findFirst({
       where: { user_id: userId, registered_event_id: eventId }
-    });
+    })
 
-    return result ? RegistrationMapper.toEntity(result) : null;
+    return result ? RegistrationMapper.toEntity(result) : null
   }
 
   async countByEvent(
@@ -52,24 +52,24 @@ export class RegistrationRepository implements IRegistrationRepository {
           in: statuses
         }
       }
-    });
+    })
   }
 
   async findEventById(eventId: string): Promise<tb_registered_event | null> {
     return this.prisma.tb_registered_event.findUnique({
       where: { id: eventId }
-    });
+    })
   }
 
   async findRegistrationById(
     registrationId: string
   ): Promise<Registration | null> {
-    const result = await this.prisma.tb_events_registration.findUnique({
+    const result = await this.prisma.eventsRegistration.findUnique({
       where: { id: registrationId },
-      include: { registered_event: true }
-    });
+      include: { registeredEvent: true }
+    })
 
-    return result ? RegistrationMapper.toEntity(result) : null;
+    return result ? RegistrationMapper.toEntity(result) : null
   }
 
   async updateRegistrationStatus(
@@ -82,9 +82,9 @@ export class RegistrationRepository implements IRegistrationRepository {
         status: status as RegistrationStatus,
         updated_at: new Date()
       }
-    });
+    })
 
-    return RegistrationMapper.toEntity(result);
+    return RegistrationMapper.toEntity(result)
   }
 
   async findRegistrationsByEventId(
@@ -98,8 +98,8 @@ export class RegistrationRepository implements IRegistrationRepository {
         }
       },
       include: { user: true, registered_event: true }
-    });
-    return results;
+    })
+    return results
   }
 
   async findAllConfirmedUsersByEvent(
@@ -107,9 +107,9 @@ export class RegistrationRepository implements IRegistrationRepository {
   ): Promise<{ event: tb_registered_event; users: tb_user[] }> {
     const event = await this.prisma.tb_registered_event.findUnique({
       where: { id: eventId }
-    });
+    })
     if (!event) {
-      throw new Error('Event not found');
+      throw new Error('Event not found')
     }
 
     const confirmedRegistrations =
@@ -121,9 +121,9 @@ export class RegistrationRepository implements IRegistrationRepository {
         include: {
           user: true
         }
-      });
+      })
 
-    const users = confirmedRegistrations.map((r) => r.user);
-    return { event, users };
+    const users = confirmedRegistrations.map((r) => r.user)
+    return { event, users }
   }
 }

@@ -1,15 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { NotificationsTemplateNames } from 'src/enum/notificationTemplateEnum';
-import { tb_user, tb_registered_event } from '@prisma/client';
-import { NotificationProducer } from '../notification.producer';
+import { Injectable } from '@nestjs/common'
+import { NotificationsTemplateNames } from 'src/enum/notificationTemplateEnum'
+import { NotificationProducer } from '../notification.producer'
+import { UserDomain } from 'src/modules/users/domain/user.entity'
+import { EventDomain } from 'src/modules/events/domain/event.entity'
 
 @Injectable()
 export class EventNotificationService {
-  constructor(
-    private readonly notificationProducer: NotificationProducer,
-  ) {}
+  constructor(private readonly notificationProducer: NotificationProducer) {}
 
-  async sendEventRegistrationNotification(user: tb_user, event: tb_registered_event) {
+  async sendEventRegistrationNotification(
+    user: UserDomain,
+    event: EventDomain
+  ) {
     await this.notificationProducer.publish({
       user_id: user.id,
       recipient_address: user.email,
@@ -17,13 +19,13 @@ export class EventNotificationService {
       payload: {
         name: user.name,
         eventName: event.title,
-        eventDate: `${event.start_at.toLocaleString('pt-BR')} - ${event.end_at.toLocaleString('pt-BR')}`,
-        eventLocation: `${event.address_country}, ${event.address_state} - ${event.address_city}, Rua ${event.address_street} ${event.address_number || 'S/N'} - ${event.address_zipcode}`,
-      },
-    });
+        eventDate: `${event.startAt.toLocaleString('pt-BR')} - ${event.endAt.toLocaleString('pt-BR')}`,
+        eventLocation: `${event.addressCountry}, ${event.addressState} - ${event.addressCity}, Rua ${event.addressStreet} ${event.addressNumber || 'S/N'} - ${event.addressZipcode}`
+      }
+    })
   }
 
-  async sendWaitingPaymentNotification(user: tb_user, event: tb_registered_event) {
+  async sendWaitingPaymentNotification(user: UserDomain, event: EventDomain) {
     await this.notificationProducer.publish({
       user_id: user.id,
       recipient_address: user.email,
@@ -31,14 +33,17 @@ export class EventNotificationService {
       payload: {
         name: user.name,
         eventName: event.title,
-        eventDate: `${event.start_at.toLocaleString('pt-BR')} - ${event.end_at.toLocaleString('pt-BR')}`,
-        eventLocation: `${event.address_country}, ${event.address_state} - ${event.address_city}, Rua ${event.address_street} ${event.address_number || 'S/N'} - ${event.address_zipcode}`,
-        eventPrice: event.price ? `R$ ${(event.price)}` : 'Gratuito',
-      },
-    });
+        eventDate: `${event.startAt.toLocaleString('pt-BR')} - ${event.endAt.toLocaleString('pt-BR')}`,
+        eventLocation: `${event.addressCountry}, ${event.addressState} - ${event.addressCity}, Rua ${event.addressStreet} ${event.addressNumber || 'S/N'} - ${event.addressZipcode}`,
+        eventPrice: event.price ? `R$ ${event.price}` : 'Gratuito'
+      }
+    })
   }
 
-  async sendEventCancellationNotification(user: tb_user, event: tb_registered_event) {
+  async sendEventCancellationNotification(
+    user: UserDomain,
+    event: EventDomain
+  ) {
     await this.notificationProducer.publish({
       user_id: user.id,
       recipient_address: user.email,
@@ -46,13 +51,13 @@ export class EventNotificationService {
       payload: {
         name: user.name,
         eventName: event.title,
-        eventDate: `${event.start_at.toLocaleString('pt-BR')} - ${event.end_at.toLocaleString('pt-BR')}`,
-        eventLocation: `${event.address_country}, ${event.address_state} - ${event.address_city}, Rua ${event.address_street} ${event.address_number || 'S/N'} - ${event.address_zipcode}`,
-      },
-    });
+        eventDate: `${event.startAt.toLocaleString('pt-BR')} - ${event.endAt.toLocaleString('pt-BR')}`,
+        eventLocation: `${event.addressCountry}, ${event.addressState} - ${event.addressCity}, Rua ${event.addressStreet} ${event.addressNumber || 'S/N'} - ${event.addressZipcode}`
+      }
+    })
   }
 
-  async sendEventCheckInNotification(user: tb_user, event: tb_registered_event) {
+  async sendEventCheckInNotification(user: UserDomain, event: EventDomain) {
     await this.notificationProducer.publish({
       user_id: user.id,
       recipient_address: user.email,
@@ -60,9 +65,9 @@ export class EventNotificationService {
       payload: {
         name: user.name,
         eventName: event.title,
-        eventDate: `${event.start_at.toLocaleString('pt-BR')} - ${event.end_at.toLocaleString('pt-BR')}`,
-        eventLocation: `${event.address_country}, ${event.address_state} - ${event.address_city}, Rua ${event.address_street} ${event.address_number || 'S/N'} - ${event.address_zipcode}`,
-      },
-    });
+        eventDate: `${event.startAt.toLocaleString('pt-BR')} - ${event.endAt.toLocaleString('pt-BR')}`,
+        eventLocation: `${event.addressCountry}, ${event.addressState} - ${event.addressCity}, Rua ${event.addressStreet} ${event.addressNumber || 'S/N'} - ${event.addressZipcode}`
+      }
+    })
   }
 }

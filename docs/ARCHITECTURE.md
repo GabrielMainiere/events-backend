@@ -125,7 +125,6 @@ A entidade Evento é complexa, possuindo muitos campos obrigatórios (título, d
 
 - (MSPAYMENTS) É a base do serviço, o PaymentService usa duas estratégias: PaymentMethodStrategy (para tratar a lógica de Pix vs. CreditCard) e PaymentGatewayStrategy (para tratar a lógica de MercadoPago vs. Stripe).
 
-- (MSEVENTSREGISTRATION) O RegistrationService usa o RegistrationStrategyService para escolher entre FreeRegistrationStrategy (status CONFIRMED) ou PaidRegistrationStrategy (status WAITING_PAYMENT) com base no is_free do evento.
 
 **Factory (MSPAYMENTS)**
 

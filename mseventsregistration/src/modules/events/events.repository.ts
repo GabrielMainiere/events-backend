@@ -1,22 +1,22 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common'
 
-import { IEventsRepository } from './interfaces/IEventsRepository';
+import { IEventsRepository } from './domain/IEventsRepository'
 import {
   EventStatus,
   EventType,
   PrismaClient,
   tb_registered_event
-} from '@prisma/client';
-import { PRISMA_CLIENT } from 'src/core/constants';
-import { EventChangeInput } from './dto/event-change.input';
+} from '@prisma/client'
+import { PRISMA_CLIENT } from 'src/core/constants'
+import { EventChangeInput } from './dto/event-change.input'
 
 @Injectable()
 export class EventsRepository implements IEventsRepository {
   constructor(@Inject(PRISMA_CLIENT) private readonly prisma: PrismaClient) {}
 
   async create(data: EventChangeInput): Promise<tb_registered_event> {
-    const eventStatus = data.status as EventStatus;
-    const eventType = data.eventType as EventType;
+    const eventStatus = data.status as EventStatus
+    const eventType = data.eventType as EventType
 
     return await this.prisma.tb_registered_event.create({
       data: {
@@ -39,12 +39,12 @@ export class EventsRepository implements IEventsRepository {
         status: eventStatus,
         event_type: eventType
       }
-    });
+    })
   }
 
   async update(data: EventChangeInput): Promise<tb_registered_event> {
-    const eventStatus = data.status as EventStatus;
-    const eventType = data.eventType as EventType;
+    const eventStatus = data.status as EventStatus
+    const eventType = data.eventType as EventType
 
     return await this.prisma.tb_registered_event.update({
       where: { id: data.id },
@@ -67,13 +67,13 @@ export class EventsRepository implements IEventsRepository {
         status: eventStatus,
         event_type: eventType
       }
-    });
+    })
   }
 
   async findById(id: string): Promise<tb_registered_event | null> {
     const event = await this.prisma.tb_registered_event.findUnique({
       where: { id }
-    });
-    return event;
+    })
+    return event
   }
 }

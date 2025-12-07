@@ -1,6 +1,6 @@
-import { EventWithUsers } from 'src/modules/registrations/entities/eventWithUsers.entity';
-import { tb_registered_event, tb_user } from '@prisma/client';
-import { GqlEventStatus, GqlEventType } from 'src/enum/registerEnum';
+import { EventWithUsers } from 'src/modules/registrations/infraestructure/graphql/object-types/eventWithUsers.entity'
+import { tb_registered_event, tb_user } from '@prisma/client'
+import { GqlEventStatus, GqlEventType } from 'src/enum/registerEnum'
 
 export class EventMapper {
   static toGraphQL(
@@ -40,6 +40,6 @@ export class EventMapper {
         createdAt: u.createdAt,
         updatedAt: u.updatedAt
       }))
-    };
+    }
   }
 }
