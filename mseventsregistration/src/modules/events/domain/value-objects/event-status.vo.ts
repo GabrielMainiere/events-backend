@@ -1,0 +1,7 @@
+export enum EventStatusValueObject {
+  DRAFT = 'DRAFT',
+  ARCHIVED = 'ARCHIVED',
+  CONFIRMED = 'CONFIRMED',
+  WAITING_PAYMENT = 'WAITING_PAYMENT',
+  CANCELED = 'CANCELED'
+}

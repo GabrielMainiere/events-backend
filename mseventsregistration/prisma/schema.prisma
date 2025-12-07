@@ -7,53 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model tb_registered_event {
-  id              String      @id @default(uuid())
-  title           String
-  description     String?
-  start_at        DateTime
-  end_at          DateTime
-  price           Int?
-  sale_start_at   DateTime?
-  sale_end_at     DateTime?
-  address_street  String
-  address_number  String?
-  address_city    String
-  address_state   String
-  address_zipcode String
-  address_country String
-  capacity        Int
-  is_free         Boolean      @default(false)
-  status          EventStatus  @default(DRAFT)
-  event_type      EventType    @default(MEETING)
-  created_at      DateTime     @default(now())
-  updated_at      DateTime     @updatedAt
-  registrations   tb_events_registration[] @relation("EventRegistrations")
+model Event {
+  id             String               @id @default(uuid())
+  title          String
+  description    String?
+  startAt        DateTime
+  endAt          DateTime
+  price          Int?
+  saleStartAt    DateTime?
+  saleEndAt      DateTime?
+  addressStreet  String
+  addressNumber  String?
+  addressCity    String
+  addressState   String
+  addressZipcode String
+  addressCountry String
+  capacity       Int
+  isFree         Boolean              @default(false)
+  status         EventStatus          @default(DRAFT)
+  eventType      EventType            @default(MEETING)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  registrations  EventsRegistration[] @relation("EventRegistrations")
 }
 
-model tb_events_registration {
-  id                  String   @id @default(uuid())
-  user_id             String   @default(uuid())
-  registered_event_id String
-  status              RegistrationStatus @default(WAITING_PAYMENT)
-  created_at          DateTime @default(now())
-  updated_at          DateTime @updatedAt
+model EventsRegistration {
+  id        String             @id @default(uuid())
+  userId    String             @default(uuid())
+  eventId   String
+  status    RegistrationStatus @default(WAITING_PAYMENT)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 
-  registered_event    tb_registered_event @relation(fields: [registered_event_id], references: [id], name: "EventRegistrations")
-  user                tb_user @relation(fields: [user_id], references: [id])
+  event Event @relation(fields: [eventId], references: [id], name: "EventRegistrations")
+  user  User  @relation(fields: [userId], references: [id])
 }
 
-model tb_user {
-  id        String @id
+model User {
+  id        String    @id
   name      String
   email     String
   cpf       String
   birthDate DateTime?
   phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  registrations tb_events_registration[]
+  registrations EventsRegistration[]
 }
 
 enum RegistrationStatus {

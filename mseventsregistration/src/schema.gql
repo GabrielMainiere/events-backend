@@ -6,9 +6,16 @@ type Registration {
   id: String!
   userId: String!
   eventId: String!
-  status: String!
+  status: RegistrationStatus!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+enum RegistrationStatus {
+  CONFIRMED
+  CANCELLED
+  WAITING_PAYMENT
+  CHECKED_IN
 }
 
 """
@@ -25,12 +32,12 @@ type Event {
   price: Int
   saleStartAt: DateTime
   saleEndAt: DateTime
-  street: String!
-  city: String!
-  state: String!
-  number: String
-  zipcode: String!
-  country: String!
+  addressStreet: String!
+  addressCity: String!
+  addressState: String!
+  addressNumber: String
+  addressZipcode: String!
+  addressCountry: String!
   capacity: Float!
   isFree: Boolean!
   status: EventStatus!
@@ -59,8 +66,8 @@ type User {
   name: String!
   email: String!
   cpf: String!
-  phone: String
-  birthDate: DateTime
+  phone: String!
+  birthDate: DateTime!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
