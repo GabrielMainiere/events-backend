@@ -1,6 +1,6 @@
 import { PaymentStatusMapper } from 'src/mappers/paymentStatusMapper'
 import { EventRegistrationService } from '../../domain/registration.service'
-import { IRegistrationRepository } from '../../repositories/IRegistration.repository'
+import { IRegistrationRepository } from '../../domain/IRegistrationRepository'
 import { RegistrationStatusValueObject } from '../../domain/value-objects/registration-status.vo'
 import { IUserRepository } from 'src/modules/users/domain/IUserRepository'
 import { IEventsRepository } from 'src/modules/events/domain/IEventsRepository'

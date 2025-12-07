@@ -1,5 +1,5 @@
 import { RegistrationStatusValueObject } from '../../domain/value-objects/registration-status.vo'
-import { IRegistrationRepository } from '../../repositories/IRegistration.repository'
+import { IRegistrationRepository } from '../../domain/IRegistrationRepository'
 import { GetRegistrationResponse } from '../dto/response/get-registration.response'
 
 export class GetRegistrationByUserAndEventUseCase {

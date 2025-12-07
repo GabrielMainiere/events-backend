@@ -1,5 +1,5 @@
 import { RegistrationStatusValueObject } from '../../domain/value-objects/registration-status.vo'
-import { IRegistrationRepository } from '../../repositories/IRegistration.repository'
+import { IRegistrationRepository } from '../../domain/IRegistrationRepository'
 
 export class CountRegistrationsUseCase {
   constructor(private readonly registrationRepo: IRegistrationRepository) {}

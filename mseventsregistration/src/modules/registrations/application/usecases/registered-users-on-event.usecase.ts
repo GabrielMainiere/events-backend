@@ -1,4 +1,4 @@
-import { IRegistrationRepository } from '../../repositories/IRegistration.repository'
+import { IRegistrationRepository } from '../../domain/IRegistrationRepository'
 import { EventWithUsersResponse } from '../dto/response/event-with-users.response.dto'
 
 export class GetUsersOnEventUseCase {

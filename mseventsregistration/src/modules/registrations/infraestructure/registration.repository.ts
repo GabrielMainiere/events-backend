@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaSingleton } from 'src/core/prismaSingleton'
 import { RegistrationStatus } from '@prisma/client'
-import { IRegistrationRepository } from '../repositories/IRegistration.repository'
+import { IRegistrationRepository } from '../domain/IRegistrationRepository'
 import { EventRegistrationDomain } from '../domain/registrations.entity'
 import { RegistrationMapper } from '../application/mappers/event-registration.mapper'
 import { RegistrationStatusValueObject } from '../domain/value-objects/registration-status.vo'

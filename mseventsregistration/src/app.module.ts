@@ -4,7 +4,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { join } from 'path'
 import { RegistrationsModule } from './modules/registrations/infraestructure/registrations.module'
 import { authGuardProvider } from './auth/auth.provider'
-import { EventsModule } from './modules/events/events.module'
+import { EventsModule } from './modules/events/infraestructure/events.module'
 import { DatabaseModule } from './modules/database/prisma.module'
 import { UsersModule } from './modules/users/users.module'
 

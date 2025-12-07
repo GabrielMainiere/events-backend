@@ -1,8 +1,6 @@
-import { EventChangeInput } from '../dto/event-change.input'
+import { EventChangeRequest } from '../application/dto/event-change.request'
 import { EventDomain } from './event.entity'
 
 export abstract class IEventsRepository {
-  abstract create(data: EventChangeInput): Promise<EventDomain>
-  abstract update(data: EventChangeInput): Promise<EventDomain>
-  abstract findById(id: string): Promise<EventDomain | null>
+  abstract upsert(data: EventChangeRequest): Promise<EventDomain>
 }

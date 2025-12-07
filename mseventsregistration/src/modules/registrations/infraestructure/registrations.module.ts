@@ -1,28 +1,13 @@
 import { forwardRef, Module } from '@nestjs/common'
-import { RegistrationRepository } from '../repositories/registration.repository'
-import { EventCapacityValidator } from '../services/validators/validateCapacity'
-import { UserRegisteredValidator } from '../services/validators/userRegisteredValidation'
-import { IRegistrationValidator } from '../services/validators/IRegistrationValidator'
-import { CheckInStatusValidator } from '../services/validators/checkInStatusValidator'
-import { CheckInDateValidator } from '../services/validators/checkInDateValidator'
-import { ICheckInValidator } from '../services/validators/ICheckInValidator'
-import { RegistrationStrategyService } from '../strategies/registrationStrategyService'
-import { FreeRegistrationStrategy } from '../strategies/freeRegistrationStrategy'
-import { PaidRegistrationStrategy } from '../strategies/paidRegistrationStrategy'
 import { UsersClient } from 'src/modules/users/client/userClient'
-import { RegistrationService } from '../services/registrations.service'
-import { ValidateCanceledEvent } from '../services/validators/validateCanceledEvent'
 import { EventNotificationModule } from 'src/modules/notifications/event-notification/event-notification.module'
-import { EventsModule } from '../../events/events.module'
+import { EventsModule } from '../../events/infraestructure/events.module'
 import { UsersModule } from '../../users/users.module'
 import { domainServiceProvider } from './providers/domain.provider'
-import {
-  checkinUseCaseProvider,
-  getUsersOnEventUseCaseProvider,
-  registerUseCaseProvider,
-  useCasesProviders
-} from './providers/usecase.provider'
+import { useCasesProviders } from './providers/usecase.provider'
 import { RegistrationResolver } from './graphql/registrations.resolver'
+import { RegistrationsController } from './registrations.controller'
+import { RegistrationRepository } from './registration.repository'
 
 @Module({
   imports: [
@@ -34,51 +19,16 @@ import { RegistrationResolver } from './graphql/registrations.resolver'
     ...useCasesProviders,
     domainServiceProvider,
     RegistrationResolver,
-    RegistrationService,
-
     {
       provide: 'IRegistrationRepository',
       useClass: RegistrationRepository
     },
     RegistrationRepository,
-
-    EventCapacityValidator,
-    UserRegisteredValidator,
-    ValidateCanceledEvent,
-    {
-      provide: 'IRegistrationValidators',
-      useFactory: (
-        capacity: EventCapacityValidator,
-        already: UserRegisteredValidator,
-        canceled: ValidateCanceledEvent
-      ): IRegistrationValidator[] => [capacity, already, canceled],
-      inject: [
-        EventCapacityValidator,
-        UserRegisteredValidator,
-        ValidateCanceledEvent
-      ]
-    },
-
-    CheckInStatusValidator,
-    CheckInDateValidator,
-    {
-      provide: 'ICheckInValidators',
-      useFactory: (
-        status: CheckInStatusValidator,
-        date: CheckInDateValidator
-      ): ICheckInValidator[] => [status, date],
-      inject: [CheckInStatusValidator, CheckInDateValidator]
-    },
-
-    FreeRegistrationStrategy,
-    PaidRegistrationStrategy,
-    RegistrationStrategyService,
     {
       provide: 'IUsersClient',
       useExisting: UsersClient
     }
   ],
-  exports: [RegistrationService],
   controllers: [RegistrationsController]
 })
 export class RegistrationsModule {}

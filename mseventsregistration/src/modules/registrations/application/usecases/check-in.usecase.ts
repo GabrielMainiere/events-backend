@@ -1,6 +1,6 @@
 import { IEventsRepository } from 'src/modules/events/domain/IEventsRepository'
 
-import { IRegistrationRepository } from '../../repositories/IRegistration.repository'
+import { IRegistrationRepository } from '../../domain/IRegistrationRepository'
 import { EventRegistrationService } from '../../domain/registration.service'
 import { RegistrationStatusValueObject } from '../../domain/value-objects/registration-status.vo'
 import { EventRegistrationDomain } from '../../domain/registrations.entity'
