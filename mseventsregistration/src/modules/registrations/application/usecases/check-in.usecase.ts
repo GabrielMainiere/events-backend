@@ -6,9 +6,9 @@ import { RegistrationStatusValueObject } from '../../domain/value-objects/regist
 import { EventRegistrationDomain } from '../../domain/registrations.entity'
 import { EventDomain } from 'src/modules/events/domain/event.entity'
 import { QRCodeGenerator } from 'src/utils/qrCodeGenerator'
-import { QrCodeResponse } from '../dto/response/qr-code.response'
 import { EventNotificationService } from 'src/modules/notifications/event-notification/event-notification.service'
 import { EventRegistrationCompleteResponse } from '../dto/response/registration-complete.response'
+import { QrCodeResponse } from '../dto/response/qr-code.response'
 
 export class CheckinUseCase {
   constructor(

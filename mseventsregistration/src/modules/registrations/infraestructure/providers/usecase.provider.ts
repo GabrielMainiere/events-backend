@@ -1,6 +1,5 @@
 import { Provider } from '@nestjs/common'
 import { RegisterUseCase } from '../../application/usecases/register-user.usecase'
-import { RegistrationRepository } from '../registration.repository'
 import { EventsRepository } from 'src/modules/events/infraestructure/events.repository'
 import { EventRegistrationService } from '../../domain/registration.service'
 import { CheckinUseCase } from '../../application/usecases/check-in.usecase'
@@ -11,11 +10,14 @@ import { EventNotificationService } from 'src/modules/notifications/event-notifi
 import { GetRegistrationByUserAndEventUseCase } from '../../application/usecases/get-registration-by-user-and-event.usecase'
 import { CountRegistrationsUseCase } from '../../application/usecases/count-registrations.usecase'
 import { UsersClient } from 'src/modules/users/infraestructure/grpc/userClient'
+import { REGISTRATION_REPOSITORY_TOKEN } from './repository.provider'
+import { EVENTS_REPOSITORY_TOKEN } from 'src/modules/events/infraestructure/providers/events-repository.provider'
+import { IRegistrationRepository } from '../../domain/IRegistrationRepository'
 
 export const registerUseCaseProvider: Provider<RegisterUseCase> = {
   provide: RegisterUseCase,
   useFactory: (
-    registrationRepo: RegistrationRepository,
+    registrationRepo: IRegistrationRepository,
     service: EventRegistrationService,
     eventRepo: EventsRepository,
     notificationService: EventNotificationService,
@@ -31,9 +33,9 @@ export const registerUseCaseProvider: Provider<RegisterUseCase> = {
       usersRepo
     ),
   inject: [
-    RegistrationRepository,
+    REGISTRATION_REPOSITORY_TOKEN,
     EventRegistrationService,
-    EventsRepository,
+    EVENTS_REPOSITORY_TOKEN,
     EventNotificationService,
     UsersClient,
     UsersRepository
@@ -43,7 +45,7 @@ export const registerUseCaseProvider: Provider<RegisterUseCase> = {
 export const checkinUseCaseProvider: Provider<CheckinUseCase> = {
   provide: CheckinUseCase,
   useFactory: (
-    registrationRepo: RegistrationRepository,
+    registrationRepo: IRegistrationRepository,
     service: EventRegistrationService,
     eventRepo: EventsRepository,
     notificationService: EventNotificationService
@@ -55,9 +57,9 @@ export const checkinUseCaseProvider: Provider<CheckinUseCase> = {
       notificationService
     ),
   inject: [
-    RegistrationRepository,
+    REGISTRATION_REPOSITORY_TOKEN,
     EventRegistrationService,
-    EventsRepository,
+    EVENTS_REPOSITORY_TOKEN,
     EventNotificationService
   ]
 }
@@ -65,16 +67,16 @@ export const checkinUseCaseProvider: Provider<CheckinUseCase> = {
 export const getUsersOnEventUseCaseProvider: Provider<GetUsersOnEventUseCase> =
   {
     provide: GetUsersOnEventUseCase,
-    useFactory: (registrationRepo: RegistrationRepository) =>
+    useFactory: (registrationRepo: IRegistrationRepository) =>
       new GetUsersOnEventUseCase(registrationRepo),
-    inject: [RegistrationRepository]
+    inject: [REGISTRATION_REPOSITORY_TOKEN]
   }
 
 export const processPaymentUpdateUseCaseProvider: Provider<ProcessPaymentUpdateUseCase> =
   {
     provide: ProcessPaymentUpdateUseCase,
     useFactory: (
-      registrationRepo: RegistrationRepository,
+      registrationRepo: IRegistrationRepository,
       service: EventRegistrationService,
       userRepo: UsersRepository,
       eventRepo: EventsRepository,
@@ -88,10 +90,10 @@ export const processPaymentUpdateUseCaseProvider: Provider<ProcessPaymentUpdateU
         notificationService
       ),
     inject: [
-      RegistrationRepository,
+      REGISTRATION_REPOSITORY_TOKEN,
       EventRegistrationService,
       UsersRepository,
-      EventsRepository,
+      EVENTS_REPOSITORY_TOKEN,
       EventNotificationService
     ]
   }
@@ -99,17 +101,17 @@ export const processPaymentUpdateUseCaseProvider: Provider<ProcessPaymentUpdateU
 export const getRegistrationByUserAndEventUseCaseProvider: Provider<GetRegistrationByUserAndEventUseCase> =
   {
     provide: GetRegistrationByUserAndEventUseCase,
-    useFactory: (registrationRepo: RegistrationRepository) =>
+    useFactory: (registrationRepo: IRegistrationRepository) =>
       new GetRegistrationByUserAndEventUseCase(registrationRepo),
-    inject: [RegistrationRepository]
+    inject: [REGISTRATION_REPOSITORY_TOKEN]
   }
 
 export const countRegistrationsUseCaseProvider: Provider<CountRegistrationsUseCase> =
   {
     provide: CountRegistrationsUseCase,
-    useFactory: (registrationRepo: RegistrationRepository) =>
+    useFactory: (registrationRepo: IRegistrationRepository) =>
       new CountRegistrationsUseCase(registrationRepo),
-    inject: [RegistrationRepository]
+    inject: [REGISTRATION_REPOSITORY_TOKEN]
   }
 
 export const useCasesProviders = [

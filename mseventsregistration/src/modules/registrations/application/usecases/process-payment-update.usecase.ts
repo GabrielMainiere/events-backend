@@ -1,4 +1,3 @@
-import { PaymentStatusMapper } from 'src/mappers/paymentStatusMapper'
 import { EventRegistrationService } from '../../domain/registration.service'
 import { IRegistrationRepository } from '../../domain/IRegistrationRepository'
 import { RegistrationStatusValueObject } from '../../domain/value-objects/registration-status.vo'
@@ -19,7 +18,7 @@ export class ProcessPaymentUpdateUseCase {
   async execute(
     eventId: string,
     userId: string,
-    status: PaymentStatus
+    paymentStatus: PaymentStatus
   ): Promise<void> {
     const registration = await this.registrationRepo.findByUserAndEvent(
       userId,
@@ -28,7 +27,6 @@ export class ProcessPaymentUpdateUseCase {
     if (!registration) throw new Error('Registration not found')
     this.registrationService.validatePaymentStatusUpdate(registration)
 
-    const paymentStatus = PaymentStatusMapper.map(status)
     const newStatus =
       paymentStatus === PaymentStatus.ACCEPTED
         ? RegistrationStatusValueObject.CONFIRMED
