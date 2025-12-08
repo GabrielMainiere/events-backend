@@ -3,12 +3,13 @@ package br.com.mspayments.services;
 import br.com.mspayments.controllers.PaymentResponse;
 import br.com.mspayments.controllers.dtos.CreatePaymentInput;
 import br.com.mspayments.controllers.dtos.RegistrationData;
-import br.com.mspayments.integrations.grpc.registration.RegistrationGrpcClient;
 import br.com.mspayments.grpc.registration.GetRegistrationResponse;
+import br.com.mspayments.integrations.grpc.registration.RegistrationGrpcClient;
 import br.com.mspayments.models.Event;
 import br.com.mspayments.models.Payment;
 import br.com.mspayments.models.PaymentStatus;
 import br.com.mspayments.models.User;
+import br.com.mspayments.publishers.PaymentNotificationPublisher;
 import br.com.mspayments.repositories.PaymentRepository;
 import br.com.mspayments.strategies.paymentGateway.PaymentGatewayFactory;
 import br.com.mspayments.strategies.paymentMethod.PaymentMethodFactory;
@@ -18,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +28,7 @@ import java.util.UUID;
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final RegistrationGrpcClient registrationGrpcClient;
+    private final PaymentNotificationPublisher paymentNotificationPublisher;
     private final UserService userService;
     private final EventService eventService;
     private final CurrencyConversionService currencyConversionService;
@@ -96,13 +97,12 @@ public class PaymentServiceImpl implements PaymentService {
     private void notifyPaymentStatusIfApproved(PaymentStatus paymentStatus, String eventId, String userId) {
         if (paymentStatus == PaymentStatus.APPROVED) {
             try {
-
                 log.info("About to send payment notification:");
                 log.info("- eventId: {}", eventId);
                 log.info("- userId: {}", userId);
                 log.info("- paymentStatus (internal): {}", paymentStatus);
 
-                registrationGrpcClient.notifyPaymentUpdate(eventId, userId, "ACCEPTED");
+                paymentNotificationPublisher.publishPaymentNotification(eventId, userId, "ACCEPTED");
 
                 log.info("Payment approved notification sent for eventId: {} and userId: {}", eventId, userId);
             } catch (Exception e) {
