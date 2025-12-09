@@ -1,25 +1,31 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { mapEvent } from '../mappers/event.mapper';
-import type { IEventRepository } from '../../domain/ports/IEventRepository';
-import type { IEventNotifier } from '../../domain/ports/IEventNotifier';
-import { EventStatus } from 'generated/prisma';
 import { Event } from '../../domain/entities/event.entity';
+import { CancelEventPort } from '../../domain/ports/in/cancelEvent.port';
+import type { EventRepositoryPort } from '../../domain/ports/out/eventRepository.port';
+import type { EventNotifierPort } from '../../domain/ports/out/eventNotifierr.port';
 
 @Injectable()
-export class CancelEventUseCase {
-    constructor(
-        @Inject('IEventRepository') private readonly repository: IEventRepository,
-        @Inject('IEventNotifier') private readonly notifier: IEventNotifier,
-    ) {}
+export class CancelEventUseCase implements CancelEventPort {
+  constructor(
+    @Inject('IEventRepository') private readonly repository: EventRepositoryPort,
+    @Inject('IEventNotifier') private readonly notifier: EventNotifierPort,
+  ) {}
 
-    async cancelEvent(id: string): Promise<Event> {
-        const event = await this.repository.getById(id);
-        if (!event) throw new NotFoundException(`Event with id ${id} not found`);
-        if (event.status === EventStatus.CANCELED) throw new BadRequestException(`Event already canceled`);
-        if (!event.isFree) throw new BadRequestException('Only free events can be canceled');
-    
-        const updated = await this.repository.cancel(id);
-        await this.notifier.notifyCancelled(updated);
-        return mapEvent(updated);
+  async cancelEvent(id: string): Promise<Event> {
+    const event = await this.repository.getById(id);
+    if (!event) throw new NotFoundException(`Event with id ${id} not found`);
+
+    try {
+      const domain = mapEvent(event);
+      domain.cancel();
+    } catch (err) {
+      throw new BadRequestException((err as Error).message);
     }
+
+    const updated = await this.repository.cancel(id);
+    await this.notifier.notifyCancelled(updated);
+
+    return mapEvent(updated);
+  }
 }

@@ -3,7 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { EVENT_CHANGE_PATTERN } from 'src/core/constants';
 import { EventChangeAction } from 'src/core/enum/eventChangeAction';
-import { IEventNotificationRequest } from 'src/modules/events/infrastructure/adapters/messaging/dto/IEventRegistrationRequest';
+import { IEventNotificationRequest } from './dto/IEventRegistrationRequest';
 
 @Injectable()
 export class EventProducer implements OnModuleInit {

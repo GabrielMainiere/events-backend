@@ -1,7 +1,7 @@
 import { PrismaSingleton } from 'src/core/prisma/prismaSingleton';
 import { EventStatus, tb_event } from 'generated/prisma';
 import { EventProps } from 'src/modules/events/domain/factories/builder/IEventsBuilder';
-import { IEventRepository } from 'src/modules/events/domain/ports/IEventRepository';
+import { EventRepositoryPort } from 'src/modules/events/domain/ports/out/eventRepository.port';
 
 export type EventWithAddress = tb_event & {
   address: {
@@ -15,7 +15,7 @@ export type EventWithAddress = tb_event & {
   };
 };
 
-export class EventRepository implements IEventRepository{
+export class EventRepository implements EventRepositoryPort{
   private prisma = PrismaSingleton.getInstance();
 
   async create(eventData: EventProps): Promise<EventWithAddress> {

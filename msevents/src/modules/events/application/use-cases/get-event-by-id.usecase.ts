@@ -1,12 +1,13 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import type { IEventRepository } from '../../domain/ports/IEventRepository';
+import type { EventRepositoryPort } from '../../domain/ports/out/eventRepository.port';
 import { mapEvent } from '../mappers/event.mapper';
 import { Event } from '../../domain/entities/event.entity';
+import { GetEventByIdPort } from '../../domain/ports/in/getEventById.port';
 
 @Injectable()
-export class GetEventUseCase {
+export class GetEventUseCase implements GetEventByIdPort {
     constructor(
-        @Inject('IEventRepository') private readonly repository: IEventRepository,
+        @Inject('IEventRepository') private readonly repository: EventRepositoryPort,
     ) {}
 
     async getById(id: string): Promise<Event> {

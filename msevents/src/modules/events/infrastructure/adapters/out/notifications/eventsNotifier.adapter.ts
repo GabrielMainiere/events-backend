@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { EventProducer } from 'src/modules/events/infrastructure/adapters/messaging/eventProducer.adapter';
+import { EventProducer } from '../messaging/eventProducer.adapter';
 import { EventChangeAction } from 'src/core/enum/eventChangeAction';
-import { IEventNotifier } from '../../../domain/ports/IEventNotifier';
+import { EventNotifierPort } from '../../../../domain/ports/out/eventNotifierr.port';
 import { EventWithAddress } from '../database/events.repository.adapter';
-import { EventsNotificationMapper } from '../../../application/mappers/eventNotification.mapper';
+import { EventsNotificationMapper } from '../../../../application/mappers/eventNotification.mapper';
 
 @Injectable()
-export class EventNotifier implements IEventNotifier{
+export class EventNotifier implements EventNotifierPort{
   constructor(private readonly producer: EventProducer) {}
 
   notifyCreatedOrUpdated(event: EventWithAddress): Promise<void> {

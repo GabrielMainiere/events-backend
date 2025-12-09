@@ -1,11 +1,7 @@
 import { ObjectType, Field } from '@nestjs/graphql';
-import { IsUUID } from 'class-validator';
 
 @ObjectType()
-export class Address {
-  @Field()
-  @IsUUID()
-  id: string;
+export class AddressModel {
 
   @Field()
   street: string;
