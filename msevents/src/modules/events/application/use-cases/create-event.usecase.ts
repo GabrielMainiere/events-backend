@@ -3,8 +3,8 @@ import { CreateEventInput } from '../dto/create-event.input';
 import { mapEvent } from '../mappers/event.mapper';
 import { EventDirector } from '../../domain/factories/builder/eventDirector';
 import { EventBuilder } from '../../domain/factories/builder/eventsBuilder';
-import type { IEventRepository } from '../../domain/ports/out/IEventRepository';
-import type { IEventNotifier } from '../../domain/ports/out/IEventNotifier';
+import type { EventRepositoryPort } from '../../domain/ports/out/eventRepository.port';
+import type { EventNotifierPort } from '../../domain/ports/out/eventNotifierr.port';
 import { validateEventPricing } from '../../domain/services/priceValidation';
 import { AddressProps } from '../../domain/factories/builder/IEventsBuilder';
 import { Event } from '../../domain/entities/event.entity';
@@ -13,8 +13,8 @@ import { CreateEventPort } from '../../domain/ports/in/createEvent.port';
 @Injectable()
 export class CreateEventUseCase implements CreateEventPort {
   constructor(
-    @Inject('IEventRepository') private readonly repository: IEventRepository,
-    @Inject('IEventNotifier') private readonly notifier: IEventNotifier,
+    @Inject('IEventRepository') private readonly repository: EventRepositoryPort,
+    @Inject('IEventNotifier') private readonly notifier: EventNotifierPort,
   ) {}
 
   async createEvent(input: CreateEventInput): Promise<Event> {
