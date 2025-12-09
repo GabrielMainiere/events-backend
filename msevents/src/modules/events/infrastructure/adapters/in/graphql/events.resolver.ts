@@ -1,8 +1,8 @@
 import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
-import { Event } from '../../../domain/entities/event.entity';
-import { CreateEventInput } from '../../../application/dto/create-event.input';
-import { UpdateEventInput } from '../../../application/dto/update-event-input';
-import { CancelEventInput } from '../../../application/dto/cancel-event.input';
+import { Event } from 'src/modules/events/domain/entities/event.entity';
+import { CreateEventInput } from 'src/modules/events/application/dto/create-event.input';
+import { UpdateEventInput } from 'src/modules/events/application/dto/update-event-input';
+import { CancelEventInput } from 'src/modules/events/application/dto/cancel-event.input';
 //import { RolesEnum } from 'src/core/enum/roles';
 import { isPublic } from 'src/auth/auth.decorators';
 import { CancelEventUseCase } from 'src/modules/events/application/use-cases/cancel-event.usecase';

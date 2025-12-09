@@ -1,5 +1,5 @@
 import { EventProps } from "../../factories/builder/IEventsBuilder";
-import { EventWithAddress } from "../../../infrastructure/adapters/database/events.repository.adapter";
+import { EventWithAddress } from "../../../infrastructure/adapters/out/database/events.repository.adapter";
 
 export interface IEventRepository {
     create(eventData: EventProps): Promise<EventWithAddress>;

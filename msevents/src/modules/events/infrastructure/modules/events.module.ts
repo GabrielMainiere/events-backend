@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { EventsResolver } from '../adapters/graphql/events.resolver';
-import { EventRepository } from '../adapters/database/events.repository.adapter';
+import { EventsResolver } from '../adapters/in/graphql/events.resolver';
+import { EventRepository } from '../adapters/out/database/events.repository.adapter';
 import 'src/core/enum/registerEnums';
-import { EventNotifier } from '../adapters/notifications/eventsNotifier.adapter';
-import { ProducerModule } from 'src/modules/events/infrastructure/adapters/messaging/producer.module';
+import { EventNotifier } from '../adapters/out/notifications/eventsNotifier.adapter';
+import { ProducerModule } from '../adapters/out/messaging/producer.module';
 import { CancelEventUseCase } from '../../application/use-cases/cancel-event.usecase';
 import { CreateEventUseCase } from '../../application/use-cases/create-event.usecase';
 import { UpdateEventUseCase } from '../../application/use-cases/update-event.usecase';
