@@ -11,16 +11,10 @@ import { GetEventUseCase } from '../../application/use-cases/get-event-by-id.use
 import { FindAllEventsUseCase } from '../../application/use-cases/findAll-event.usecase';
 
 @Module({
-  imports: [
-    ProducerModule,
-  ],
+  imports: [ProducerModule],
+
   providers: [
     EventsResolver,
-    CancelEventUseCase,
-    CreateEventUseCase,
-    UpdateEventUseCase,
-    GetEventUseCase,
-    FindAllEventsUseCase,
     {
       provide: 'IEventRepository',
       useClass: EventRepository,
@@ -29,7 +23,35 @@ import { FindAllEventsUseCase } from '../../application/use-cases/findAll-event.
       provide: 'IEventNotifier',
       useClass: EventNotifier,
     },
+
+    {
+      provide: 'ICancelEventPort',
+      useClass: CancelEventUseCase,
+    },
+    {
+      provide: 'ICreateEventPort',
+      useClass: CreateEventUseCase,
+    },
+    {
+      provide: 'IUpdateEventPort',
+      useClass: UpdateEventUseCase,
+    },
+    {
+      provide: 'IGetEventByIdPort',
+      useClass: GetEventUseCase,
+    },
+    {
+      provide: 'IFindAllEventsPort',
+      useClass: FindAllEventsUseCase,
+    },
   ],
-  exports: [CancelEventUseCase, CreateEventUseCase, UpdateEventUseCase, GetEventUseCase, FindAllEventsUseCase],
+
+  exports: [
+    'ICancelEventPort',
+    'ICreateEventPort',
+    'IUpdateEventPort',
+    'IGetEventByIdPort',
+    'IFindAllEventsPort',
+  ],
 })
 export class EventsModule {}
