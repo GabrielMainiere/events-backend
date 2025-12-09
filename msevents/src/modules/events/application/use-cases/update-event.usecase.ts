@@ -1,13 +1,14 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { UpdateEventInput } from '../dto/update-event-input';
 import { mapEvent } from '../mappers/event.mapper';
-import type { IEventRepository } from '../../domain/ports/IEventRepository';
-import type { IEventNotifier } from '../../domain/ports/IEventNotifier';
+import type { IEventRepository } from '../../domain/ports/out/IEventRepository';
+import type { IEventNotifier } from '../../domain/ports/out/IEventNotifier';
 import { validateEventPricing } from '../../domain/services/priceValidation';
 import { Event } from '../../domain/entities/event.entity';
+import { UpdareEventPort } from '../../domain/ports/in/updateEvent.port';
 
 @Injectable()
-export class UpdateEventUseCase {
+export class UpdateEventUseCase implements UpdareEventPort {
   constructor(
     @Inject('IEventRepository') private readonly repository: IEventRepository,
     @Inject('IEventNotifier') private readonly notifier: IEventNotifier,

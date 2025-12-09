@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EventProducer } from 'src/modules/events/infrastructure/adapters/messaging/eventProducer.adapter';
 import { EventChangeAction } from 'src/core/enum/eventChangeAction';
-import { IEventNotifier } from '../../../domain/ports/IEventNotifier';
+import { IEventNotifier } from '../../../domain/ports/out/IEventNotifier';
 import { EventWithAddress } from '../database/events.repository.adapter';
 import { EventsNotificationMapper } from '../../../application/mappers/eventNotification.mapper';
 

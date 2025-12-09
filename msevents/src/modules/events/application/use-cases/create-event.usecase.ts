@@ -3,14 +3,15 @@ import { CreateEventInput } from '../dto/create-event.input';
 import { mapEvent } from '../mappers/event.mapper';
 import { EventDirector } from '../../domain/factories/builder/eventDirector';
 import { EventBuilder } from '../../domain/factories/builder/eventsBuilder';
-import type { IEventRepository } from '../../domain/ports/IEventRepository';
-import type { IEventNotifier } from '../../domain/ports/IEventNotifier';
+import type { IEventRepository } from '../../domain/ports/out/IEventRepository';
+import type { IEventNotifier } from '../../domain/ports/out/IEventNotifier';
 import { validateEventPricing } from '../../domain/services/priceValidation';
 import { AddressProps } from '../../domain/factories/builder/IEventsBuilder';
 import { Event } from '../../domain/entities/event.entity';
+import { CreateEventPort } from '../../domain/ports/in/createEvent.port';
 
 @Injectable()
-export class CreateEventUseCase {
+export class CreateEventUseCase implements CreateEventPort {
   constructor(
     @Inject('IEventRepository') private readonly repository: IEventRepository,
     @Inject('IEventNotifier') private readonly notifier: IEventNotifier,
