@@ -25,25 +25,25 @@ export class CreateEventUseCase implements CreateEventPort {
     director.setBuilder(builder);
 
     const address: AddressProps = {
-        street: input.address.street,
-        number: input.address.number ?? '',
-        city: input.address.city,
-        state: input.address.state,
-        zipcode: input.address.zipcode,
-        country: input.address.country,
+      street: input.address.street,
+      number: input.address.number ?? '',
+      city: input.address.city,
+      state: input.address.state,
+      zipcode: input.address.zipcode,
+      country: input.address.country,
     };
 
     const eventData = director.buildFullEvent(
-        input.title,
-        new Date(input.startAt),
-        new Date(input.endAt ?? input.startAt),
-        address,
-        input.capacity,
-        input.isFree,
-        input.description,
-        input.price,
-        input.saleStartAt ? new Date(input.saleStartAt) : undefined,
-        input.saleEndAt ? new Date(input.saleEndAt) : undefined
+      input.title,
+      new Date(input.startAt),
+      new Date(input.endAt ?? input.startAt),
+      address,
+      input.capacity,
+      input.isFree,
+      input.description,
+      input.price,
+      input.saleStartAt ? new Date(input.saleStartAt) : undefined,
+      input.saleEndAt ? new Date(input.saleEndAt) : undefined
     );
 
     const event = await this.repository.create(eventData);
