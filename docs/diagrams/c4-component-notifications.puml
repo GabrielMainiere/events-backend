@@ -1,65 +1,117 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/refs/heads/master/C4_Component.puml
+AddRelTag("port", $lineStyle=DashedLine())
 
-title Diagrama de Componentes - MS Notifications
+title Diagrama de Componentes - MS Notifications (Arquitetura Hexagonal)
 
-Container_Boundary(msnotifications, "MS Notifications") {
+Container_Boundary(msnotifications, "MS Notifications - Hexagonal Architecture") {
     
-    Component(grpcController, "gRPC Controller", "NestJS Controller", "Recebe requisições gRPC (Ex: Enviar Notificação)")
-    Component(graphqlResolver, "GraphQL Resolver", "NestJS Resolver", "Expõe API GraphQL (Ex: Gerenciar Templates)")
+    ' ------------ CAMADA EXTERNA - ADAPTERS INPUT ------------
+    Boundary(adaptersInput, "Adapters Input (Drivers)") {
+        Component(graphqlAdapter, "GraphQL Adapter", "NestJS Resolver", "API GraphQL para gerenciar templates e preferências")
+        Component(rabbitConsumer, "RabbitMQ Consumer", "NestJS Controller", "Consome eventos de notificação (notification.dispatch)")
+    }
     
-    Component(notificationService, "Notification Service", "Service", "Orquestra a lógica de 'enfileirar' a notificação")
+    ' ------------ CAMADA MÉDIA - APPLICATION ------------
+    Boundary(application, "Application Layer") {
+        Component(processNotificationUseCase, "Process Notification Use Case", "Use Case", "Processa notificação recebida")
+        Component(createTemplateUseCase, "Create Template Use Case", "Use Case", "Cria novo template")
+        Component(updateTemplateUseCase, "Update Template Use Case", "Use Case", "Atualiza template existente")
+        Component(upsertPreferenceUseCase, "Upsert Preference Use Case", "Use Case", "Gerencia preferências de usuário")
+        
+        Component(notificationMapper, "Notification Mapper", "Mapper", "Domain ↔ DTO")
+        Component(templateMapper, "Template Mapper", "Mapper", "Domain ↔ DTO")
+    }
     
-    Component(notificationWorker, "Notification Worker", "@nestjs/schedule (Cron)", "Verifica o banco de dados por envios pendentes a cada 10s")
-    Component(batchProcessor, "Batch Processor", "Service", "Processa os envios pendentes em lote")
-    Component(notificationSender, "Notification Sender", "Service", "Coordena o envio de uma única notificação")
-    Component(templateProcessor, "Template Processor", "Handlebars", "Processa templates com dados dinâmicos")
-
-    Component(strategyFactory, "Strategy Factory", "Factory Pattern", "Monta a pilha de estratégia + decorators")
-    Component(emailStrategy, "Email Strategy", "Strategy Pattern", "Implementação concreta de envio de email")
-    Component(auditDecorator, "Audit Decorator", "Decorator Pattern", "Adiciona log de auditoria")
-    Component(retryDecorator, "Retry Decorator", "Decorator Pattern", "Adiciona lógica de retry")
-    Component(performanceDecorator, "Performance Decorator", "Decorator Pattern", "Adiciona log de performance")
+    ' ------------ CAMADA INTERNA - DOMAIN ------------
+    Boundary(domain, "Domain Layer (Core)") {
+        Component(notificationAggregate, "Notification Aggregate", "Aggregate Root", "Entidade raiz que gerencia o ciclo de vida")
+        Component(templateEntity, "Template Entity", "Entity", "Entidade de template")
+        Component(preferenceEntity, "Preference Entity", "Entity", "Preferências de notificação do usuário")
+        
+        Component(emailVO, "Email Value Object", "Value Object", "Validação de email")
+        Component(notificationFactory, "Notification Factory", "Factory Pattern", "Cria notificações válidas")
+        
+        Component(notificationProcessor, "Notification Processor", "Domain Service", "Orquestra processamento de notificação")
+        Component(templateRenderer, "Template Renderer", "Domain Service", "Renderiza templates (Handlebars)")
+        Component(permissionService, "Permission Service", "Domain Service", "Valida preferências do usuário")
+        
+        ' Ports (Interfaces)
+        Component(notificationRepoPort, "Notification Repository Port", "Interface (Port OUT)", "Contrato de persistência")
+        Component(templateRepoPort, "Template Repository Port", "Interface (Port OUT)", "Contrato de templates")
+        Component(preferenceRepoPort, "Preference Repository Port", "Interface (Port OUT)", "Contrato de preferências")
+        Component(notificationSenderPort, "Notification Sender Port", "Interface (Port OUT)", "Contrato de envio")
+    }
     
-    Component(notificationRepo, "Notification Repository", "Repository", "Lê e grava logs de notificações")
-    Component(templateRepo, "Template Repository", "Repository", "Gerencia templates")
-    Component(preferenceRepo, "Preference Repository", "Repository", "Gerencia preferências de usuário")
-    
-    Component(prismaSingleton, "Prisma Singleton", "Singleton Pattern", "Gerencia a instância única do PrismaClient")
-    
-    Component(emailClient, "Email Client", "Nodemailer", "Cliente SMTP para envio")
+    ' ------------ CAMADA EXTERNA - ADAPTERS OUTPUT ------------
+    Boundary(adaptersOutput, "Adapters Output (Driven)") {
+        Component(notificationRepoImpl, "Notification Repository", "Prisma Adapter", "Implementa NotificationRepositoryPort")
+        Component(templateRepoImpl, "Template Repository", "Prisma Adapter", "Implementa TemplateRepositoryPort")
+        Component(preferenceRepoImpl, "Preference Repository", "Prisma Adapter", "Implementa PreferenceRepositoryPort")
+        
+        Component(strategyFactory, "Strategy Factory", "Factory Pattern", "Cria estratégia de envio com decorators")
+        Component(emailStrategy, "Email Strategy", "Strategy Pattern", "Implementação de envio por email")
+        Component(auditDecorator, "Audit Decorator", "Decorator Pattern", "Log de auditoria")
+        Component(retryDecorator, "Retry Decorator", "Decorator Pattern", "Retry automático")
+        Component(performanceDecorator, "Performance Decorator", "Decorator Pattern", "Medição de performance")
+        
+        Component(smtpAdapter, "SMTP Adapter", "Nodemailer", "Cliente SMTP")
+        Component(prismaSingleton, "Prisma Singleton", "Singleton Pattern", "Instância única do Prisma")
+    }
 }
 
-ComponentDb(database, "Notifications DB", "PostgreSQL", "Armazena logs, templates e preferências. Atua como fila (tabela NotificationLog).")
-Component_Ext(smtpServer, "SMTP Server", "Servidor de email")
+ComponentDb(database, "Notifications DB", "PostgreSQL", "Armazena notificações, templates e preferências")
+ContainerQueue(rabbitmq, "RabbitMQ", "Message Broker", "Exchange: notifications_exchange, Queue: notifications.dispatch")
+Component_Ext(smtpServer, "SMTP Server", "Servidor de email externo")
 
-Rel(graphqlResolver, templateRepo, "Gerencia")
-Rel(graphqlResolver, preferenceRepo, "Gerencia")
+' ------------ RELACIONAMENTOS ------------
 
-Rel(grpcController, notificationService, "Chama")
-Rel(notificationService, preferenceRepo, "Lê")
-Rel(notificationService, notificationRepo, "Enfileira (Grava PENDENTE)")
+' Input Adapters -> Use Cases
+Rel(graphqlAdapter, createTemplateUseCase, "Chama", "HTTP")
+Rel(graphqlAdapter, updateTemplateUseCase, "Chama", "HTTP")
+Rel(graphqlAdapter, upsertPreferenceUseCase, "Chama", "HTTP")
+Rel(rabbitConsumer, processNotificationUseCase, "Chama", "Event")
 
-Rel(notificationWorker, notificationRepo, "Consome (Lê PENDENTE)")
-Rel(notificationWorker, batchProcessor, "Dispara")
-Rel(batchProcessor, notificationSender, "Delega")
-Rel(batchProcessor, notificationRepo, "Atualiza Status")
+' RabbitMQ -> Input Adapter
+Rel_U(rabbitmq, rabbitConsumer, "Consome eventos", "AMQP")
 
-Rel(notificationSender, templateProcessor, "Usa")
-Rel(notificationSender, strategyFactory, "Usa")
-Rel(strategyFactory, emailStrategy, "Injeta")
-Rel(strategyFactory, auditDecorator, "Cria (wrap)")
-Rel(strategyFactory, retryDecorator, "Cria (wrap)")
-Rel(strategyFactory, performanceDecorator, "Cria (wrap)")
-Rel(notificationSender, emailStrategy, "Chama 'send()'")
-Rel(emailStrategy, emailClient, "Usa")
-Rel(emailClient, smtpServer, "Envia", "SMTP")
+' Use Cases -> Domain Services
+Rel(processNotificationUseCase, notificationProcessor, "Usa")
+Rel(processNotificationUseCase, notificationMapper, "Usa")
+Rel(createTemplateUseCase, templateMapper, "Usa")
 
-Rel(notificationRepo, prismaSingleton, "Usa", "getInstance()")
-Rel(templateRepo, prismaSingleton, "Usa", "getInstance()")
-Rel(preferenceRepo, prismaSingleton, "Usa", "getInstance()")
+' Domain Services -> Entities/VOs
+Rel(notificationProcessor, notificationAggregate, "Cria/Manipula")
+Rel(notificationProcessor, notificationFactory, "Usa")
+Rel(notificationProcessor, templateRenderer, "Usa")
+Rel(notificationProcessor, permissionService, "Valida")
+Rel(notificationFactory, emailVO, "Valida")
 
-Rel(prismaSingleton, database, "Lê/Grava", "Prisma")
+' Domain Services -> Ports (Interfaces)
+Rel(notificationProcessor, notificationRepoPort, "Usa", $tags="port")
+Rel(notificationProcessor, templateRepoPort, "Usa", $tags="port")
+Rel(notificationProcessor, preferenceRepoPort, "Usa", $tags="port")
+Rel(notificationProcessor, notificationSenderPort, "Usa", $tags="port")
+
+' Ports -> Output Adapters (Dependency Injection)
+Rel(notificationRepoPort, notificationRepoImpl, "Implementado por", $tags="port")
+Rel(templateRepoPort, templateRepoImpl, "Implementado por", $tags="port")
+Rel(preferenceRepoPort, preferenceRepoImpl, "Implementado por", $tags="port")
+Rel(notificationSenderPort, strategyFactory, "Implementado por", $tags="port")
+
+' Strategy Pattern + Decorators
+Rel(strategyFactory, emailStrategy, "Cria e injeta")
+Rel(strategyFactory, auditDecorator, "Envolve (wrap)")
+Rel(strategyFactory, retryDecorator, "Envolve (wrap)")
+Rel(strategyFactory, performanceDecorator, "Envolve (wrap)")
+Rel(emailStrategy, smtpAdapter, "Usa")
+
+' Adapters -> Infraestrutura
+Rel(notificationRepoImpl, prismaSingleton, "Usa")
+Rel(templateRepoImpl, prismaSingleton, "Usa")
+Rel(preferenceRepoImpl, prismaSingleton, "Usa")
+Rel(prismaSingleton, database, "Lê/Grava", "SQL")
+Rel(smtpAdapter, smtpServer, "Envia email", "SMTP")
 
 SHOW_LEGEND()
 @enduml

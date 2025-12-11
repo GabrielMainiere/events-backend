@@ -12,6 +12,7 @@ Sistema de gerenciamento de eventos similar ao Sympla, desenvolvido com arquitet
     * [Diagramas C4 (Contexto, Contêineres, etc.)](./docs/diagrams/DIAGRAMS.md)
     * [Guia da API (GraphQL)](./docs/API_GUIDE.md)
     * [Decisões de Arquitetura (SOLID, Patterns)](./docs/ARCHITECTURE.md)
+    * [Mudanças na Arquitetura](CHANGELOG.md)
 * [Como Executar (Instalação)](#-guia-de-instalação-e-execução)
 * [Autores](#-autores)
 
@@ -35,7 +36,10 @@ Este projeto é um sistema completo de gerenciamento de eventos, desenvolvido ut
 -   **API Gateway (Kong)**: Ponto único de entrada que centraliza todas as requisições externas.
 -   **Arquitetura de Microsserviços**: 6 microsserviços independentes (NestJS e Spring Boot).
 -   **GraphQL**: Comunicação otimizada com frontend.
--   **gRPC**: Comunicação de alta performance entre microsserviços.
+-   **Comunicação Híbrida**: 
+    - **gRPC**: Comunicação síncrona de alta performance entre microsserviços
+    - **RabbitMQ**: Mensageria assíncrona para desacoplamento e resiliência
+-   **DDD e Arquitetura Hexagonal**: 3 microsserviços (msnotifications, msevents, mscurrency) seguem Domain-Driven Design e Ports & Adapters.
 -   **Isolamento de Dados**: Cada microsserviço possui seu próprio banco de dados PostgreSQL.
 -   **Containerização**: Todos os serviços containerizados com Docker.
 
@@ -43,30 +47,47 @@ Este projeto é um sistema completo de gerenciamento de eventos, desenvolvido ut
 
 ## Arquitetura do Sistema
 
-O sistema é composto por 5 microsserviços principais, um API Gateway e bancos de dados isolados, todos orquestrados via Docker Compose.
+O sistema é composto por 6 microsserviços principais, um API Gateway, RabbitMQ para mensageria e bancos de dados isolados, todos orquestrados via Docker Compose.
 
 1.  **ms-users** (NestJS): Gerencia usuários, autenticação e roles.
-2.  **ms-events** (NestJS): Gerencia a criação e listagem de eventos.
+2.  **ms-events** (NestJS + Hexagonal): Gerencia a criação e listagem de eventos.
 3.  **ms-events-registration** (NestJS): Gerencia inscrições e check-ins.
 4.  **ms-payments** (Java/Spring Boot): Processa pagamentos (Stripe, Mercado Pago).
-5.  **ms-notifications** (NestJS): Envia notificações (Email) e gerencia templates.
-6.  **ms-currency** (Java/Spring Boot): Controla as moedas aceitas pelo sistema, e atualiza periodicamente os seus valores com dados reais.
+5.  **ms-notifications** (NestJS + Hexagonal): Envia notificações (Email) e gerencia templates.
+6.  **ms-currency** (Java/Spring Boot + Hexagonal): Controla as moedas aceitas pelo sistema, e atualiza periodicamente os seus valores com dados reais.
 7.  **gateway** (Kong): Ponto de entrada único (roteia `http://localhost:8000/<ms-name>`).
+8.  **rabbitmq**: Message broker para comunicação assíncrona entre microsserviços.
 
 ---
 
-## Design Patterns
-O sistema utilizou  5 padrões de projeto distintos, espalhandos pelos microsserviços, entre eles foram:
+## Design Patterns e Arquitetura
 
-1.  **Singleton** : Garante uma única instância de uma classe e fornece um ponto global de acesso a ela
+### Padrões GoF Implementados
+
+O sistema utilizou 5 padrões de projeto distintos, espalhados pelos microsserviços:
+
+1.  **Singleton**: Garante uma única instância de uma classe e fornece um ponto global de acesso a ela
 2.  **Strategy**: Define famílias de algoritmos e permite trocar o comportamento em tempo de execução sem alterar o código cliente
 3.  **Factory**: Centraliza a criação de objetos sem expor a lógica de instanciamento, delegando a subclasses ou métodos
 4.  **Decorator**: Adiciona funcionalidades extras dinamicamente a um objeto sem alterar sua estrutura original
-5.  **Builder**: Permite construir objetos complexos passo a passo, controlando o processo de criação e possibilitando diferentes configurações do mesmo objeto.
+5.  **Builder**: Permite construir objetos complexos passo a passo, controlando o processo de criação e possibilitando diferentes configurações do mesmo objeto
 
-Para saber mais profundado sobre a implementação de cada um acesse: 
-* [Decisões de Arquitetura (SOLID, Patterns)](./docs/ARCHITECTURE.md) - Para justificativas
-* [Diagramas C4 (Contexto, Contêineres, etc.)](./docs/diagrams/DIAGRAMS.md) - Para visualizar com clareza atraves de diagramas
+### Arquitetura Hexagonal e DDD
+
+Na segunda etapa do projeto, três microsserviços foram reestruturados seguindo **Domain-Driven Design** e **Arquitetura Hexagonal (Ports & Adapters)**:
+
+-   **MS Notifications** (NestJS + Hexagonal)
+-   **MS Events** (NestJS + Hexagonal)
+-   **MS Currency** (Spring Boot + Hexagonal)
+
+**Benefícios**:
+- Isolamento do domínio (lógica de negócio independente de frameworks)
+- Maior testabilidade (domínio testável sem dependências externas)
+- Facilita evolução e mudanças tecnológicas
+
+Para saber mais profundamente sobre a implementação:
+* [Decisões de Arquitetura (SOLID, Patterns, Hexagonal)](./docs/ARCHITECTURE.md) - Para justificativas detalhadas
+* [Diagramas C4 (Contexto, Contêineres, etc.)](./docs/diagrams/DIAGRAMS.md) - Para visualizar com clareza através de diagramas
 
 ## Documentação Completa
 
@@ -75,8 +96,9 @@ Toda a documentação detalhada do projeto, incluindo diagramas, guias de API e 
 | Documento | Descrição |
 | :--- | :--- |
 | **[Guia da API (GraphQL)](./docs/API_GUIDE.md)** | Contém todas as *queries* e *mutations* de todos os microsserviços, com exemplos prontos para teste. |
-| **[Decisões de Arquitetura](./docs/ARCHITECTURE.md)** | Detalha o *porquê* das escolhas técnicas, incluindo a aplicação dos **Padrões de Projeto** e **Princípios SOLID**. |
-| **[Diagramas C4](./docs/diagrams/DIAGRAMS.md)** | Contém todos os diagramas C4 (Contexto, Contêineres, Componentes e Código) que ilustram a arquitetura. |
+| **[Decisões de Arquitetura](./docs/ARCHITECTURE.md)** | Detalha o *porquê* das escolhas técnicas, incluindo RabbitMQ, DDD, Hexagonal e **Padrões de Projeto**. |
+| **[Diagramas C4](./docs/diagrams/DIAGRAMS.md)** | Contém todos os diagramas C4 (Contexto, Contêineres, Componentes e Código) atualizados para segunda etapa. |
+| **[Changelog](./CHANGELOG.md)** | 🆕 Histórico de mudanças e evolução do sistema (primeira e segunda etapa). |
 
 ---
 
@@ -158,11 +180,17 @@ docker-compose up -d
 
 O API Gateway (Kong) é o ponto de entrada principal e está disponível em [http://localhost:8000](http://localhost:8000).
 
+**Endpoints GraphQL**:
 - **MS Users (GraphQL):** http://localhost:8000/msusers/graphql
 - **MS Events (GraphQL):** http://localhost:8000/msevents/graphql
 - **MS Registration (GraphQL):** http://localhost:8000/mseventsregistration/graphql
 - **MS Payments (GraphQL):** http://localhost:8000/mspayments/graphql
 - **MS Notifications (GraphQL):** http://localhost:8000/msnotifications/graphql
+
+**RabbitMQ Management Console**:
+- **URL:** http://localhost:15672
+- **Usuário:** Conforme configurado em `.env` (padrão: guest/guest)
+- **Função:** Monitorar filas, exchanges e mensagens
 
 > **Nota:** Para testar as mutations e queries, consulte o [Guia da API (GraphQL)](./docs/API_GUIDE.md).
 

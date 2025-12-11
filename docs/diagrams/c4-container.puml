@@ -3,7 +3,7 @@
 AddRelTag("async", $lineStyle=DashedLine())
 AddRelTag("sync", $lineStyle=SolidLine())
 
-title Diagrama de Containers - Sistema de Gerenciamento de Eventos (com MS Currency)
+title Diagrama de Containers - Sistema de Gerenciamento de Eventos (RabbitMQ + Hexagonal)
 
 Person(user, "Usuário", "Participante ou organizador")
 System_Ext(mercadoPago, "Mercado Pago API", "Gateway de pagamento")
@@ -15,12 +15,14 @@ System_Boundary(eventsSystem, "Sistema de Gerenciamento de Eventos (Docker Compo
 
     Container(gateway, "Kong API Gateway", "Kong", "Ponto único de entrada, autenticação JWT, roteamento")
 
-    Container(msusers, "MS Users", "NestJS/TypeScript", "Gerencia usuários e autenticação (GraphQL + gRPC Server)")
-    Container(msevents, "MS Events", "NestJS/TypeScript", "Gerencia eventos (GraphQL + gRPC Client)")
-    Container(msregistration, "MS Events Registration", "NestJS/TypeScript", "Gerencia inscrições (GraphQL + gRPC Server + Client)")
+    Container(msusers, "MS Users", "NestJS/TypeScript", "Gerencia usuários e autenticação (GraphQL + gRPC + RabbitMQ Producer)")
+    Container(msevents, "MS Events", "NestJS/TypeScript (Hexagonal)", "Gerencia eventos (GraphQL + RabbitMQ Publisher)")
+    Container(msregistration, "MS Events Registration", "NestJS/TypeScript", "Gerencia inscrições (GraphQL + gRPC + RabbitMQ Consumer)")
     Container(mspayments, "MS Payments", "Java/Spring Boot", "Processa pagamentos (GraphQL + gRPC Server + Client)")
-    Container(msnotifications, "MS Notifications", "NestJS/TypeScript", "Gerencia notificações (GraphQL + gRPC Server + Worker)")
-    Container(mscurrency, "MS Currency", "Java/Spring Boot", "Gerencia e atualiza cotações de moedas")
+    Container(msnotifications, "MS Notifications", "NestJS/TypeScript (Hexagonal)", "Gerencia notificações (GraphQL + RabbitMQ Consumer)")
+    Container(mscurrency, "MS Currency", "Java/Spring Boot (Hexagonal)", "Gerencia e atualiza cotações de moedas")
+    
+    ContainerQueue(rabbitmq, "RabbitMQ", "Message Broker", "Mensageria assíncrona, filas e exchanges")
     
     ContainerDb(dbUsers, "Users DB", "PostgreSQL", "Dados de usuários e roles")
     ContainerDb(dbEvents, "Events DB", "PostgreSQL", "Dados de eventos")
@@ -50,12 +52,14 @@ Rel_R(msregistration, msusers, "Valida Usuário", "gRPC", $tags="sync")
 Rel_R(msevents, msregistration, "Conta Inscrições", "gRPC", $tags="sync")
 Rel_R(mspayments, msregistration, "Busca Inscrição", "gRPC", $tags="sync")
 
-Rel(msusers, msnotifications, "Notifica Conta", "gRPC", $tags="async")
-Rel(msregistration, msnotifications, "Notifica Inscrição", "gRPC", $tags="async")
-Rel(mscurrency, mspayments, "Envia Cotação", "gRPC", $tags="async")
+Rel_D(msusers, rabbitmq, "Publica evento", "RabbitMQ", $tags="async")
+Rel_D(msregistration, rabbitmq, "Publica evento", "RabbitMQ", $tags="async")
+Rel_D(msevents, rabbitmq, "Publica evento", "RabbitMQ", $tags="async")
+Rel_D(mscurrency, rabbitmq, "Publica cotação", "RabbitMQ", $tags="async")
 
-Rel_D(msevents, msregistration, "Notifica Evento", "gRPC", $tags="async")
-Rel_U(mspayments, msregistration, "Notifica Pagamento", "gRPC", $tags="async")
+Rel_D(rabbitmq, msnotifications, "Consome eventos", "RabbitMQ", $tags="async")
+Rel_D(rabbitmq, mspayments, "Consome eventos", "RabbitMQ", $tags="async")
+Rel_D(rabbitmq, msregistration, "Consome eventos", "RabbitMQ", $tags="async")
 
 Rel_R(msnotifications, smtpServer, "Envia Email", "SMTP")
 Rel_R(mspayments, mercadoPago, "Processa Pagamento", "REST API")

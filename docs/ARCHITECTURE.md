@@ -6,12 +6,67 @@ Este documento detalha as principais decisões arquiteturais tomadas durante o d
 
 ## Índice
 
-1. [Arquitetura de Microsserviços](#arquitetura-de-microsserviços)
-2. [Escolha de Tecnologias](#escolha-de-tecnologias)
-3. [Comunicação Entre Serviços](#comunicação-entre-serviços)
-4. [Padrões de Projeto](#padroes-de-projeto)
-5. [Gerenciamento de Dados](#gerenciamento-de-dados)
-6. [Segurança](#segurança)
+1. [Evolução Arquitetural](#evolução-arquitetural)
+2. [Arquitetura de Microsserviços](#arquitetura-de-microsserviços)
+3. [Escolha de Tecnologias](#escolha-de-tecnologias)
+4. [Comunicação Entre Serviços](#comunicação-entre-serviços)
+5. [Padrões de Projeto](#padroes-de-projeto)
+6. [Gerenciamento de Dados](#gerenciamento-de-dados)
+7. [Segurança](#segurança)
+8. [Arquitetura Hexagonal e DDD](#arquitetura-hexagonal-e-ddd)
+
+---
+
+## Evolução Arquitetural
+
+### Primeira Etapa - Arquitetura Base
+
+Na primeira etapa do projeto, foi implementada a arquitetura base com:
+- **Comunicação Externa**: GraphQL para o frontend
+- **Comunicação Interna**: gRPC para comunicação síncrona entre microsserviços
+- **Arquitetura**: Microsserviços com estrutura em camadas (controller, service, repository)
+- **Padrões**: Aplicação de padrões GoF (Singleton, Strategy, Factory, Builder, Decorator)
+- **Princípios**: Aderência aos princípios SOLID
+
+### Segunda Etapa - Evolução e Modernização
+
+Na segunda etapa, o sistema evoluiu significativamente:
+
+#### Introdução de Mensageria (RabbitMQ)
+
+**Decisão**: Migração de comunicação síncrona (gRPC) para assíncrona (RabbitMQ) em cenários específicos
+
+**Justificativa**:
+- **Desacoplamento**: Reduz dependências diretas entre serviços
+- **Resiliência**: Sistema continua operando mesmo com serviços temporariamente indisponíveis
+- **Escalabilidade**: Processamento assíncrono permite melhor distribuição de carga
+- **Retry Automático**: Dead Letter Queues (DLQ) para tratamento de falhas
+
+**Microsserviços Afetados**:
+- **MS Users → MS Notifications**: Migrado completamente para RabbitMQ (envio de notificações)
+- **MS Events Registration**: Manteve gRPC (consultas síncronas) + RabbitMQ (eventos assíncronos)
+- **MS Events**: Publica eventos de mudanças via RabbitMQ
+
+#### Adoção de DDD e Arquitetura Hexagonal
+
+**Decisão**: Reestruturar microsserviços críticos seguindo Domain-Driven Design e Arquitetura Hexagonal
+
+**Justificativa**:
+- **Isolamento de Domínio**: Lógica de negócio independente de frameworks
+- **Testabilidade**: Facilita testes unitários do domínio
+- **Manutenibilidade**: Separação clara de responsabilidades
+- **Evolução**: Facilita mudanças tecnológicas sem impactar o domínio
+
+**Microsserviços Reestruturados**:
+1. **MS Notifications** (NestJS + Hexagonal)
+2. **MS Events** (NestJS + Hexagonal)
+3. **MS Currency** (Spring Boot + Hexagonal)
+
+**Trade-offs da Evolução**:
+- Maior resiliência e desacoplamento
+- Melhor organização do código (separação domínio/infra)
+- Maior complexidade de monitoramento (mensageria)
+- Curva de aprendizado (DDD/Hexagonal)
 
 ---
 
@@ -92,20 +147,55 @@ Este documento detalha as principais decisões arquiteturais tomadas durante o d
 - Documentação automática (GraphQL Playground)
 - Mutations e queries em único endpoint
 
-### gRPC para Comunicação Interna
+### Comunicação Interna - Abordagem Híbrida
 
-**Escolha**: gRPC para comunicação entre microsserviços
+O sistema utiliza dois padrões de comunicação interna, escolhidos conforme a natureza da operação:
+
+#### gRPC - Comunicação Síncrona
+
+**Quando usar**: Operações que requerem resposta imediata
 
 **Justificativa**:
-- Performance superior a REST (Protocol Buffers binário)
+- Performance superior (Protocol Buffers binário)
 - Strongly-typed contracts (arquivos .proto)
-- Suporte a streaming bidirecional
-- Ideal para comunicação interna
+- Timeout controlado
+- Ideal para consultas e validações
 
-**Exemplo**:
-- MS Registration → MS Payments (solicitar pagamento)
-- MS Events → MS Registration (consultar total de inscritos)
-- Qualquer MS → MS Notifications (enviar notificação)
+**Casos de Uso Atuais**:
+- MS Registration → MS Users (validar usuário via gRPC)
+- MS Events → MS Registration (consultar total de inscritos via gRPC)
+- MS Payments → MS Users (consultar dados de usuário via gRPC)
+
+#### RabbitMQ - Comunicação Assíncrona
+
+**Quando usar**: Operações que não requerem resposta imediata, eventos de domínio
+
+**Justificativa**:
+- Desacoplamento temporal entre serviços
+- Garantia de entrega (mensagens persistentes)
+- Retry automático com Dead Letter Queue (DLQ)
+- Escalabilidade horizontal (múltiplos consumers)
+- Resiliência (mensagens não são perdidas se o consumer estiver offline)
+
+**Arquitetura RabbitMQ**:
+```
+Exchange: notifications_exchange (topic)
+  ├── Queue: notifications.dispatch
+  │   └── Routing Key: notification.dispatch
+  └── Dead Letter Queue: notifications.dlq
+      └── Retry automático após falhas
+```
+
+**Casos de Uso Atuais**:
+- MS Users → MS Notifications (envio de email via RabbitMQ)
+- MS Events → MS Events Registration (evento de mudança de capacidade via RabbitMQ)
+- MS Events Registration → MS Payments (evento de registro criado via RabbitMQ)
+
+**Exemplo de Fluxo Híbrido (MS Registration)**:
+1. **Criar Registro** → Valida usuário via gRPC (síncrono)
+2. **Criar Registro** → Publica evento de registro via RabbitMQ (assíncrono)
+3. **MS Payments** consome evento e processa pagamento
+4. **MS Notifications** consome evento e envia confirmação
 
 ---
 
@@ -203,3 +293,42 @@ EmailStrategy tem apenas uma responsabilidade: enviar o e-mail. Para adicionar f
 - Ambiente consistente dev/prod
 - Fácil deploy
 - Isolamento de dependências
+
+---
+
+## Arquitetura Hexagonal e DDD
+
+### Visão Geral
+
+Três microsserviços foram reestruturados seguindo **Domain-Driven Design (DDD)** e **Arquitetura Hexagonal (Ports & Adapters)** para melhorar a separação de responsabilidades e facilitar a evolução do sistema.
+
+### Microsserviços com Arquitetura Hexagonal
+
+#### 1. MS Notifications (NestJS)
+* [Estrutura Hexagonal](../msnotifications/HEXAGONAL_STRUCTURE.md)
+
+#### 2. MS Events (NestJS)
+* [Estrutura Hexagonal](../msevents/HEXAGONAL_STRUCTURE.md)
+
+#### 3. MS Currency (Spring Boot)
+* [Estrutura Hexagonal](../mscurrency/HEXAGONAL_STRUCTURE.md)
+
+### Benefícios da Arquitetura Hexagonal
+
+1. **Testabilidade**
+   - Domínio testável sem dependências externas
+   - Mocks fáceis de criar (interfaces ports)
+
+2. **Independência de Frameworks**
+   - Lógica de negócio não depende de NestJS, Spring, Prisma
+   - Facilita migração tecnológica
+
+3. **Separação de Responsabilidades**
+   - Domínio: O quê (regras de negócio)
+   - Aplicação: Como (orquestração)
+   - Infraestrutura: Com o quê (tecnologias)
+
+4. **Evolução Controlada**
+   - Mudanças em adapters não afetam domínio
+   - Novos adapters podem ser adicionados facilmente
+
