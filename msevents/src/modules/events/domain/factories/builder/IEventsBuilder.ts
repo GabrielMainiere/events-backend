@@ -1,5 +1,5 @@
-import { EventStatus } from "generated/prisma";
-import { EventType } from "generated/prisma";
+import { EventStatus } from "@prisma/client";
+import { EventType } from "@prisma/client";
 
 export interface AddressProps {
   street: string;

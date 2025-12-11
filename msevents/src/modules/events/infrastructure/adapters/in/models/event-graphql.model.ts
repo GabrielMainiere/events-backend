@@ -1,7 +1,7 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { IsUUID } from 'class-validator';
-import { EventStatus } from 'generated/prisma';
-import { EventType } from 'generated/prisma';
+import { EventStatus } from '@prisma/client';
+import { EventType } from '@prisma/client';
 import { AddressModel } from './address-graphql-model';
 
 @ObjectType()

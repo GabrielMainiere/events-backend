@@ -1,7 +1,7 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
 import { IsString, IsDateString, IsOptional, IsInt, IsBoolean, ValidateNested } from 'class-validator';
-import { EventStatus } from 'generated/prisma';
-import { EventType } from 'generated/prisma';
+import { EventStatus } from '@prisma/client';
+import { EventType } from '@prisma/client';
 import { AddressInput } from './address.input';
 import { Type } from 'class-transformer';
 

@@ -1,6 +1,6 @@
 import { IEventBuilder, EventProps, AddressProps } from './IEventsBuilder';
-import { EventType } from 'generated/prisma';
-import { EventStatus } from 'generated/prisma';
+import { EventType } from '@prisma/client';
+import { EventStatus } from '@prisma/client';
 
 export class EventBuilder implements IEventBuilder {
   private event: Partial<EventProps> = {};
