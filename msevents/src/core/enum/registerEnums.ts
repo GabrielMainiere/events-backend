@@ -1,5 +1,5 @@
 import { registerEnumType } from '@nestjs/graphql';
-import { EventStatus, EventType } from 'generated/prisma';
+import { EventStatus, EventType } from '@prisma/client';
 
 registerEnumType(EventStatus, {
   name: 'EventStatus',

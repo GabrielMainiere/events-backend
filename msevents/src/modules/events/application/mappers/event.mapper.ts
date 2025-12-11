@@ -1,4 +1,4 @@
-import { tb_event, tb_address } from "generated/prisma";
+import { tb_event, tb_address } from "@prisma/client";
 import { Event } from "../../domain/entities/event.entity";
 import { Address } from "../../domain/value-objects/address.entity";
 import { 
