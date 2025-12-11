@@ -6,11 +6,12 @@ title Diagrama de Contexto - Sistema de Gerenciamento de Eventos
 Person(attendee, "Participante", "Usuário que se inscreve em eventos")
 Person(admin, "Administrador", "Gerencia o sistema, usuários, roles e eventos")
 
-System(eventsSystem, "Sistema de Gerenciamento de Eventos", "Plataforma para criação, inscrição e pagamento de eventos.")
+System(eventsSystem, "Sistema de Gerenciamento de Eventos", "Plataforma para criação, inscrição e pagamento de eventos com mensageria assíncrona.")
 
 System_Ext(mercadoPago, "Mercado Pago", "Gateway de pagamento")
 System_Ext(stripe, "Stripe", "Gateway de pagamento")
 System_Ext(smtpServer, "Servidor SMTP", "Serviço externo para envio de emails transacionais")
+System_Ext(currencyApi, "Currency API", "API externa para cotações de moedas")
 
 Rel_U(attendee, eventsSystem, "Visualiza, se inscreve e paga por eventos", "HTTPS/GraphQL")
 Rel_U(admin, eventsSystem, "Administra o sistema e cria/gerencia eventos", "HTTPS/GraphQL")
@@ -18,6 +19,7 @@ Rel_U(admin, eventsSystem, "Administra o sistema e cria/gerencia eventos", "HTTP
 Rel_D(eventsSystem, smtpServer, "Solicita envio de email", "SMTP")
 Rel_D(eventsSystem, mercadoPago, "Processa pagamentos", "REST API")
 Rel_D(eventsSystem, stripe, "Processa pagamentos", "REST API")
+Rel_D(eventsSystem, currencyApi, "Busca cotações", "REST API")
 
 Rel_U(mercadoPago, eventsSystem, "Envia Webhooks de status de pagamento", "HTTPS")
 Rel_U(stripe, eventsSystem, "Envia Webhooks de status de pagamento", "HTTPS")

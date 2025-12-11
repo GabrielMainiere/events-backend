@@ -1,47 +1,116 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/refs/heads/master/C4_Component.puml
+AddRelTag("port", $lineStyle=DashedLine())
 
-title Diagrama de Componentes - MS Events
+title Diagrama de Componentes - MS Events (Arquitetura Hexagonal)
 
 Component_Ext(ms_registrations, "MS Registrations", "gRPC Server", "Microsserviço de Inscrições")
 ComponentDb(database, "Events DB", "PostgreSQL", "Armazena dados de eventos e endereços")
+ContainerQueue(rabbitmq, "RabbitMQ", "Message Broker", "Publica eventos de mudanças (capacidade, status)")
+Person_Ext(admin, "Administrador/Organizador", "Usuário que gerencia eventos")
 
-Container_Boundary(ms_events, "MS Events") {
+Container_Boundary(ms_events, "MS Events - Hexagonal Architecture") {
     
-    Component(graphqlResolver, "Events Resolver", "NestJS Resolver (GraphQL)", "Recebe Queries e Mutations para CRUD de eventos")
+    ' ========== CAMADA EXTERNA - ADAPTERS INPUT ----------
+    Boundary(adaptersInput, "Adapters Input (Drivers)") {
+        Component(graphqlAdapter, "GraphQL Adapter", "NestJS Resolver", "API GraphQL para CRUD de eventos")
+    }
     
-    Component(eventsService, "Events Service", "Service", "Orquestra a lógica de negócio (criação, atualização, etc.)")
-    Component(eventBuilder, "Event Builder/Director", "Builder Pattern", "Constrói objetos de evento complexos. (Usado pelo Events Service)")
+    ' ---------- CAMADA MÉDIA - APPLICATION ----------
+    Boundary(application, "Application Layer") {
+        Component(createEventUseCase, "Create Event Use Case", "Use Case", "Cria novo evento")
+        Component(updateEventUseCase, "Update Event Use Case", "Use Case", "Atualiza evento existente")
+        Component(deleteEventUseCase, "Delete Event Use Case", "Use Case", "Remove evento")
+        Component(listEventsUseCase, "List Events Use Case", "Use Case", "Lista eventos com filtros")
+        Component(getEventUseCase, "Get Event Use Case", "Use Case", "Consulta evento específico")
+        
+        Component(eventMapper, "Event Mapper", "Mapper", "Domain ↔ DTO")
+    }
     
-    Component(eventRepository, "Events Repository", "Repository", "Persiste e consulta eventos no banco de dados. (Implementa IEventRepository)")
-    Component(prismaSingleton, "Prisma Singleton", "Singleton Pattern", "Gerencia a instância única do PrismaClient")
-
-    Component(eventsNotifier, "Events Notifier", "Service", "Dispara notificações de eventos (criado, atualizado) via gRPC. (Implementa IEventNotifier)")
-    Component(eventRegCounter, "Event Reg. Counter", "Service", "Busca contagem de inscritos via gRPC. (Implementa IEventRegistrationCount)")
-    Component(grpcClient, "EventReg. gRPC Client", "NestJS Client", "Cliente gRPC que se comunica com o MS Registrations")
-
+    ' ---------- CAMADA INTERNA - DOMAIN ----------
+    Boundary(domain, "Domain Layer (Core)") {
+        Component(eventEntity, "Event Entity", "Entity", "Entidade principal de evento")
+        
+        Component(capacityVO, "Capacity Value Object", "Value Object", "Valida capacidade (> 0)")
+        Component(eventDateVO, "EventDate Value Object", "Value Object", "Valida datas (início < fim)")
+        Component(priceVO, "Price Value Object", "Value Object", "Valida preço (>= 0)")
+        
+        Component(eventBuilder, "Event Builder", "Builder Pattern", "Constrói eventos complexos passo a passo")
+        Component(eventDirector, "Event Director", "Director Pattern", "Coordena construção de eventos")
+        
+        Component(eventDomainService, "Event Domain Service", "Domain Service", "Lógica de validação complexa (disponibilidade)")
+        
+        Component(domainEvents, "Domain Events", "Events", "EventCreated, EventCapacityChanged, EventCancelled")
+        
+        ' Ports OUT (Interfaces)
+        Component(eventRepoPort, "Event Repository Port", "Interface (Port OUT)", "Contrato de persistência")
+        Component(eventPublisherPort, "Event Publisher Port", "Interface (Port OUT)", "Contrato de publicação de eventos")
+        Component(registrationCountPort, "Registration Count Port", "Interface (Port OUT)", "Contrato de contagem de inscritos")
+    }
+    
+    ' ---------- CAMADA EXTERNA - ADAPTERS OUTPUT ----------
+    Boundary(adaptersOutput, "Adapters Output (Driven)") {
+        Component(eventRepoImpl, "Event Repository", "Prisma Adapter", "Implementa EventRepositoryPort")
+        Component(rabbitPublisher, "RabbitMQ Publisher", "NestJS AMQP", "Implementa EventPublisherPort")
+        Component(grpcClient, "Registration gRPC Client", "gRPC Client", "Implementa RegistrationCountPort")
+        
+        Component(prismaSingleton, "Prisma Singleton", "Singleton Pattern", "Instância única do Prisma")
+    }
 }
 
+' ---------- RELACIONAMENTOS ----------
 
-Rel(graphqlResolver, eventsService, "Usa", "GraphQL")
+' Admin -> Input Adapter
+Rel(admin, graphqlAdapter, "Gerencia eventos", "GraphQL/HTTPS")
 
+' Input Adapters -> Use Cases
+Rel(graphqlAdapter, createEventUseCase, "Chama")
+Rel(graphqlAdapter, updateEventUseCase, "Chama")
+Rel(graphqlAdapter, deleteEventUseCase, "Chama")
+Rel(graphqlAdapter, listEventsUseCase, "Chama")
+Rel(graphqlAdapter, getEventUseCase, "Chama")
 
-Rel(eventsService, eventBuilder, "Usa", "Builder Pattern")
-Rel(eventsService, eventRepository, "Grava/Lê", "Prisma")
+' Use Cases -> Mappers
+Rel(createEventUseCase, eventMapper, "Usa")
+Rel(updateEventUseCase, eventMapper, "Usa")
+Rel(getEventUseCase, eventMapper, "Usa")
 
+' Use Cases -> Domain
+Rel(createEventUseCase, eventDirector, "Usa")
+Rel(createEventUseCase, domainEvents, "Publica EventCreated")
+Rel(updateEventUseCase, eventEntity, "Atualiza")
+Rel(updateEventUseCase, eventDomainService, "Valida")
+Rel(updateEventUseCase, domainEvents, "Publica EventCapacityChanged")
 
-Rel(eventsService, eventsNotifier, "Chama", "Async")
-Rel(eventsService, eventRegCounter, "Chama", "Async")
-Rel(eventsNotifier, grpcClient, "Usa", "gRPC")
-Rel(eventRegCounter, grpcClient, "Usa", "gRPC")
+' Domain - Builder Pattern
+Rel(eventDirector, eventBuilder, "Usa")
+Rel(eventBuilder, eventEntity, "Constrói")
 
+' Domain Entity -> Value Objects
+Rel(eventEntity, capacityVO, "Usa (validação)")
+Rel(eventEntity, eventDateVO, "Usa (validação)")
+Rel(eventEntity, priceVO, "Usa (validação)")
 
-Rel(grpcClient, ms_registrations, "Notifica / Consulta", "gRPC")
+' Use Cases -> Ports (Interfaces)
+Rel(createEventUseCase, eventRepoPort, "Usa", $tags="port")
+Rel(createEventUseCase, eventPublisherPort, "Usa", $tags="port")
+Rel(updateEventUseCase, eventRepoPort, "Usa", $tags="port")
+Rel(updateEventUseCase, eventPublisherPort, "Usa", $tags="port")
+Rel(deleteEventUseCase, eventRepoPort, "Usa", $tags="port")
+Rel(listEventsUseCase, eventRepoPort, "Usa", $tags="port")
+Rel(listEventsUseCase, registrationCountPort, "Usa", $tags="port")
+Rel(getEventUseCase, eventRepoPort, "Usa", $tags="port")
 
+' Ports -> Output Adapters (Dependency Injection)
+Rel(eventRepoPort, eventRepoImpl, "Implementado por", $tags="port")
+Rel(eventPublisherPort, rabbitPublisher, "Implementado por", $tags="port")
+Rel(registrationCountPort, grpcClient, "Implementado por", $tags="port")
 
-Rel(eventRepository, prismaSingleton, "Usa", "getInstance()")
-Rel(prismaSingleton, database, "Lê/Grava", "Prisma")
-
+' Output Adapters -> Infraestrutura Externa
+Rel(eventRepoImpl, prismaSingleton, "Usa")
+Rel(prismaSingleton, database, "Lê/Grava", "SQL")
+Rel(rabbitPublisher, rabbitmq, "Publica eventos de domínio", "AMQP")
+Rel(grpcClient, ms_registrations, "Consulta contagem", "gRPC")
 
 SHOW_LEGEND()
 @enduml

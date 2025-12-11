@@ -1,41 +1,108 @@
 @startuml
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/refs/heads/master/C4_Component.puml
+AddRelTag("port", $lineStyle=DashedLine())
 
-title Diagrama de Componentes - MS Currency
+title Diagrama de Componentes - MS Currency (Arquitetura Hexagonal)
 
 ' --- Sistemas Externos ---
-Component_Ext(ms_payments, "MS Payments", "gRPC Server", "Serviço de Pagamentos")
-Component_Ext(ext_currency_api, "External Currency API", "REST API", "API Externa de Cotação de Moedas")
-ComponentDb(database, "Currency DB", "PostgreSQL", "Armazena preços de moedas (BRL)")
+Component_Ext(ext_currency_api, "External Currency API", "REST API", "API Externa de Cotação de Moedas (AwesomeAPI)")
+ComponentDb(database, "Currency DB", "PostgreSQL", "Armazena preços de moedas (USD, EUR, BRL)")
+ContainerQueue(rabbitmq, "RabbitMQ", "Message Broker", "Publica eventos de atualização de cotação")
 Person_Ext(admin, "Administrador", "Usuário com permissão de gerenciar moedas")
 
-Container_Boundary(mscurrency, "MS Currency") {
+Container_Boundary(mscurrency, "MS Currency - Hexagonal Architecture") {
     
-    Component(graphqlController, "GraphQL Controller", "Spring GraphQL", "Recebe requisições de Admin para CRUD de moedas")
+    ' ------------ CAMADA EXTERNA - ADAPTERS INPUT ------------
+    Boundary(adaptersInput, "Adapters Input (Drivers)") {
+        Component(graphqlAdapter, "GraphQL Adapter", "Spring GraphQL Controller", "API GraphQL para CRUD de moedas")
+        Component(schedulerAdapter, "Scheduler Adapter", "Spring @Scheduled", "Dispara sincronização periódica (a cada 3h + startup)")
+    }
     
-    Component(scheduler, "Currency Rate Scheduler", "Spring @Scheduled", "Dispara atualizações a cada 3 horas e na inicialização")
+    ' ------------ CAMADA MÉDIA - APPLICATION ------------
+    Boundary(application, "Application Layer") {
+        Component(createUseCase, "Create Currency Price Use Case", "Use Case", "Cria nova moeda")
+        Component(updateUseCase, "Update Currency Price Use Case", "Use Case", "Atualiza preço de moeda")
+        Component(deleteUseCase, "Delete Currency Price Use Case", "Use Case", "Remove moeda")
+        Component(getUseCase, "Get Currency Price Use Case", "Use Case", "Consulta moeda específica")
+        Component(listUseCase, "List All Currencies Use Case", "Use Case", "Lista todas as moedas")
+        Component(syncUseCase, "Sync Currency Rates Use Case", "Use Case", "Sincroniza cotações com API externa")
+        
+        Component(graphqlMapper, "GraphQL Mapper", "Mapper", "Domain ↔ GraphQL DTO")
+    }
     
-    Component(priceService, "CurrencyPrice Service", "Service", "Lógica de negócio para CRUD de moedas")
-    Component(updateService, "CurrencyRateUpdate Service", "Service", "Busca cotações na API externa e atualiza o DB")
+    ' ------------ CAMADA INTERNA - DOMAIN ------------
+    Boundary(domain, "Domain Layer (Core)") {
+        Component(currencyEntity, "CurrencyPrice Entity", "Entity", "Entidade principal de preço de moeda")
+        
+        Component(currencyCodeVO, "CurrencyCode Value Object", "Value Object", "Valida códigos ISO (USD, EUR, BRL)")
+        Component(priceVO, "Price Value Object", "Value Object", "Valida valores de preço (> 0)")
+        
+        Component(domainExceptions, "Domain Exceptions", "Exceptions", "InvalidCurrencyCodeException, InvalidPriceException")
+        
+        ' Ports OUT (Interfaces)
+        Component(repositoryPort, "CurrencyPrice Repository Port", "Interface (Port OUT)", "Contrato de persistência")
+        Component(exchangeRatePort, "Exchange Rate Provider Port", "Interface (Port OUT)", "Contrato de API externa")
+        Component(notificationPort, "Currency Notification Port", "Interface (Port OUT)", "Contrato de notificação")
+    }
     
-    Component(grpcClient, "Payment gRPC Client", "gRPC Client", "Envia atualizações de preço para o MS Payments")
-    
-    Component(repository, "CurrencyPrice Repository", "JPA Repository", "Persiste e consulta preços de moedas")
+    ' ------------ CAMADA EXTERNA - ADAPTERS OUTPUT ------------
+    Boundary(adaptersOutput, "Adapters Output (Driven)") {
+        Component(jpaRepository, "JPA Repository Adapter", "Spring Data JPA", "Implementa CurrencyPriceRepositoryPort")
+        Component(exchangeRateAdapter, "Exchange Rate Adapter", "RestTemplate", "Implementa ExchangeRateProviderPort")
+        Component(rabbitPublisher, "RabbitMQ Publisher", "Spring AMQP", "Implementa CurrencyNotificationPort")
+    }
 }
 
-Rel(admin, graphqlController, "Gerencia moedas", "GraphQL/HTTPS")
-Rel(graphqlController, priceService, "Usa")
-Rel(priceService, repository, "Lê/Grava")
+' ------------ RELACIONAMENTOS ------------
 
-Rel(scheduler, updateService, "Dispara atualização via API")
-Rel(scheduler, grpcClient, "Envia cotações salvas (na inicialização)")
+' Admin -> Input Adapter
+Rel(admin, graphqlAdapter, "Gerencia moedas", "GraphQL/HTTPS")
 
-Rel(updateService, ext_currency_api, "Busca cotações", "REST")
-Rel(updateService, repository, "Salva cotações")
-Rel(updateService, grpcClient, "Envia cotação atualizada", "gRPC") ' Assumindo que o updateService também notifica
+' Input Adapters -> Use Cases
+Rel(graphqlAdapter, createUseCase, "Chama")
+Rel(graphqlAdapter, updateUseCase, "Chama")
+Rel(graphqlAdapter, deleteUseCase, "Chama")
+Rel(graphqlAdapter, getUseCase, "Chama")
+Rel(graphqlAdapter, listUseCase, "Chama")
+Rel(schedulerAdapter, syncUseCase, "Dispara (a cada 3h)")
 
-Rel(grpcClient, ms_payments, "UpdateCurrencyPrice()", "gRPC")
-Rel(repository, database, "Lê/Grava", "JPA")
+' Use Cases -> Mappers
+Rel(createUseCase, graphqlMapper, "Usa")
+Rel(updateUseCase, graphqlMapper, "Usa")
+Rel(getUseCase, graphqlMapper, "Usa")
+
+' Use Cases -> Domain Entity
+Rel(createUseCase, currencyEntity, "Cria")
+Rel(updateUseCase, currencyEntity, "Atualiza")
+Rel(syncUseCase, currencyEntity, "Atualiza/Cria")
+
+' Domain Entity -> Value Objects
+Rel(currencyEntity, currencyCodeVO, "Usa (validação)")
+Rel(currencyEntity, priceVO, "Usa (validação)")
+
+' Domain Entity -> Exceptions
+Rel(currencyCodeVO, domainExceptions, "Lança")
+Rel(priceVO, domainExceptions, "Lança")
+
+' Use Cases -> Ports (Interfaces)
+Rel(createUseCase, repositoryPort, "Usa", $tags="port")
+Rel(updateUseCase, repositoryPort, "Usa", $tags="port")
+Rel(deleteUseCase, repositoryPort, "Usa", $tags="port")
+Rel(getUseCase, repositoryPort, "Usa", $tags="port")
+Rel(listUseCase, repositoryPort, "Usa", $tags="port")
+Rel(syncUseCase, repositoryPort, "Usa", $tags="port")
+Rel(syncUseCase, exchangeRatePort, "Usa", $tags="port")
+Rel(syncUseCase, notificationPort, "Usa", $tags="port")
+
+' Ports -> Output Adapters (Dependency Injection)
+Rel(repositoryPort, jpaRepository, "Implementado por", $tags="port")
+Rel(exchangeRatePort, exchangeRateAdapter, "Implementado por", $tags="port")
+Rel(notificationPort, rabbitPublisher, "Implementado por", $tags="port")
+
+' Output Adapters -> Infraestrutura Externa
+Rel(jpaRepository, database, "Lê/Grava", "SQL")
+Rel(exchangeRateAdapter, ext_currency_api, "Busca cotações", "REST")
+Rel(rabbitPublisher, rabbitmq, "Publica evento", "AMQP")
 
 SHOW_LEGEND()
 @enduml
