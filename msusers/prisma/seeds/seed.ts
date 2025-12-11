@@ -47,7 +47,34 @@ async function main() {
       },
     },
   })
+
+  console.log('Criando 100 usuários...')
+
+  const hashedPassword = await hash('Events-backend1', 10)
+
+  for (let i = 1; i <= 100; i++) {
+    await prisma.user.create({
+      data: {
+        email: `user${i}@events.com`,
+        name: `User ${i}`,
+        password: hashedPassword,
+        activationCode: `${10000 + i}`,
+        cpf: `${10000000000 + i}`,
+        birthDatetime: new Date('1995-01-01'),
+        phoneNumber: `119999900${i.toString().padStart(2, '0')}`,
+        isActive: true,
+        roles: {
+          connect: {
+            id: '85d31814-20e7-4fec-87b6-f40620135aa8',
+          },
+        },
+      },
+    })
+  }
+
+  console.log('100 usuários criados!')
 }
+
 
 main()
   .catch(e => {
