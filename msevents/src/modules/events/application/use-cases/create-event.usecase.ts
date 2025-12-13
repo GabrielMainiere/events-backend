@@ -1,6 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { CreateEventInput } from '../dto/create-event.input';
-import { mapEvent } from '../mappers/event.mapper';
 import { EventDirector } from '../../domain/factories/builder/eventDirector';
 import { EventBuilder } from '../../domain/factories/builder/eventsBuilder';
 import type { EventRepositoryPort } from '../../domain/ports/out/eventRepository.port';
@@ -48,6 +47,6 @@ export class CreateEventUseCase implements CreateEventPort {
 
     const event = await this.repository.create(eventData);
     await this.notifier.notifyCreatedOrUpdated(event);
-    return mapEvent(event);
+    return event;
   }
 }

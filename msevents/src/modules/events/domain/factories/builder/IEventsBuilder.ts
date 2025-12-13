@@ -1,5 +1,4 @@
-import { EventStatus } from "@prisma/client";
-import { EventType } from "@prisma/client";
+import { DomainEventStatus, DomainEventType } from "../../entities/event.entity";
 
 export interface AddressProps {
   street: string;
@@ -21,8 +20,8 @@ export interface EventProps {
     address: AddressProps;
     capacity: number;
     isFree: boolean;
-    eventType: EventType;
-    status: EventStatus;
+    eventType: DomainEventType;
+    status: DomainEventStatus;
 }
 
 export interface IEventBuilder {
@@ -31,8 +30,8 @@ export interface IEventBuilder {
     producePrice(price?: number): void;
     produceSaleDates(saleStartAt?: Date, saleEndAt?: Date): void;
     produceAddress(address: AddressProps): void;
-    produceType(type?: EventType): void;
-    produceStatus(status?: EventStatus): void;
+    produceType(type?: DomainEventType): void;
+    produceStatus(status?: DomainEventStatus): void;
     produceCapacity(capacity: number): void;
     getResult(): EventProps;
 }

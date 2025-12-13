@@ -1,11 +1,11 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { UpdateEventInput } from '../dto/update-event-input';
-import { mapEvent } from '../mappers/event.mapper';
 import type { EventRepositoryPort } from '../../domain/ports/out/eventRepository.port';
 import type { EventNotifierPort } from '../../domain/ports/out/eventNotifierr.port';
 import { validateEventPricing } from '../../domain/services/priceValidation';
 import { Event } from '../../domain/entities/event.entity';
 import { UpdateEventPort } from '../../domain/ports/in/updateEvent.port';
+import { Address } from '../../domain/value-objects/address.entity';
 
 @Injectable()
 export class UpdateEventUseCase implements UpdateEventPort {
@@ -18,35 +18,53 @@ export class UpdateEventUseCase implements UpdateEventPort {
     const existing = await this.repository.getById(input.id);
     if (!existing) throw new NotFoundException(`Event with id ${input.id} not found`);
 
-    const domainEvent = mapEvent(existing);
-
-    const finalIsFree = input.isFree ?? domainEvent.isFree;
-    const finalPrice = input.price ?? domainEvent.price ?? undefined;
+    const finalIsFree = input.isFree ?? existing.isFree;
+    const finalPrice = input.price ?? existing.price;
     validateEventPricing(finalIsFree, finalPrice);
 
-    const updated = await this.repository.update(input.id, {
-      title: input.title ?? domainEvent.title,
-      description: input.description ?? domainEvent.description ?? undefined,
-      startAt: input.startAt ?? domainEvent.startAt,
-      endAt: input.endAt ?? domainEvent.endAt,
-      price: finalPrice,
-      isFree: finalIsFree,
-      capacity: input.capacity ?? domainEvent.capacity,
-      address: input.address
-        ? {
-            street: input.address.street,
-            number: input.address.number ?? undefined,
-            city: input.address.city,
-            state: input.address.state,
-            zipcode: input.address.zipcode,
-            country: input.address.country,
-          }
-        : undefined,
-      eventType: domainEvent.eventType,
-      status: domainEvent.status,
+    if (input.title !== undefined) existing.title = input.title;
+    if (input.description !== undefined) existing.description = input.description;
+    if (input.startAt !== undefined) existing.startAt = input.startAt;
+    if (input.endAt !== undefined) existing.endAt = input.endAt;
+    if (input.capacity !== undefined) existing.capacity = input.capacity;
+    if (input.isFree !== undefined) existing.isFree = input.isFree;
+    if (input.price !== undefined) existing.price = input.price;
+
+    if (input.address) {
+      existing.address = new Address(
+        input.address.street,
+        input.address.number,
+        input.address.city,
+        input.address.state,
+        input.address.zipcode,
+        input.address.country,
+      );
+    }
+
+    existing.updatedAt = new Date();
+
+    const updated = await this.repository.update(existing.id, {
+      title: existing.title,
+      description: existing.description,
+      startAt: existing.startAt,
+      endAt: existing.endAt,
+      price: existing.price,
+      isFree: existing.isFree,
+      capacity: existing.capacity,
+      address: {
+        street: existing.address.street,
+        number: existing.address.number,
+        city: existing.address.city,
+        state: existing.address.state,
+        zipcode: existing.address.zipcode,
+        country: existing.address.country,
+      },
+      status: existing.status,
+      eventType: existing.eventType,
     });
 
     await this.notifier.notifyCreatedOrUpdated(updated);
-    return mapEvent(updated);
+
+    return updated;
   }
 }

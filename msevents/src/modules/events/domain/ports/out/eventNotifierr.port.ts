@@ -1,6 +1,6 @@
-import { EventWithAddress } from "../../../infrastructure/adapters/out/database/events.repository.adapter";
+import { Event } from '../../entities/event.entity';
 
 export interface EventNotifierPort {
-  notifyCreatedOrUpdated(event: EventWithAddress): Promise<void>;
-  notifyCancelled(event: EventWithAddress): Promise<void>;
+  notifyCreatedOrUpdated(event: Event): Promise<void>;
+  notifyCancelled(event: Event): Promise<void>;
 }

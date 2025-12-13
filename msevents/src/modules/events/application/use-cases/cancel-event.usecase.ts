@@ -1,5 +1,4 @@
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
-import { mapEvent } from '../mappers/event.mapper';
 import { Event } from '../../domain/entities/event.entity';
 import { CancelEventPort } from '../../domain/ports/in/cancelEvent.port';
 import type { EventRepositoryPort } from '../../domain/ports/out/eventRepository.port';
@@ -17,8 +16,7 @@ export class CancelEventUseCase implements CancelEventPort {
     if (!event) throw new NotFoundException(`Event with id ${id} not found`);
 
     try {
-      const domain = mapEvent(event);
-      domain.cancel();
+      event.cancel();
     } catch (err) {
       throw new BadRequestException((err as Error).message);
     }
@@ -26,6 +24,6 @@ export class CancelEventUseCase implements CancelEventPort {
     const updated = await this.repository.cancel(id);
     await this.notifier.notifyCancelled(updated);
 
-    return mapEvent(updated);
+    return updated;
   }
 }
