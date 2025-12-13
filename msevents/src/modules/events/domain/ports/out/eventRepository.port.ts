@@ -1,10 +1,10 @@
+import { Event } from "../../entities/event.entity";
 import { EventProps } from "../../factories/builder/IEventsBuilder";
-import { EventWithAddress } from "../../../infrastructure/adapters/out/database/events.repository.adapter";
 
 export interface EventRepositoryPort {
-    create(eventData: EventProps): Promise<EventWithAddress>;
-    update(id: string, eventData: Partial<EventProps>): Promise<EventWithAddress>
-    getById(id: string): Promise<EventWithAddress | null>;
-    findAll(): Promise<EventWithAddress[]>;
-    cancel(id: string): Promise<EventWithAddress>;
+    create(event: EventProps): Promise<Event>;
+    update(id: string, event: Partial<EventProps>): Promise<Event>;
+    getById(id: string): Promise<Event | null>;
+    findAll(): Promise<Event[]>;
+    cancel(id: string): Promise<Event>;
 }

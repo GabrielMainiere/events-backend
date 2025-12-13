@@ -1,6 +1,5 @@
 import { IEventBuilder, EventProps, AddressProps } from './IEventsBuilder';
-import { EventType } from '@prisma/client';
-import { EventStatus } from '@prisma/client';
+import { DomainEventStatus, DomainEventType } from '../../entities/event.entity';
 
 export class EventBuilder implements IEventBuilder {
   private event: Partial<EventProps> = {};
@@ -29,12 +28,12 @@ export class EventBuilder implements IEventBuilder {
     this.event.address = address;
   }
 
-  produceType(type?: EventType): void {
-    this.event.eventType = type ?? EventType.MEETING;
+  produceType(type?: DomainEventType): void {
+    this.event.eventType = type ?? DomainEventType.MEETING;
   }
 
-  produceStatus(status?: EventStatus): void {
-    this.event.status = status ?? EventStatus.DRAFT;
+  produceStatus(status?: DomainEventStatus): void {
+    this.event.status = status ?? DomainEventStatus.DRAFT;
   }
 
   produceCapacity(capacity: number): void {

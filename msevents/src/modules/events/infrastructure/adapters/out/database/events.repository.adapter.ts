@@ -2,6 +2,8 @@ import { PrismaSingleton } from 'src/core/prisma/prismaSingleton';
 import { EventStatus, tb_event } from '@prisma/client';
 import { EventProps } from 'src/modules/events/domain/factories/builder/IEventsBuilder';
 import { EventRepositoryPort } from 'src/modules/events/domain/ports/out/eventRepository.port';
+import { Event } from 'src/modules/events/domain/entities/event.entity';
+import { PrismaEventMapper } from '../../in/mappers/event.Prisma.mapper';
 
 export type EventWithAddress = tb_event & {
   address: {
@@ -15,11 +17,11 @@ export type EventWithAddress = tb_event & {
   };
 };
 
-export class EventRepository implements EventRepositoryPort{
+export class EventRepository implements EventRepositoryPort {
   private prisma = PrismaSingleton.getInstance();
 
-  async create(eventData: EventProps): Promise<EventWithAddress> {
-    return this.prisma.tb_event.create({
+  async create(eventData: EventProps): Promise<Event> {
+    const created = await this.prisma.tb_event.create({
       data: {
         title: eventData.title,
         description: eventData.description ?? null,
@@ -45,10 +47,12 @@ export class EventRepository implements EventRepositoryPort{
       },
       include: { address: true },
     });
+
+    return PrismaEventMapper.toDomain(created);
   }
 
-  async update(id: string, data: Partial<EventProps>): Promise<EventWithAddress> {
-    return this.prisma.tb_event.update({
+  async update(id: string, data: Partial<EventProps>): Promise<Event> {
+    const updated = await this.prisma.tb_event.update({
       where: { id },
       data: {
         title: data.title,
@@ -64,7 +68,7 @@ export class EventRepository implements EventRepositoryPort{
           ? {
               update: {
                 street: data.address.street,
-                number: data.address.number,
+                number: data.address.number ?? null,
                 city: data.address.city,
                 state: data.address.state,
                 zipcode: data.address.zipcode,
@@ -75,21 +79,30 @@ export class EventRepository implements EventRepositoryPort{
       },
       include: { address: true },
     });
+
+    return PrismaEventMapper.toDomain(updated);
   }
 
-  async getById(id: string): Promise<EventWithAddress | null> {
-    return this.prisma.tb_event.findUnique({
+  async getById(id: string): Promise<Event | null> {
+    const event = await this.prisma.tb_event.findUnique({
       where: { id },
       include: { address: true },
     });
+
+    if (!event) return null;
+    return PrismaEventMapper.toDomain(event);
   }
 
-  async findAll(): Promise<EventWithAddress[]> {
-    return this.prisma.tb_event.findMany({ include: { address: true } });
+  async findAll(): Promise<Event[]> {
+    const events = await this.prisma.tb_event.findMany({
+      include: { address: true },
+    });
+
+    return events.map(PrismaEventMapper.toDomain);
   }
 
-  async cancel(id: string): Promise<EventWithAddress> {
-    return this.prisma.tb_event.update({
+  async cancel(id: string): Promise<Event> {
+    const canceled = await this.prisma.tb_event.update({
       where: { id },
       data: {
         status: EventStatus.CANCELED,
@@ -97,5 +110,7 @@ export class EventRepository implements EventRepositoryPort{
       },
       include: { address: true },
     });
+
+    return PrismaEventMapper.toDomain(canceled);
   }
 }

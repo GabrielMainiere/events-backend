@@ -1,6 +1,5 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import type { EventRepositoryPort } from '../../domain/ports/out/eventRepository.port';
-import { mapEvent } from '../mappers/event.mapper';
 import { Event } from '../../domain/entities/event.entity';
 import { GetEventByIdPort } from '../../domain/ports/in/getEventById.port';
 
@@ -13,6 +12,6 @@ export class GetEventUseCase implements GetEventByIdPort {
     async getById(id: string): Promise<Event> {
         const event = await this.repository.getById(id);
         if (!event) throw new NotFoundException(`Event with id ${id} not found`);
-        return mapEvent(event);
+        return event;
     }
 }
