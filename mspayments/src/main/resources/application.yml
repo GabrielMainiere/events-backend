@@ -15,8 +15,8 @@ spring:
   rabbitmq:
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USERNAME:admin}
-    password: ${RABBITMQ_PASSWORD:admin}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 grpc:
   server:
     port: 50053
