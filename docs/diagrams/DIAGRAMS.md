@@ -52,7 +52,7 @@ Um "zoom" em cada microsserviço, mostrando seus componentes internos e responsa
 Os seguintes microsserviços foram reestruturados na segunda etapa seguindo **Domain-Driven Design** e **Arquitetura Hexagonal (Ports & Adapters)**:
 
 #### Componentes - MS Notifications (Hexagonal)
-![Componentes do MS Notifications](./images/c4-component-notifications.png)
+![Componentes do MS Notifications](./images/c4-component-notifications.svg)
 
 **Destaques**:
 - **Domain**: NotificationAggregate, Email VO, Factories
