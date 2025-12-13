@@ -45,9 +45,9 @@ src/
     │   │   ├── template.factory.ts            # TemplateFactory
     │   │   ├── user-preference.factory.ts     # UserPreferenceFactory
     │   │   └── types/                         # Tipos para factories
-    │   │       ├── notification-factory.types.ts
-    │   │       ├── template-factory.types.ts
-    │   │       └── user-preference-factory.types.ts
+    │   │       ├── notification.types.ts      # Tipos de NotificationFactory
+    │   │       ├── template.types.ts          # Tipos de TemplateFactory
+    │   │       └── user-preference.type.ts    # Tipos de UserPreferenceFactory
     │   │
     │   ├── helper/                            # Helpers do domínio
     │   │   └── notification-type.helper.ts    # Lógica auxiliar de tipos
@@ -62,9 +62,7 @@ src/
     │       ├── template-rendering.service.ts          # Renderiza templates
     │       ├── user-preference-permission.service.ts  # Valida permissões
     │       └── interface/
-    │           ├── notification-processor.interface.ts
-    │           ├── notification-sender.interface.ts
-    │           ├── template-rendering.interface.ts
+    │           ├── template-renderer.interface.ts
     │           └── user-preference-permission.interface.ts
     │
     ├── application/                           # ═══════════════════════════════
@@ -95,41 +93,39 @@ src/
     │   ├── ports/                             # Definição de Ports
     │   │   ├── input/                         # PORTS IN (Use Cases)
     │   │   │   ├── notifications/
-    │   │   │   │   ├── process-notification.port.ts
-    │   │   │   │   ├── get-notification.port.ts
-    │   │   │   │   └── list-notifications.port.ts
+    │   │   │   │   └── process-notification.port.ts
     │   │   │   │
     │   │   │   ├── templates/
     │   │   │   │   ├── create-template.port.ts
-    │   │   │   │   ├── update-template.port.ts
     │   │   │   │   ├── delete-template.port.ts
     │   │   │   │   ├── get-template.port.ts
-    │   │   │   │   └── list-templates.port.ts
+    │   │   │   │   ├── list-templates.port.ts
+    │   │   │   │   └── update-template.port.ts
     │   │   │   │
     │   │   │   └── user-preferences/
-    │   │   │       ├── upsert-preference.port.ts
-    │   │   │       ├── get-preference.port.ts
-    │   │   │       └── delete-preference.port.ts
+    │   │   │       ├── get-user-preferences.port.ts
+    │   │   │       └── upsert-user-preference.port.ts
     │   │   │
-    │   │   └── output/                        # PORTS OUT (já no domain/repositories)
+    │   │   └── output/                        # PORTS OUT (Adapters externos)
+    │   │       ├── email-gateway.port.ts      # Port para envio de email
+    │   │       ├── notification-strategy.port.ts  # Port para estratégias
+    │   │       ├── sms-gateway.ts             # Port para SMS
+    │   │       └── strategy-factory.port.ts   # Port para factory de estratégias
     │   │
     │   └── use-cases/                         # Implementação dos Use Cases
     │       ├── notifications/
-    │       │   ├── process-notification.usecase.ts
-    │       │   ├── get-notification.usecase.ts
-    │       │   └── list-notifications.usecase.ts
+    │       │   └── process-notification.use-case.ts
     │       │
     │       ├── templates/
-    │       │   ├── create-template.usecase.ts
-    │       │   ├── update-template.usecase.ts
-    │       │   ├── delete-template.usecase.ts
-    │       │   ├── get-template.usecase.ts
-    │       │   └── list-templates.usecase.ts
+    │       │   ├── create-template.use-case.ts
+    │       │   ├── delete-template.use-case.ts
+    │       │   ├── get-by-id-template.use-case.ts
+    │       │   ├── list-template.use-case.ts
+    │       │   └── update-template.use-case.ts
     │       │
     │       └── user-preferences/
-    │           ├── upsert-preference.usecase.ts
-    │           ├── get-preference.usecase.ts
-    │           └── delete-preference.usecase.ts
+    │           ├── get-user-preference.use-case.ts
+    │           └── upsert-user-preference.use-case.ts
     │
     └── infrastructure/                        # ═══════════════════════════════
         │                                      # CAMADA EXTERNA (DETALHES TÉCNICOS)
@@ -143,9 +139,20 @@ src/
         │   │   │                              # Recebem requisições externas
         │   │   │
         │   │   ├── graphql/                   # Adapter GraphQL
-        │   │   │   ├── notification.resolver.ts
         │   │   │   ├── template.resolver.ts
-        │   │   │   └── user-preference.resolver.ts
+        │   │   │   ├── user-preference.resolver.ts
+        │   │   │   │
+        │   │   │   ├── enums/
+        │   │   │   │   └── register-enums.ts      # Enums GraphQL
+        │   │   │   │
+        │   │   │   ├── input/
+        │   │   │   │   ├── create-template.input.ts
+        │   │   │   │   ├── update-template.input.ts
+        │   │   │   │   └── upsert-user-preference.input.ts
+        │   │   │   │
+        │   │   │   └── types/
+        │   │   │       ├── template.type.ts
+        │   │   │       └── user-preference.type.ts
         │   │   │
         │   │   └── messaging/                 # Adapter RabbitMQ
         │   │       ├── notification.consumer.ts      # Consumer (EventPattern)
@@ -156,26 +163,38 @@ src/
         │   └── output/                        # ADAPTERS OUTPUT (Driven)
         │       │                              # Implementam interfaces do domain
         │       │
-        │       ├── repositories/              # Repositories (Prisma)
-        │       │   ├── notification.repository.ts
-        │       │   ├── template.repository.ts
-        │       │   └── user-preference.repository.ts
+        │       ├── email/                     # Email Gateway
+        │       │   └── nodemailer-email.gateway.ts   # Implementação Nodemailer
         │       │
-        │       └── notification/              # Notification Senders
-        │           ├── strategies/            # Strategy Pattern
-        │           │   ├── email.strategy.ts          # EmailStrategy (SMTP)
-        │           │   └── strategy.interface.ts      # INotificationStrategy
-        │           │
-        │           ├── decorators/            # Decorator Pattern
-        │           │   ├── audit-log.decorator.ts     # Log de auditoria
-        │           │   ├── retry.decorator.ts         # Retry automático
-        │           │   └── performance-log.decorator.ts # Log de performance
-        │           │
-        │           ├── factories/             # Factory Pattern
-        │           │   └── strategy.factory.ts        # Cria strategy + decorators
-        │           │
-        │           └── adapters/              # Adapters específicos
-        │               └── smtp.adapter.ts            # Nodemailer (SMTP)
+        │       ├── notification-channels/     # Notification Channels (Strategy + Decorator)
+        │       │   ├── strategy.factory.ts    # Factory de estratégias
+        │       │   │
+        │       │   ├── decorators/            # Decorator Pattern
+        │       │   │   ├── audit-log.decorator.ts
+        │       │   │   ├── performance-log.decorator.ts
+        │       │   │   └── retry.decorator.ts
+        │       │   │
+        │       │   └── strategies/            # Strategy Pattern
+        │       │       ├── email.strategy.ts
+        │       │       ├── push.strategy.ts
+        │       │       └── sms.strategy.ts
+        │       │
+        │       ├── persistence/               # Persistence (Prisma)
+        │       │   ├── mappers/               # Mappers Prisma ↔ Domain
+        │       │   │   ├── prisma-notification.mapper.ts
+        │       │   │   ├── prisma-template.mapper.ts
+        │       │   │   └── prisma-user-preference.mapper.ts
+        │       │   │
+        │       │   └── prisma/
+        │       │       ├── prisma-client.singleton.ts    # Singleton do Prisma
+        │       │       │
+        │       │       └── repositories/
+        │       │           ├── prisma-notification.repository.ts
+        │       │           ├── prisma-template.repository.ts
+        │       │           └── prisma-user-preference.repository.ts
+        │       │
+        │       └── template-engine/           # Template Engine (Handlebars)
+        │           └── handlebars-template-renderer.ts
         │
         └── modules/                           # NestJS Modules (DI)
             ├── app.module.ts                  # Módulo principal
@@ -227,15 +246,21 @@ RabbitMQ (mensagem)
     ↓
 [INPUT ADAPTER] notification.consumer.ts (@EventPattern)
     ↓
-[USE CASE] process-notification.usecase.ts
-    ↓
-[DOMAIN SERVICE] notification-processor.service.ts
-    ↓
-[AGGREGATE] NotificationAggregate (cria/valida)
-    ↓
-[PORT OUT] NotificationRepositoryPort (save)
-    ↓
-[OUTPUT ADAPTER] notification.repository.ts (Prisma)
+[USE CASE] process-notification.use-case.ts (O Orquestrador) 
+            ↓
+        [PORT OUT] TemplateRepository (Busca Template)
+            ↓
+        [DOMAIN SERVICE] UserPreferencePermissionService (Verifica Permissão)
+            ↓
+        [FACTORY] NotificationFactory (Cria o Aggregate)
+            ↓
+        [DOMAIN SERVICE] NotificationProcessorService (Regra de Negócio: Iniciar/Renderizar)
+            ↓
+        [PORT OUT] NotificationRepository (Salva PENDING)
+            ↓
+        [OUTPUT ADAPTER] StrategyFactory + Decorators (Envia o Email/SMS)
+            ↓
+        [PORT OUT] NotificationRepository (Atualiza para SENT)
     ↓
 PostgreSQL
 ```

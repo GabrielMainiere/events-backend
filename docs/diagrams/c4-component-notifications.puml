@@ -2,7 +2,12 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/refs/heads/master/C4_Component.puml
 AddRelTag("port", $lineStyle=DashedLine())
 
-title Diagrama de Componentes - MS Notifications (Arquitetura Hexagonal)
+title Diagrama de Componentes - MS Notifications (Arquitetura Hexagonal - Fluxo Orquestrado)
+
+' Definir componentes externos ANTES do boundary principal
+ComponentDb(database, "Notifications DB", "PostgreSQL", "Armazena notificações, templates e preferências")
+ContainerQueue(rabbitmq, "RabbitMQ", "Message Broker", "Exchange: notifications_exchange, Queue: notifications.dispatch")
+Component_Ext(smtpServer, "SMTP Server", "Servidor de email externo")
 
 Container_Boundary(msnotifications, "MS Notifications - Hexagonal Architecture") {
     
@@ -14,7 +19,7 @@ Container_Boundary(msnotifications, "MS Notifications - Hexagonal Architecture")
     
     ' ------------ CAMADA MÉDIA - APPLICATION ------------
     Boundary(application, "Application Layer") {
-        Component(processNotificationUseCase, "Process Notification Use Case", "Use Case", "Processa notificação recebida")
+        Component(processNotificationUseCase, "Process Notification Use Case", "Use Case", "Orquestrador: Busca dados, chama domínio, salva e envia")
         Component(createTemplateUseCase, "Create Template Use Case", "Use Case", "Cria novo template")
         Component(updateTemplateUseCase, "Update Template Use Case", "Use Case", "Atualiza template existente")
         Component(upsertPreferenceUseCase, "Upsert Preference Use Case", "Use Case", "Gerencia preferências de usuário")
@@ -25,22 +30,22 @@ Container_Boundary(msnotifications, "MS Notifications - Hexagonal Architecture")
     
     ' ------------ CAMADA INTERNA - DOMAIN ------------
     Boundary(domain, "Domain Layer (Core)") {
-        Component(notificationAggregate, "Notification Aggregate", "Aggregate Root", "Entidade raiz que gerencia o ciclo de vida")
+        Component(notificationAggregate, "Notification Aggregate", "Aggregate Root", "Entidade raiz com comportamento (startProcessing, markAsSent)")
         Component(templateEntity, "Template Entity", "Entity", "Entidade de template")
         Component(preferenceEntity, "Preference Entity", "Entity", "Preferências de notificação do usuário")
         
-        Component(emailVO, "Email Value Object", "Value Object", "Validação de email")
-        Component(notificationFactory, "Notification Factory", "Factory Pattern", "Cria notificações válidas")
+        Component(emailVO, "Email Value Object", "Value Object", "Validação de formato de email")
+        Component(notificationFactory, "Notification Factory", "Factory Pattern", "Encapsula criação complexa")
         
-        Component(notificationProcessor, "Notification Processor", "Domain Service", "Orquestra processamento de notificação")
-        Component(templateRenderer, "Template Renderer", "Domain Service", "Renderiza templates (Handlebars)")
-        Component(permissionService, "Permission Service", "Domain Service", "Valida preferências do usuário")
+        Component(notificationProcessor, "Notification Processor", "Domain Service", "Lógica pura: manipula estado e renderiza conteúdo")
+        Component(templateRenderer, "Template Renderer", "Domain Service", "Interface para engine de templates")
+        Component(permissionService, "Permission Service", "Domain Service", "Valida regras de permissão")
         
         ' Ports (Interfaces)
         Component(notificationRepoPort, "Notification Repository Port", "Interface (Port OUT)", "Contrato de persistência")
         Component(templateRepoPort, "Template Repository Port", "Interface (Port OUT)", "Contrato de templates")
         Component(preferenceRepoPort, "Preference Repository Port", "Interface (Port OUT)", "Contrato de preferências")
-        Component(notificationSenderPort, "Notification Sender Port", "Interface (Port OUT)", "Contrato de envio")
+        Component(notificationSenderPort, "Strategy Factory Port", "Interface (Port OUT)", "Contrato para obter estratégia de envio")
     }
     
     ' ------------ CAMADA EXTERNA - ADAPTERS OUTPUT ------------
@@ -52,61 +57,60 @@ Container_Boundary(msnotifications, "MS Notifications - Hexagonal Architecture")
         Component(strategyFactory, "Strategy Factory", "Factory Pattern", "Cria estratégia de envio com decorators")
         Component(emailStrategy, "Email Strategy", "Strategy Pattern", "Implementação de envio por email")
         Component(auditDecorator, "Audit Decorator", "Decorator Pattern", "Log de auditoria")
-        Component(retryDecorator, "Retry Decorator", "Decorator Pattern", "Retry automático")
-        Component(performanceDecorator, "Performance Decorator", "Decorator Pattern", "Medição de performance")
+        Component(retryDecorator, "Retry Decorator", "Decorator Pattern", "Retry automático (3x)")
+        Component(performanceDecorator, "Performance Decorator", "Decorator Pattern", "Medição de tempo de envio")
         
         Component(smtpAdapter, "SMTP Adapter", "Nodemailer", "Cliente SMTP")
         Component(prismaSingleton, "Prisma Singleton", "Singleton Pattern", "Instância única do Prisma")
     }
 }
 
-ComponentDb(database, "Notifications DB", "PostgreSQL", "Armazena notificações, templates e preferências")
-ContainerQueue(rabbitmq, "RabbitMQ", "Message Broker", "Exchange: notifications_exchange, Queue: notifications.dispatch")
-Component_Ext(smtpServer, "SMTP Server", "Servidor de email externo")
-
 ' ------------ RELACIONAMENTOS ------------
 
-' Input Adapters -> Use Cases
+' 1. Input Adapters -> Use Cases
 Rel(graphqlAdapter, createTemplateUseCase, "Chama", "HTTP")
 Rel(graphqlAdapter, updateTemplateUseCase, "Chama", "HTTP")
 Rel(graphqlAdapter, upsertPreferenceUseCase, "Chama", "HTTP")
 Rel(rabbitConsumer, processNotificationUseCase, "Chama", "Event")
 
-' RabbitMQ -> Input Adapter
+' 2. RabbitMQ -> Input Adapter
 Rel_U(rabbitmq, rabbitConsumer, "Consome eventos", "AMQP")
 
-' Use Cases -> Domain Services
-Rel(processNotificationUseCase, notificationProcessor, "Usa")
+' 3. Use Case: O Grande Orquestrador (CORRIGIDO)
+' O Use Case chama as Portas de Saída (Repos) e o Domínio
+Rel(processNotificationUseCase, templateRepoPort, "1. Busca Template", $tags="port")
+Rel(processNotificationUseCase, preferenceRepoPort, "2. Busca Preferência", $tags="port")
+Rel(processNotificationUseCase, permissionService, "3. Valida Permissão")
+Rel(processNotificationUseCase, notificationFactory, "4. Cria Entidade")
+Rel(processNotificationUseCase, notificationProcessor, "5. Processa/Renderiza")
+Rel(processNotificationUseCase, notificationRepoPort, "6. Salva (Pending)", $tags="port")
+Rel(processNotificationUseCase, notificationSenderPort, "7. Obtém Sender", $tags="port")
+Rel(processNotificationUseCase, notificationRepoPort, "8. Atualiza (Sent/Failed)", $tags="port")
+
+' Use Case -> Mappers
 Rel(processNotificationUseCase, notificationMapper, "Usa")
 Rel(createTemplateUseCase, templateMapper, "Usa")
 
-' Domain Services -> Entities/VOs
-Rel(notificationProcessor, notificationAggregate, "Cria/Manipula")
-Rel(notificationProcessor, notificationFactory, "Usa")
+' 4. Domain Logic Internals (Pureza do Domínio)
+' O Domain Service NÃO chama repositórios, apenas entidades
+Rel(notificationProcessor, notificationAggregate, "Manipula Estado")
 Rel(notificationProcessor, templateRenderer, "Usa")
-Rel(notificationProcessor, permissionService, "Valida")
-Rel(notificationFactory, emailVO, "Valida")
+Rel(notificationFactory, emailVO, "Cria")
 
-' Domain Services -> Ports (Interfaces)
-Rel(notificationProcessor, notificationRepoPort, "Usa", $tags="port")
-Rel(notificationProcessor, templateRepoPort, "Usa", $tags="port")
-Rel(notificationProcessor, preferenceRepoPort, "Usa", $tags="port")
-Rel(notificationProcessor, notificationSenderPort, "Usa", $tags="port")
-
-' Ports -> Output Adapters (Dependency Injection)
+' 5. Implementação das Portas (Dependency Injection)
 Rel(notificationRepoPort, notificationRepoImpl, "Implementado por", $tags="port")
 Rel(templateRepoPort, templateRepoImpl, "Implementado por", $tags="port")
 Rel(preferenceRepoPort, preferenceRepoImpl, "Implementado por", $tags="port")
 Rel(notificationSenderPort, strategyFactory, "Implementado por", $tags="port")
 
-' Strategy Pattern + Decorators
-Rel(strategyFactory, emailStrategy, "Cria e injeta")
-Rel(strategyFactory, auditDecorator, "Envolve (wrap)")
-Rel(strategyFactory, retryDecorator, "Envolve (wrap)")
-Rel(strategyFactory, performanceDecorator, "Envolve (wrap)")
+' 6. Strategy & Decorators Chain
+Rel(strategyFactory, auditDecorator, "Cria stack")
+Rel(auditDecorator, retryDecorator, "Envolve")
+Rel(retryDecorator, performanceDecorator, "Envolve")
+Rel(performanceDecorator, emailStrategy, "Envolve")
 Rel(emailStrategy, smtpAdapter, "Usa")
 
-' Adapters -> Infraestrutura
+' 7. Adapters -> Infraestrutura Real
 Rel(notificationRepoImpl, prismaSingleton, "Usa")
 Rel(templateRepoImpl, prismaSingleton, "Usa")
 Rel(preferenceRepoImpl, prismaSingleton, "Usa")
